@@ -4,7 +4,11 @@
         color: '#9999FF',
         defaults: {
             name: {value: ""},
-            adapterId: {value: "ARTNET_01", required: true}
+            adapterId: {value: "ARTNET_01", required: true},
+            host: {value: "", required: true},
+            port: {value: "6454", required: true},
+            refresh: {value: 4000},
+            universe: {value: 0}
         },
         inputs:0,
         outputs:1,
@@ -16,15 +20,33 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="habitat-node-artnet">
+<script type="text/x-red" data-template-name="habitat-adapter-artnet">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
         <input type="text" id="node-input-adapterId" placeholder="Adapter ID">
     </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="0.0.0.0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="6454">
+    </div>
+    <div class="form-row">
+        <label for="node-input-refresh"><i class="icon-tag"></i> Refresh artnet buffer [ms]</label>
+        <input type="text" id="node-input-refresh" placeholder="4000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-universe"><i class="icon-tag"></i> Universe</label>
+        <input type="text" id="node-input-universe" placeholder="0">
+    </div>
 </script>
 
-<script type="text/x-red" data-help-name="habitat-node-artnet">
+<script type="text/x-red" data-help-name="habitat-adapter-artnet">
     <p>This node is a ARTNET (DMX) adapter for the HABITAT home automation system</p>
 </script>

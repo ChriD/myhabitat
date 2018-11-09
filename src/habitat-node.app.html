@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('habitat-app',{
         category: 'Habitat',
-        color: '#a6bbcf',
+        color: '#9999FF',
         defaults: {
             name: {value:""}
         },
@@ -15,13 +15,13 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="habitat-node-app">
+<script type="text/x-red" data-template-name="habitat-app">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="habitat-node-app">
+<script type="text/x-red" data-help-name="habitat-app">
     <p>This node adds a unique id from the config to a message</p>
 </script>

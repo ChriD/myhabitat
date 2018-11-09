@@ -16,10 +16,10 @@ module.exports = function(RED) {
         var self = this
 
         // TODO: @@@
-        this.config.ga          = "1/1/4"
-        this.config.adapterId   = "KNX_01"
+        self.config.ga          = "1/1/4"
+        self.config.adapterId   = "KNX_01"
 
-        this.groupAddressFilter.push(this.config.ga)
+        self.groupAddressFilter.push(self.config.ga)
 
         RED.nodes.createNode(self, _config)
 

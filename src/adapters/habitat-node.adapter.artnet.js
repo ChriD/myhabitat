@@ -19,14 +19,19 @@ module.exports = function(RED) {
       super(RED, _config)
 
       var self = this
-      self.options = {
-        host: '10.0.0.125',
-        port: '6454',
-        refresh: 4000,
-        universe: 0
+
+
+      // all the options we need are stored in the config
+      var options = {
+        host: self.config.host,
+        port: self.config.port,
+        refresh: self.config.refresh,
+        universe: self.config.universe
       }
 
-      self.artnet = require('artnet')(self.options)
+      RED.nodes.createNode(self, _config)
+
+      self.artnet = require('artnet')(options)
 
       // TODO:  we do not have good infos from the underlaying artnet library if connection is ok or not
       //        so we assume that connection is ok and set it on error if there is a socket error
@@ -42,7 +47,6 @@ module.exports = function(RED) {
         self.logError("Connection error: " + _error.toString(), _error)
       })
 
-      RED.nodes.createNode(self, _config)
 
       // we have to call the created event for some stuff which will be done in the base class
       self.created()
@@ -86,10 +90,15 @@ module.exports = function(RED) {
      */
     sendToArtnet(_channel, _values)
     {
-        this.artnet.set(this.options.universe, this.toInt(_channel), _values)
-        this.send({ 'universe' : this.options.universe,
+      var self = this
+        this.artnet.set(this.config.universe, this.toInt(_channel), _values, function (err, res) {
+          // TODO: @@@ why does it not throw an error when recipient is not online?
+          // Maybe with unicast?
+          //self.artnet.close()
+        })
+        this.send({ 'universe' : this.config.universe,
                     'channel' : _channel,
-                    'values' : _values,
+                    'values' : _values
        })
     }
 
