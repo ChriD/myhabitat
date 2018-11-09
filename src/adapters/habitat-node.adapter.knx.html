@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('habitat-adapter-knx',{
+        category: 'Habitat Adapter',
+        color: '#9999FF',
+        defaults: {
+            name: {value: ""},
+            adapterId: {value: "KNX_01", required: true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "function.png",
+        paletteLabel: 'Habitat KNX Adapter',
+        label: function() {
+            return this.name || 'Habitat KNX Adapter';
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="habitat-node-knx">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
+        <input type="text" id="node-input-adapterId" placeholder="Adapter ID">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="habitat-node-knx">
+    <p>This node is a KNX adapter for the HABITAT home automation system</p>
+</script>

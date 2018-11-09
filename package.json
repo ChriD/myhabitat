@@ -1,0 +1,29 @@
+{
+    "name": "habitat",
+    "version": "0.0.1",
+    "description": "Home Automation System powered by node-red",
+    "author": "ChriD",
+    "license": "ISC",
+    "keywords": [
+        "node-red",
+        "home automation system"
+    ],
+    "node-red": {
+        "nodes": {
+            "habitat-app": "src/habitat-node.app.js",
+            "habitat-adapter-artnet": "src/adapters/habitat-node.adapter.artnet.js",
+            "habitat-adapter-knx": "src/adapters/habitat-node.adapter.knx.js",
+            "habitat-thing-artnet-tunablewhite": "src/things/habitat-node.thing.artnet.tunableWhite.js",
+            "habitat-thing-knx-gafilter": "src/things/habitat-node.thing.knx.gaFilter.js"
+        }
+    },
+    "dependencies": {
+        "artnet": "^1.4.0",
+        "fs": "0.0.1-security",
+        "glob": "^7.1.3",
+        "knx": "^2.3.1",
+        "path": "^0.12.7",
+        "ws": "^6.0.0"
+    },
+    "devDependencies": {}
+}

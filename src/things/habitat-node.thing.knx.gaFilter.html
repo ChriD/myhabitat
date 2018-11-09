@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('habitat-node-thing-knx-gafilter',{
+        category: 'Habitat Thing',
+        color: '#9999FF',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "function.png",
+        paletteLabel: 'Habitat KNX GA Filter',
+        label: function() {
+            return this.name || 'Habitat KNX GA Filter';
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="habitat-node-thing-knx-gafilter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
+        <input type="text" id="node-input-thingId" placeholder="ThingId">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="habitat-node-thing-knx-gafilter">
+    <p>This node adds a unique id from the config to a message</p>
+</script>

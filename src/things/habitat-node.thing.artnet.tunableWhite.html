@@ -1,0 +1,37 @@
+<script type="text/javascript">
+    RED.nodes.registerType('habitat-node-thing-artnet-tunablewhite',{
+        category: 'Habitat Thing',
+        color: '#9999FF',
+        defaults: {
+            name: {value:""},
+            thingId: {value:"", required:true},
+            channel: {value:0, validate:RED.validators.number() },
+        },
+        inputs:1,
+        outputs:0,
+        icon: "function.png",
+        paletteLabel: 'Habitat Artnet TunableWhite',
+        label: function() {
+            return this.name || 'Habitat Artnet TunableWhite';
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="habitat-node-thing-artnet-tunablewhite">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
+        <input type="text" id="node-input-thingId" placeholder="ThingId">
+    </div>
+    <div class="form-row">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="habitat-node-thing-artnet-tunablewhite">
+    <p>This node adds a unique id from the config to a message</p>
+</script>

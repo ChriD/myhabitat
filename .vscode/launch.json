@@ -1,0 +1,32 @@
+{
+    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach",
+            "port": 9229
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Habitat Test starten",
+            "program": "${workspaceFolder}\\src\\test.habitat.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Gateway Test starten",
+            "program": "${workspaceFolder}\\src\\test.gateway.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Client Connection Test starten",
+            "program": "${workspaceFolder}\\src\\test.clientConnection.js"
+        }
+    ]
+}
