@@ -1,0 +1,103 @@
+<script type="text/javascript">
+    RED.nodes.registerType('habitat-node-thing-artnet-light',{
+        category: 'Habitat Thing',
+        color: '#9999FF',
+        defaults: {
+            name: {value:""},
+            thingId: {value:"", required:true},
+            lightType : {value:"", required:true},
+            channelWhite: {value:0, validate:RED.validators.number() },
+            channelWarmWhite: {value:0, validate:RED.validators.number() },
+            channelRed: {value:0, validate:RED.validators.number() },
+            channelGreen: {value:0, validate:RED.validators.number() },
+            channelBlue: {value:0, validate:RED.validators.number() },
+        },
+        inputs:1,
+        outputs:0,
+        icon: "function.png",
+        paletteLabel: 'Habitat Artnet Light',
+        label: function() {
+            return this.name || 'Habitat Artnet Light';
+        },
+
+        //
+        oneditprepare: function() {
+
+            var self = this
+            // prepare the light type option box
+            var lightTypesArray = [ { id: 'ONE',    name: 'Light'},
+                                    { id: 'TW',     name: 'Tunable white'},
+                                    { id: 'RGB',    name: 'RGB'},
+                                    { id: 'RGBW',   name: 'RGBW'} ]
+
+            var lightTypeElement = document.getElementById("node-input-lightType")
+
+            for (i = 0; i < lightTypesArray.length ; i++)
+            {
+                var option = document.createElement('option');
+                option.textContent = i + " : " + lightTypesArray[i].name + ' (' + lightTypesArray[i].id + ')'
+                option.setAttribute('value', lightTypesArray[i].id)
+                lightTypeElement.appendChild(option)
+            }
+
+            lightTypeElement.value = this.lightType || 0
+            // TODO call  design change
+
+            // when selection of the type of light is changed, we have to store it back into our default value
+            // because this is not doen automatically!
+            lightTypeElement.onchange = function() {
+                self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
+                // TODO call  design change
+            }
+
+        }
+    })
+
+
+
+
+</script>
+
+<script type="text/x-red" data-template-name="habitat-node-thing-artnet-light">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
+        <input type="text" id="node-input-thingId" placeholder="ThingId">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-lightType><i class="icon-tag"></i> Typ</label>
+        <select id="node-input-lightType"></select>
+    </div>
+
+    <!-- Channels for the given types of lights -->
+
+    <div class="form-row TW ONE">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel White</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+    <div class="form-row TW RGBW">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel WarmWhite</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+    <div class="form-row RGB RGBW">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel Red</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+    <div class="form-row RGB RGBW">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel Green</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+    <div class="form-row RGB RGBW">
+        <label for="node-input-channel><i class="icon-tag"></i> Channel Blue</label>
+        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="habitat-node-thing-artnet-light">
+    <p>This node adds a unique id from the config to a message</p>
+</script>

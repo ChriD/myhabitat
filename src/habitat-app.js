@@ -2,6 +2,7 @@
 
 const Habitat_Base = require('./habitat-base.js')
 const Habitat_Storage_File = require('./storage/habitat-storage.file.js')
+const Habitat_HTTPServer = require('./server/habitat-httpServer.js')
 const Glob = require('glob')
 const Path = require('path')
 
@@ -22,6 +23,10 @@ class Habitat_App extends Habitat_Base
     // currently the storage is a file storage, if we do want to have another (maybe db) we have to
     // create a new inheritance from the storage base class
     this.storage = new Habitat_Storage_File()
+
+    // this is the HTTP server for serving GUIs for the habitat app
+    // it may not be used if the gui's are present on another server
+    this.guiServer = new Habitat_HTTPServer(8080)
   }
 
   /**
@@ -31,6 +36,7 @@ class Habitat_App extends Habitat_Base
   init()
   {
     this.initGateways()
+    //this.initGUIServer()
   }
 
 
@@ -41,6 +47,30 @@ class Habitat_App extends Habitat_Base
   close()
   {
     this.closeGateways()
+    this.closeGUIServer()
+
+  }
+
+  initGUIServer()
+  {
+    var self = this
+
+    if(!self.guiServer)
+      return
+    // the logs of the webserver should be redirected to the application main log
+    self.guiServer.on("log", function(_logType, _log, _data) {
+      self.log(_logType, _log, _data)
+    })
+
+    self.guiServer.listen()
+
+  }
+
+  closeGUIServer()
+  {
+    if(!this.guiServer)
+      return
+    this.guiServer.close()
   }
 
   /**
