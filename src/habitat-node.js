@@ -1,6 +1,7 @@
 
 "use strict"
 
+
 /**
  * This is the node base class for all nodes which are in relation to habitat
  */
@@ -201,15 +202,23 @@ class Habitat_Node
 
 
   /**
-   * does combine 2 states
+   * does combine 2 states with deep merging!
    */
   combineStates(_stateA, _stateB)
   {
+    var newState = this.copyObject(_stateA)
+    const cloner = require('cloner')
+    newState = cloner.deep.merge(newState, _stateB)
+    return newState
+
+    //const deepmerge = require('deepmerge')
+    //return deepmerge.all(_stateA, _stateB)
+
     // ECMA Script 2018
     //return {_stateA, _stateB}
 
     // ECMA Script 2015
-    return Object.assign(_stateA, _stateB);
+    //return Object.assign(_stateA, _stateB)
   }
 
    /**
@@ -263,7 +272,7 @@ class Habitat_Node
    */
   copyObject(_object)
   {
-      return JSON.parse(JSON.stringify(_object))
+    return JSON.parse(JSON.stringify(_object))
   }
 
   /**

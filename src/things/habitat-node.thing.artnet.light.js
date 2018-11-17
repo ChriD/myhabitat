@@ -79,14 +79,21 @@ module.exports = function(RED) {
               // an object should be a "state" object
               // this will be merged and applied to the current state object
               case "object":
-                var newState = copyObject(this.state)
-                newState = self.combineStates(newState, value)
+                var newState = self.combineStates(value, this.state)
                 self.setState(newState, false)
                 break
               default:
                 self.logWarning("Wrong input type for " + self.getThingId())
             }
         });
+      }
+
+
+       /**
+       * upgradeState
+       */
+      upgradeState(_state)
+      {
       }
 
 
@@ -131,8 +138,8 @@ module.exports = function(RED) {
             // if all the fading and dimming is done we do store/commit the new state as the last state
             // we do not want to have a state saved when it's in dimming or fading mode
             Promise.all(proms).then(function(){
-              // be sure we do set the whole loaded state to the current state
-              self.state = self.copyObject(_newState)
+              // be sure we do set the whole loaded state to the current state but do not loose any vars!
+              self.state = self.combineStates( _newState, self.state)
               self.saveLastState()
               _resolve()
             }).catch(function(_exception){
@@ -427,7 +434,11 @@ module.exports = function(RED) {
                 // TODO: only update when something changed
                 self.sendToArtnet(source)
 
-                if(_target.warmwhite == source.warmwhite && _target.white == source.white && _target.red == source.red && _target.green == source.green && _target.blue == source.blue)
+                if( (_target.warmwhite == source.warmwhite || !whiteMS)  &&
+                    (_target.white == source.white || !warmWhiteMS) &&
+                    (_target.red == source.red || !redMS) &&
+                    (_target.green == source.green || !greenMS) &&
+                    (_target.blue == source.blue || !blueMS))
                 {
                   clearInterval(self.fadingTimerId)
                   _resolve()
