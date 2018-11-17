@@ -1,53 +1,74 @@
 <script type="text/javascript">
-    RED.nodes.registerType('habitat-node-thing-artnet-light',{
+    RED.nodes.registerType('habitat-node-thing-artnet-light', {
         category: 'Habitat Thing',
         color: '#9999FF',
         defaults: {
-            name: {value:""},
-            thingId: {value:"", required:true},
-            lightType : {value:"", required:true},
-            channelWhite: {value:0, validate:RED.validators.number() },
-            channelWarmWhite: {value:0, validate:RED.validators.number() },
-            channelRed: {value:0, validate:RED.validators.number() },
-            channelGreen: {value:0, validate:RED.validators.number() },
-            channelBlue: {value:0, validate:RED.validators.number() },
+            name: { value: "" },
+            thingId: { value: "", required: true },
+            lightType: { value: "ONE", required: true },
+            channelWhite: { value: 0 },
+            channelWarmWhite: { value: 0 },
+            channelRed: { value: 0 },
+            channelGreen: { value: 0 },
+            channelBlue: { value: 0 },
+            autoBrightness : { value: 0 },
+            autoHCL : { value: 0 }
         },
-        inputs:1,
-        outputs:0,
+        inputs: 1,
+        outputs: 0,
         icon: "function.png",
         paletteLabel: 'Habitat Artnet Light',
-        label: function() {
+        label: function () {
             return this.name || 'Habitat Artnet Light';
         },
 
         //
-        oneditprepare: function() {
+        oneditprepare: function () {
 
             var self = this
+
+            var lightTypeElement            = document.getElementById("node-input-lightType")
+
             // prepare the light type option box
-            var lightTypesArray = [ { id: 'ONE',    name: 'Light'},
-                                    { id: 'TW',     name: 'Tunable white'},
-                                    { id: 'RGB',    name: 'RGB'},
-                                    { id: 'RGBW',   name: 'RGBW'} ]
+            var lightTypesArray = [ { id: 'ONE', name: 'Light' },
+                                    { id: 'TW', name: 'Tunable white' },
+                                    { id: 'RGB', name: 'RGB' },
+                                    { id: 'RGBW', name: 'RGBW' }]
 
-            var lightTypeElement = document.getElementById("node-input-lightType")
-
-            for (i = 0; i < lightTypesArray.length ; i++)
-            {
+            for (i = 0; i < lightTypesArray.length; i++) {
                 var option = document.createElement('option');
                 option.textContent = i + " : " + lightTypesArray[i].name + ' (' + lightTypesArray[i].id + ')'
                 option.setAttribute('value', lightTypesArray[i].id)
                 lightTypeElement.appendChild(option)
             }
-
             lightTypeElement.value = this.lightType || 0
-            // TODO call  design change
+
+
+            updateDesign()
 
             // when selection of the type of light is changed, we have to store it back into our default value
             // because this is not doen automatically!
-            lightTypeElement.onchange = function() {
-                self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
-                // TODO call  design change
+            lightTypeElement.onchange = function () {
+                if(lightTypeElement.selectedIndex >= 0)
+                    self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
+                updateDesign()
+            }
+
+
+            function updateDesign() {
+
+                // hide all elements which have a data-lightType attribute and make only those visible which have the correct type!
+                var container = document.getElementById("habitat-node-thing-artnet-light")
+                var elements = container.querySelectorAll('[data-lighttype]')
+                for(var i=0; i<elements.length; i++)
+                {
+                    var types =  elements[i].dataset.lighttype.split(" ")
+                    if(types.indexOf(self.lightType) != -1)
+                        elements[i].style.display = 'block'
+                    else
+                        elements[i].style.display = 'none'
+                }
+
             }
 
         }
@@ -55,47 +76,58 @@
 
 
 
-
 </script>
 
 <script type="text/x-red" data-template-name="habitat-node-thing-artnet-light">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
-        <input type="text" id="node-input-thingId" placeholder="ThingId">
-    </div>
+    <div id="habitat-node-thing-artnet-light">
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
+            <input type="text" id="node-input-thingId" placeholder="ThingId">
+        </div>
 
-    <div class="form-row">
-        <label for="node-input-lightType><i class="icon-tag"></i> Typ</label>
-        <select id="node-input-lightType"></select>
-    </div>
+        <div class="form-row">
+            <label for="node-input-lightType><i class="icon-tag"></i> Typ</label>
+            <select id="node-input-lightType"></select>
+        </div>
 
-    <!-- Channels for the given types of lights -->
+        <div class="form-row" data-lighttype="ONE TW RGBW RGB">
+            <label for="node-input-autoBrightness><i class="icon-tag"></i>auto. Brightness</label>
+            <input type="checkbox" id="node-input-autoBrightness" placeholder="">
+        </div>
 
-    <div class="form-row TW ONE">
-        <label for="node-input-channel><i class="icon-tag"></i> Channel White</label>
-        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
-    </div>
-    <div class="form-row TW RGBW">
-        <label for="node-input-channel><i class="icon-tag"></i> Channel WarmWhite</label>
-        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
-    </div>
-    <div class="form-row RGB RGBW">
-        <label for="node-input-channel><i class="icon-tag"></i> Channel Red</label>
-        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
-    </div>
-    <div class="form-row RGB RGBW">
-        <label for="node-input-channel><i class="icon-tag"></i> Channel Green</label>
-        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
-    </div>
-    <div class="form-row RGB RGBW">
-        <label for="node-input-channel><i class="icon-tag"></i> Channel Blue</label>
-        <input type="number" id="node-input-channel" placeholder="Artnet Channel">
-    </div>
+        <div class="form-row" data-lighttype="TW RGBW RGB">
+            <label for="node-input-autoHCL><i class="icon-tag"></i>auto. HCL</label>
+            <input type="checkbox" id="node-input-autoHCL" placeholder="">
+        </div>
 
+
+        <!-- Channels for the given types of lights -->
+
+        <div class="form-row" data-lighttype="TW ONE RGBW">
+            <label for="node-input-channelWhite><i class="icon-tag"></i> Ch. White</label>
+            <input type="number" id="node-input-channelWhite" placeholder="0-512" style="width: 5em">
+        </div>
+        <div class="form-row TW RGBW" data-lighttype="TW">
+            <label for="node-input-channelWarmWhite><i class="icon-tag"></i> Ch. W-White</label>
+            <input type="number" id="node-input-channelWarmWhite" placeholder="0-512" style="width: 5em">
+        </div>
+        <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
+            <label for="node-input-channelRed><i class="icon-tag"></i> Ch. Red</label>
+            <input type="number" id="node-input-channelRed" placeholder="0-512" style="width: 5em">
+        </div>
+        <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
+            <label for="node-input-channelGreen><i class="icon-tag"></i> Ch. Green</label>
+            <input type="number" id="node-input-channelGreen" placeholder="0-512" style="width: 5em">
+        </div>
+        <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
+            <label for="node-input-channelBlue><i class="icon-tag"></i> Ch. Blue</label>
+            <input type="number" id="node-input-channelBlue" placeholder="0-512" style="width: 5em">
+        </div>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="habitat-node-thing-artnet-light">

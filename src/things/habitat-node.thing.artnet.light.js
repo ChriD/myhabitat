@@ -153,13 +153,42 @@ module.exports = function(RED) {
 
       sendToArtnet(_color = this.state.color, _brightness = this.state.brightness, _isOn = this.state.isOn)
       {
-        // TODO: build artnet value array from the color object and the brightness
+        var channels
+        var values
+
+        // be sure we do have valid values for the artnet library
         this.normalizeColorObject(_color)
-        this.getArtnetAdapter().sendToArtnet(this.config.channel, [
-                                                                    Math.round(_color.warmwhite * _brightness) * (_isOn ? 1 : 0),
-                                                                    Math.round( _color.white * _brightness) * (_isOn ? 1: 0)
-                                                                  ])
+
+        // for each light type we have, we have to set up the channels and the values
+        switch(this.config.lightType)
+        {
+          case "ONE":
+            channels  = [this.config.channelWhite]
+            values    = [_color.white]
+            break
+          case "TW":
+            channels  = [this.config.channelWhite, this.config.channelWarmWhite]
+            values    = [_color.white, _color.warmwhite]
+            break
+          case "RGB":
+            channels  = [this.config.channelRed, this.config.channelGreen, this.config.channelBlue]
+            values    = [_color.red, _color.green, _color.blue]
+            break
+          case "RGBW":
+            channels  = [this.config.channelRed, this.config.channelGreen, this.config.channelBlue, this.config.channelWhite]
+            values    = [_color.red, _color.green, _color.blue, _color.white]
+            break
+          default:
+            self.logError("light type is not supported")
+        }
+
+        // we do send the values each by each so we can have gaps between the channels
+        for(var i = 0; i < channels.length; i++)
+        {
+          this.getArtnetAdapter().sendToArtnet(channels[i], Math.round(values[i] * _brightness) * (_isOn ? 1 : 0))
+        }
       }
+
 
 
       normalizeColorObject(_color)
@@ -339,7 +368,7 @@ module.exports = function(RED) {
       /**
        * fade option
        * TODO: should be made faster & better
-       * fading should dim bertween the values and keep the teperature        */
+       * */
       // TODO: FOR RGBW!!!
       fadeTo(_target, _duration =  this.config.colorFadeDuration)
       {
@@ -358,18 +387,27 @@ module.exports = function(RED) {
             // calculate the ms each color has to be updated
             var whiteDiff     = _target.white - source.white
             var warmWhiteDiff = _target.warmwhite - source.warmwhite
-
+            var redDiff       = _target.red - source.red
+            var greenDiff     = _target.green - source.green
+            var blueDiff      = _target.blue - source.blue
 
             // clear the current fading if we are starting a new one
             if(self.fadingTimerId)
               clearInterval(self.fadingTimerId)
 
-            if(whiteDiff || warmWhiteDiff)
+            if(whiteDiff || warmWhiteDiff || redDiff || greenDiff || blueDiff)
             {
               var whiteMS     = Math.abs(Math.round(duration / whiteDiff))
               var warmWhiteMS = Math.abs(Math.round(duration / warmWhiteDiff))
-              if(!whiteMS && whiteDiff) whiteMS = 1
+              var redMS       = Math.abs(Math.round(duration / redDiff))
+              var greenMS     = Math.abs(Math.round(duration / greenDiff))
+              var blueMS      = Math.abs(Math.round(duration / blueDiff))
+
+              if(!whiteMS && whiteDiff)         whiteMS = 1
               if(!warmWhiteMS && warmWhiteDiff) warmWhiteMS = 1
+              if(!redMS && redDiff)             redMS = 1
+              if(!greenMS && greenDiff)         greenMS = 1
+              if(!blueMS && blueDiff)           blueMS = 1
 
               // set up the fading timer/interval (the timer will be set up for 1 milisecond)
               self.fadingTimerId = setInterval(function(){
@@ -378,11 +416,18 @@ module.exports = function(RED) {
                   source.white += 1 * (_target.white < source.white ? -1 : 1)
                 if(warmWhiteMS && intervalTime % warmWhiteMS == 0 && source.warmwhite != _target.warmwhite)
                   source.warmwhite += 1 *  (_target.warmwhite < source.warmwhite ? -1 : 1)
+                if(redMS && intervalTime % redMS == 0 && source.red != _target.red)
+                  source.red += 1 * (_target.red < source.red ? -1 : 1)
+                if(greenMS && intervalTime % greenMS == 0 && source.green != _target.green)
+                  source.green += 1 * (_target.green < source.green ? -1 : 1)
+                if(blueMS && intervalTime % blueMS == 0 && source.blue != _target.blue)
+                  source.blue += 1 * (_target.blue < source.blue ? -1 : 1)
+
+
                 // TODO: only update when something changed
                 self.sendToArtnet(source)
-                //self.getArtnetAdapter().sendToArtnet(self.config.channel, [self.fadeMap[self.state.color.white], self.fadeMap[self.state.color.warmwhite]] )
 
-                if(_target.warmwhite == source.warmwhite && _target.white == source.white)
+                if(_target.warmwhite == source.warmwhite && _target.white == source.white && _target.red == source.red && _target.green == source.green && _target.blue == source.blue)
                 {
                   clearInterval(self.fadingTimerId)
                   _resolve()
