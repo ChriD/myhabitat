@@ -28,8 +28,8 @@ module.exports = function(RED) {
             // the habitat instance should log to the node-red output
             self.habitat.on("log", function(_logType, _log, _data){ self.log(_log) })
             // update some default path for several m,odules
-            self.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat\\states") + "\\"
-            self.habitat.guiServer.defaultPath  = Path.join(RED.settings.userDir, "habitat\\webclients") + "\\"
+            self.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat/states") + "/"
+            self.habitat.guiServer.defaultPath  = Path.join(RED.settings.userDir, "habitat/webclients") + "/"
 
             self.habitat.init()
 

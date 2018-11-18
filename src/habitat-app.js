@@ -36,7 +36,7 @@ class Habitat_App extends Habitat_Base
   init()
   {
     this.initGateways()
-    //this.initGUIServer()
+    this.initGUIServer()
   }
 
 
