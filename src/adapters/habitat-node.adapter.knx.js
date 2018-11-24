@@ -2,6 +2,8 @@
 // https://nodered.org/docs/creating-nodes/status
 
 
+KNX = require('knx')
+
 /**
  * This node is an adapter for the habitat system which provides access to the KNX bus
  * it uses the knx library from https://bitbucket.org/ekarak/knx.js
@@ -31,7 +33,7 @@ module.exports = function(RED) {
       // Here's the API description 'https://bitbucket.org/ekarak/knx.js/src/master/README-API.md?fileviewer=file-view-default'
       // the underlaying knx lib is very reliable! if the connection is lost it will automatically try to reconnect
       // and will trigger the right events aterwards
-      this.knx = require('knx').Connection({
+      this.knx = KNX.Connection({
         ipAddr : this.config.host,
         ipPort : this.config.port,
         handlers: {
@@ -42,7 +44,16 @@ module.exports = function(RED) {
           },
           // we do emit the events of the lib so the knx nodes can attach
           event: function(_event, _source, _destination, _value) {
-            self.logDebug("Event: " + _event + " Source: " + _source.toString() + " Destination: " + _destination.toString() + " Value:" + _value.toString())
+            self.logDebug("Event: " + _event + " Source: " + _source.toString() + " Destination: " + _destination.toString() + " Value:" + (_value['0'] ? _value['0'].toString() :_value.toString()))
+
+            // we do output every knx info we get on the output, the user may do something with it or not
+            // in fact there should be no need for the data at all except logging or monitoring the bus
+            self.send({ 'event'       : _event,
+                        'source'      : _source,
+                        'destination' : _destination,
+                        'value'       : _value
+                      })
+
             switch(_event.toUpperCase())
             {
               case "GROUPVALUE_WRITE":
@@ -100,12 +111,14 @@ module.exports = function(RED) {
 
     /**
      * send values onto the knx  bus
-     * @param {integer} _channel starting channel wheer the -values are going to be set
-     * @param {integer[]} _values values to be set from starting channel
+     * @param {string} _ga group address
+     * @param {string} _ga th datatype
+     * @param {anytype} _value value
      */
-    sendToKnx(_channel, _values)
+    sendToKNX(_ga, _datatype, _value)
     {
-      // TODO: @@@
+      var datapoint = new KNX.Datapoint({ga: _ga, dpt: _datatype}, this.knx)
+      datapoint.write(_value)
     }
 
   }

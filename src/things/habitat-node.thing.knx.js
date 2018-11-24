@@ -63,7 +63,7 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
 
 
   /**
-   * returns the knx adapter node
+   * is called whn knx data was received
    * @param {string} _source
    * @param {string} _destination
    * @param {string} _value

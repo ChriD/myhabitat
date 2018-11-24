@@ -3,12 +3,17 @@
         category: 'Habitat Thing',
         color: '#9999FF',
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            thingId: { value: "", required: true },
+            gaActionBlindPosition: {value:""},
+            gaActionBlindDegree: {value:""},
+            gaFeedbackBlindPosition: {value:""},
+            gaFeedbackBlindDegree: {value:""}
         },
         inputs:0,
         outputs:1,
         icon: "function.png",
-        paletteLabel: 'Habitat KNX GA Blind',
+        paletteLabel: 'Habitat KNX Blind',
         label: function() {
             return this.name || 'Habitat KNX Blind';
         }
@@ -17,9 +22,33 @@
 
 <script type="text/x-red" data-template-name="habitat-node-thing-knx-blind">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-name" style="width:11em"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
     </div>
+    <div class="form-row">
+        <label for="node-input-thingId" style="width:11em"><i class="icon-tag"></i> Id</label>
+        <input type="text" id="node-input-thingId" placeholder="ThingId" style="width:60%">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-gaActionBlindPosition" style="width:11em"><i class="icon-tag"></i>GA: Position setzen</label>
+        <input type="text" id="node-input-gaActionBlindPosition" placeholder="0/0/0" style="width:60%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-gaActionBlindDegree" style="width:11em"><i class="icon-tag"></i>GA: Winkel setzen</label>
+        <input type="text" id="node-input-gaActionBlindDegree" placeholder="0/0/0" style="width:60%">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-gaFeedbackBlindPosition" style="width:11em"><i class="icon-tag"></i>GA: Position lesen</label>
+        <input type="text" id="node-input-gaFeedbackBlindPosition" placeholder="0/0/0" style="width:60%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-gaFeedbackBlindDegree" style="width:11em"><i class="icon-tag"></i>GA: Winkel lesen</label>
+        <input type="text" id="node-input-gaFeedbackBlindDegree" placeholder="0/0/0" style="width:60%">
+    </div>
+
+
 </script>
 
 <script type="text/x-red" data-help-name="habitat-node-thing-knx-blind">
