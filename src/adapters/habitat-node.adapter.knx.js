@@ -40,6 +40,7 @@ module.exports = function(RED) {
           connected: function() {
             self.logInfo("Connection to KNX-Bus extablished")
             self.isConnected = true
+            self.emit("connectionStateChanged", self.isConnected)
             self.status({fill:"green",shape:"dot",text:"connected"})
           },
           // we do emit the events of the lib so the knx nodes can attach
@@ -65,6 +66,7 @@ module.exports = function(RED) {
           },
           error: function(_connstatus) {
             self.isConnected = false
+            self.emit("connectionStateChanged", self.isConnected)
             self.status({fill:"red",shape:"ring",text:"disconnected"})
             self.logError("Connection error: " + _connstatus.toString(), _connstatus)
           }
@@ -106,8 +108,11 @@ module.exports = function(RED) {
     close()
     {
       this.knx.Disconnect()
+      this.isConnected = false
+      this.emit("connectionStateChanged", this.isConnected)
       super.close()
     }
+
 
     /**
      * send values onto the knx  bus
@@ -120,6 +125,37 @@ module.exports = function(RED) {
       var datapoint = new KNX.Datapoint({ga: _ga, dpt: _datatype}, this.knx)
       datapoint.write(_value)
     }
+
+
+    /**
+     * read values from the knx bus
+     * @param {string} _ga group address
+     * @param {string} _ga th datatype
+     * @return {Promise} returns a promise which will fire if value was retrieved
+     */
+    readFromKNX(_ga, _datatype)
+    {
+      var self = this
+
+      return new Promise((_resolve, _reject) => {
+
+        try
+        {
+          var datapoint = new KNX.Datapoint({ga: _ga, dpt: _datatype}, self.knx)
+          datapoint.read( function (_response) {
+            self.logDebug("Read Request Response from " + ga + ": " + _response.toString())
+            _resolve(_response)
+          })
+        }
+        catch(_exception)
+        {
+          self.logError(_exception.toString())
+          _reject(_exception)
+        }
+
+      })
+    }
+
 
   }
 

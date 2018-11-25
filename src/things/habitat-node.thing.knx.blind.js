@@ -30,10 +30,12 @@ module.exports = function(RED) {
         // this is a 'have to'!
         self.created()
 
-        // add the group address we have to listen for on the bus, those are our status GA's
-        self.groupAddressFilter.push(self.config.gaFeedbackBlindPosition)
-        self.groupAddressFilter.push(self.config.gaFeedbackBlindDegree)
+        // add the group addresses which will deliver the status for the blind state (positions)
+        // those datapoints will call the "feedbackDatapointChanged" method if their value has been changed!
+        self.addFeedbackDatapoint(self.config.gaFeedbackBlindPosition, "DPT5.001")
+        self.addFeedbackDatapoint(self.config.gaFeedbackBlindDegree, "DPT5.001")
 
+        //
         self.on('input', function(_msg) {
           var value = _msg.payload
           switch(typeof value)
@@ -41,36 +43,14 @@ module.exports = function(RED) {
             // position of the shutter in % (0 .. 100)
             case "number":
               value = value > 100 ? 100 : value
-              value = value < 0 ? 0 : value
-
+              value = value < 0   ? 0   : value
               break
           }
         });
       }
 
-      restoreState(_newState)
-      {
-        var self = this
-        super.restoreState()
 
-        // when restoring the last state from a blackout (we do not know if blackout was by loss of power supply or by redeploying the objects)
-        // we should retrieve all feedback objects associated with the knx device
-        // TODO: Do this in base class?
-        return new Promise((_resolve, _reject) => {
-          try
-          {
-            // TODO: get all feedback ga's
-            _resolve()
-          }
-          catch(_exception)
-          {
-            self.logError(_exception.toString())
-            _reject(_exception)
-          }
-        })
-      }
-
-       /**
+      /**
        * applyState
        */
       applyState(_newState)
@@ -88,7 +68,7 @@ module.exports = function(RED) {
             // do not combine the new state value we got because it should be updated via the KNX State GA's
             // TODO: @@@ we may update the state if we do not have any feedbakc ga's defined?!
             //self.state = self.combineStates(_newState, self.state)
-            self.updateInfoStatus()
+            self.updateNodeInfoState()
             _resolve()
           }
           catch(_exception)
@@ -112,47 +92,36 @@ module.exports = function(RED) {
       }
 
 
+      /**
+       * is called whenever a value of a registered feedback datapoint is changing
+       * @param {String} _ga ga which value has changed
+       * @param {anytype} _oldValue old value of the ga
+       * @param {anytype} _value new value of the ga
+       */
+      feedbackDatapointChanged(_ga, _oldValue, _value)
+      {
+        if(_ga == this.config.gaFeedbackBlindPosition)
+          this.state.blindPosition =_value
+        if(_ga == this.config.gaFeedbackBlindDegree)
+          this.state.blindDegree = _value
+
+        // the state has updated, so we have to update the node appearanec in the node-red gui and we have
+        // to tell the habitat app thet tha state of this thing has changed
+        this.updateNodeInfoState()
+        this.stateUpdated()
+      }
+
+
+
       setPosition(_position)
       {
         this.getKnxAdapter().sendToKNX(this.config.gaActionBlindPosition, 'DPT5.001', _position)
       }
 
 
-      /**
-       * is called when knx data wa sreceived
-       * @param {string} _source the knx device id/address
-       * @param {string} _destination the knx group address
-       * @param {string} _value the value of the message
-       * @param {Object} _valueObject the knx object value
-       */
-      knxDataReceived(_source, _destination, _value, _valueObject)
+      updateNodeInfoState()
       {
-        // the blind may have some status objects, those one we have to listen for and we will run
-        // into this method if thise ga's are present
-        if(this.config.gaFeedbackBlindPosition)
-          this.state.blindPosition = _value
-        if(this.config.gaFeedbackBlindDegree)
-          this.state.blindDegree = _value
-
-        // TODO:
-        /*
-          setPosition
-          setDegree
-          up
-          down
-
-          get status from status GA's (position degree)
-        */
-
-        //if(_destination == this.config.ga)
-        //this.send({payload :_value })
-        self.updateInfoStatus()
-      }
-
-
-      updateInfoStatus()
-      {
-        let infoText = "Pos.:" (this.state.blindPosition).toString() + "% / Deg.: " + (this.state.blindDegree).toString()
+        let infoText = "Pos.:" + (this.state.blindPosition).toString() + "% / Deg.: " + (this.state.blindDegree).toString() + "%"
         let infoFill = this.state.blindPosition ? "green" : "red"
         this.status({fill:infoFill, shape:"dot", text: infoText})
       }
