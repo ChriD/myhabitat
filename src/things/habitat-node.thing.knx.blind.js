@@ -56,19 +56,15 @@ module.exports = function(RED) {
       applyState(_newState)
       {
         var self = this
-        var proms = new Array()
-
         return new Promise((_resolve, _reject) => {
-
           try
           {
             // when we got a new state we have to update the blind position
-            // TODO: be sure we do only update if the state origin comes from an external source
+            // the apply state will only be called when the state was changed by a client or by a scene (loaded state)
             self.setPosition(_newState.blindPosition)
-            // do not combine the new state value we got because it should be updated via the KNX State GA's
-            // TODO: @@@ we may update the state if we do not have any feedbakc ga's defined?!
-            //self.state = self.combineStates(_newState, self.state)
-            self.updateNodeInfoState()
+
+            // we do not combine the new state we got because it should be updated via the KNX State GA's
+            // INFO: we may update the state if we do not have any feedback ga's defined?!
             _resolve()
           }
           catch(_exception)
@@ -77,7 +73,6 @@ module.exports = function(RED) {
             _reject(_exception)
           }
         })
-
       }
 
 
@@ -112,13 +107,16 @@ module.exports = function(RED) {
       }
 
 
-
       setPosition(_position)
       {
         this.getKnxAdapter().sendToKNX(this.config.gaActionBlindPosition, 'DPT5.001', _position)
       }
 
 
+       /**
+       * should be called when the appearnce of the node in the node-red gui has to be updates
+       * in this case we do show the current position of the blind (position + degree)
+       */
       updateNodeInfoState()
       {
         let infoText = "Pos.:" + (this.state.blindPosition).toString() + "% / Deg.: " + (this.state.blindDegree).toString() + "%"
