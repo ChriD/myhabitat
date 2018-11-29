@@ -183,11 +183,15 @@ class Habitat_Node
     if(_isInit)
       this.restoreState(_state).then(function(){
         self.stateUpdated()
+      }).catch(function(_exception){
+        self.logError("Error restoring state: " + _exception.toString(), _state)
       })
     // if the state is loaded by user (scene change) we have to apply the new state values
     else
       this.applyState(_state).then(function(){
         self.stateUpdated()
+      }).catch(function(_exception){
+        self.logError("Error applying state: " + _exception.toString(), _state)
       })
   }
 

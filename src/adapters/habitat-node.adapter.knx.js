@@ -60,8 +60,8 @@ module.exports = function(RED) {
               case "GROUPVALUE_WRITE":
                 self.emit("gaReceived",_source, _destination, _value['0'], _value)
                 break
-              default:
-                self.logWarning("Event: " + _event + " not considered!")
+              //default:
+              //  self.logDebug("Event: " + _event + " not considered!")
             }
           },
           error: function(_connstatus) {

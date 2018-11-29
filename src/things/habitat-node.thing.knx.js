@@ -100,6 +100,7 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
     })
     self.feedbackDatapoints.push(datapoint)
     self.groupAddressFilter.push(_ga)
+    return datapoint
   }
 
 
