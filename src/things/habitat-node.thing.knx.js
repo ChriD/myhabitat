@@ -50,12 +50,31 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
 
 
   /**
+   * returns true if there is a valid adapter found
+   * @return {Boolean}
+   */
+  hasValidAdapter()
+  {
+    if(!this.getKnxAdapter())
+    {
+      this.logError("No KNX-Adapter instance for ID " + this.getKnxAdapterId() + " found")
+      return false
+    }
+    return true
+  }
+
+
+  /**
    * will be called when all nodes are started
    */
   nodesStarted()
   {
     var self = this
     super.nodesStarted()
+
+    // be sure we skip and give an error if there is no instance found we can use!
+    if(!self.hasValidAdapter())
+      return
 
     // the node has to be aware when a ga was reveiced on the bus
     self.getKnxAdapter().on("gaReceived", function(_source, _destination, _value, _valueObject){

@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('habitat-adapter-artnet',{
-        category: 'Habitat Adapter',
+        category: 'config',
         color: '#9999FF',
         defaults: {
             name: {value: ""},
@@ -22,28 +22,28 @@
 
 <script type="text/x-red" data-template-name="habitat-adapter-artnet">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
-        <input type="text" id="node-input-adapterId" placeholder="Adapter ID">
+        <label for="node-config-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
+        <input type="text" id="node-config-input-adapterId" placeholder="Adapter ID">
     </div>
     <div class="form-row">
-        <label for="node-input-host"><i class="icon-tag"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="0.0.0.0">
+        <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="0.0.0.0">
     </div>
     <div class="form-row">
-        <label for="node-input-port"><i class="icon-tag"></i> Port</label>
-        <input type="text" id="node-input-port" placeholder="6454">
+        <label for="node-config-input-port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="6454">
     </div>
     <div class="form-row">
-        <label for="node-input-refresh"><i class="icon-tag"></i> Refresh artnet buffer [ms]</label>
-        <input type="text" id="node-input-refresh" placeholder="4000">
+        <label for="node-config-input-refresh"><i class="icon-tag"></i> Refresh artnet buffer [ms]</label>
+        <input type="text" id="node-config-input-refresh" placeholder="4000">
     </div>
     <div class="form-row">
-        <label for="node-input-universe"><i class="icon-tag"></i> Universe</label>
-        <input type="text" id="node-input-universe" placeholder="0">
+        <label for="node-config-input-universe"><i class="icon-tag"></i> Universe</label>
+        <input type="text" id="node-config-input-universe" placeholder="0">
     </div>
 </script>
 

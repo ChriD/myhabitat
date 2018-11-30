@@ -12,55 +12,53 @@ module.exports = function(RED) {
 
     class Habitat_Node_App extends Habitat_Node
     {
-        constructor(_config)
-        {
+      constructor(_config)
+      {
+        super(RED, _config)
 
-            super(RED, _config)
+        var self = this
 
-            var self = this
+        RED.nodes.createNode(self, _config);
 
-            RED.nodes.createNode(self, _config);
+        self.log("Starting habitat")
 
-            self.log("Starting habitat")
+        // create the habitat app
+        self.habitat = new Habitat_App()
+        // the habitat instance should log to the node-red output
+        self.habitat.on("log", function(_logType, _log, _data){ self.log(_log) })
+        // update some default path for several m,odules
+        self.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat/states") + "/"
+        self.habitat.guiServer.defaultPath  = Path.join(RED.settings.userDir, "habitat/webclients") + "/"
 
-            // create the habitat app
-            self.habitat = new Habitat_App()
-            // the habitat instance should log to the node-red output
-            self.habitat.on("log", function(_logType, _log, _data){ self.log(_log) })
-            // update some default path for several m,odules
-            self.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat/states") + "/"
-            self.habitat.guiServer.defaultPath  = Path.join(RED.settings.userDir, "habitat/webclients") + "/"
+        self.habitat.init()
 
-            self.habitat.init()
+        //
+        self.on('input', function(){ self.onInput() })
+        self.on('close', function(){ self.onClose() })
 
-            //
-            self.on('input', function(){ self.onInput() })
-            self.on('close', function(){ self.onClose() })
-
-            // we have to store this instance to the global context so every habitat child node
-            // does have access to it
-            self.context().global.set(self.getHabitatGlobalContextId(), self)
-        }
-
-
-        close()
-        {
-            this.log("Shutting down habitat")
-            this.habitat.close()
-        }
+        // we have to store this instance to the global context so every habitat child node
+        // does have access to it
+        self.context().global.set(self.getHabitatGlobalContextId(), self)
+      }
 
 
-        onInput()
-        {
-            // TODO: control message.. send to habitat app!
-        }
+      close()
+      {
+        this.log("Shutting down habitat")
+        this.habitat.close()
+      }
 
 
-        nodesStarted()
-        {
-            super.nodesStarted()
-        }
+      onInput()
+      {
+        // TODO: control message.. send to habitat app!
+      }
 
+
+      nodesStarted()
+      {
+        super.nodesStarted()
+      }
 
     }
 

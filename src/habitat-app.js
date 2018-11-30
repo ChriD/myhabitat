@@ -226,9 +226,8 @@ class Habitat_App extends Habitat_Base
     return this.storage.loadState(_objectId, _stateId)
   }
 
-
-
 }
+
 
 
 module.exports = Habitat_App

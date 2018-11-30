@@ -29,7 +29,7 @@ module.exports = function(RED) {
                       'green'     : 127,
                       'blue'      : 127
                     },
-           'brightness' : 1.0,
+          'brightness' : 1.0,
          }
 
         // timer id which will be > 0 when fading is currently running
@@ -39,7 +39,6 @@ module.exports = function(RED) {
         self.brightnessIntervallId = 0
 
         // TODO: @@@
-        this.config.adapterId   = "ARTNET_01"
         this.config.dimFadeDuration   = 254
         this.config.colorFadeDuration = 254
 
@@ -141,6 +140,7 @@ module.exports = function(RED) {
               // be sure we do set the whole loaded state to the current state but do not loose any vars!
               self.state = self.combineStates( _newState, self.state)
               self.saveLastState()
+              self.updateNodeInfoState()
               _resolve()
             }).catch(function(_exception){
               _reject(_exception)
@@ -236,6 +236,7 @@ module.exports = function(RED) {
             self.dimTo(self.state.brightness, 0).then(function(){
               self.stateUpdated()
               self.saveLastState()
+              self.updateNodeInfoState()
               _resolve()
             })
 
@@ -273,6 +274,7 @@ module.exports = function(RED) {
               self.state.isOn = false
               self.stateUpdated()
               self.saveLastState()
+              self.updateNodeInfoState()
               _resolve()
             })
 
@@ -460,6 +462,20 @@ module.exports = function(RED) {
               _reject(_exception)
           }
         })
+      }
+
+
+
+
+       /**
+       * should be called when the appearance of the node in the node-red gui has to be updated
+       * in this case we do show  if the lamp is on/off and the brightness
+       */
+      updateNodeInfoState()
+      {
+        let infoText = Math.round((this.state.brightness * 100)).toString() + "%"
+        let infoFill = this.state.isOn ? "green" : "red"
+        this.status({fill:infoFill, shape:"dot", text: infoText})
       }
 
 

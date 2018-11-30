@@ -70,6 +70,8 @@ class Habitat_Node
    */
   habitat()
   {
+    if(!this.habitatNode())
+      return null
     return this.habitatNode().habitat
   }
 
@@ -290,7 +292,10 @@ class Habitat_Node
 
   logInt(_type, _log, _object)
   {
-    this.habitat().log(_type, this.getLogPrefix() + " " + _log, _object)
+    if(this.habitat())
+      this.habitat().log(_type, this.getLogPrefix() + " " + _log, _object)
+    else
+      this.log(this.getLogPrefix() + " " + _log)
     //this.emit("log", _type, _log, _object)
   }
 

@@ -9,6 +9,12 @@ class Habitat_Node_Thing extends Habitat_Node
   constructor(_RED, _config)
   {
     super(_RED, _config)
+
+    // get the defined adapter from the config
+    // we will retrieve the adpater node and we can use the id of the node for the link
+    var adapterNode = _RED.nodes.getNode(this.config.adapterNode)
+    if(adapterNode)
+      this.config.adapterId = adapterNode.getAdapterId()
   }
 
   /**
@@ -88,6 +94,14 @@ class Habitat_Node_Thing extends Habitat_Node
         }
       }
     })
+  }
+
+
+  /**
+   * will be called when node was created
+   */
+  created()
+  {
   }
 
   /**

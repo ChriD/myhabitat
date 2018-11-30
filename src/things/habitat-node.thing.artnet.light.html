@@ -5,6 +5,7 @@
         defaults: {
             name: { value: "" },
             thingId: { value: "", required: true },
+            adapterNode: { value: "", required: true, type: "habitat-adapter-artnet"},
             lightType: { value: "ONE", required: true },
             channelWhite: { value: 0 },
             channelWarmWhite: { value: 0 },
@@ -36,7 +37,7 @@
                                     { id: 'RGBW', name: 'RGBW' }]
 
             for (i = 0; i < lightTypesArray.length; i++) {
-                var option = document.createElement('option');
+                var option = document.createElement('option')
                 option.textContent = i + " : " + lightTypesArray[i].name + ' (' + lightTypesArray[i].id + ')'
                 option.setAttribute('value', lightTypesArray[i].id)
                 lightTypeElement.appendChild(option)
@@ -56,7 +57,6 @@
 
 
             function updateDesign() {
-
                 // hide all elements which have a data-lightType attribute and make only those visible which have the correct type!
                 var container = document.getElementById("habitat-node-thing-artnet-light")
                 var elements = container.querySelectorAll('[data-lighttype]')
@@ -81,50 +81,54 @@
 <script type="text/x-red" data-template-name="habitat-node-thing-artnet-light">
     <div id="habitat-node-thing-artnet-light">
         <div class="form-row">
-            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
+            <label for="node-input-name" style="width:11em"> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
         </div>
         <div class="form-row">
-            <label for="node-input-thingId><i class="icon-tag"></i> Id</label>
-            <input type="text" id="node-input-thingId" placeholder="ThingId">
+            <label for="node-input-thingId" style="width:11em">Id</label>
+            <input type="text" id="node-input-thingId" placeholder="ThingId" style="width:60%">
+        </div>
+        <div class="form-row">
+            <label for="node-input-adapterNode" style="width:11em">Adapter</label>
+            <input type="text" id="node-input-adapterNode" placeholder="" style="width:60%">
         </div>
 
         <div class="form-row">
-            <label for="node-input-lightType><i class="icon-tag"></i> Typ</label>
+            <label for="node-input-lightType" style="width:11em"><i class="icon-tag"></i> Typ</label>
             <select id="node-input-lightType"></select>
         </div>
 
         <div class="form-row" data-lighttype="ONE TW RGBW RGB">
-            <label for="node-input-autoBrightness><i class="icon-tag"></i>auto. Brightness</label>
-            <input type="checkbox" id="node-input-autoBrightness" placeholder="">
+            <label for="node-input-autoBrightness style="width:11em">auto. Brightness</label>
+            <input type="checkbox" id="node-input-autoBrightness" placeholder="" style="width:60%">
         </div>
 
         <div class="form-row" data-lighttype="TW RGBW RGB">
-            <label for="node-input-autoHCL><i class="icon-tag"></i>auto. HCL</label>
-            <input type="checkbox" id="node-input-autoHCL" placeholder="">
+            <label for="node-input-autoHCL style="width:11em">auto. HCL</label>
+            <input type="checkbox" id="node-input-autoHCL" placeholder="" style="width:60%">
         </div>
 
 
         <!-- Channels for the given types of lights -->
 
         <div class="form-row" data-lighttype="TW ONE RGBW">
-            <label for="node-input-channelWhite><i class="icon-tag"></i> Ch. White</label>
+            <label for="node-input-channelWhite>Ch. White</label>
             <input type="number" id="node-input-channelWhite" placeholder="0-512" style="width: 5em">
         </div>
         <div class="form-row TW RGBW" data-lighttype="TW">
-            <label for="node-input-channelWarmWhite><i class="icon-tag"></i> Ch. W-White</label>
+            <label for="node-input-channelWarmWhite>Ch. W-White</label>
             <input type="number" id="node-input-channelWarmWhite" placeholder="0-512" style="width: 5em">
         </div>
         <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
-            <label for="node-input-channelRed><i class="icon-tag"></i> Ch. Red</label>
+            <label for="node-input-channelRed>Ch. Red</label>
             <input type="number" id="node-input-channelRed" placeholder="0-512" style="width: 5em">
         </div>
         <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
-            <label for="node-input-channelGreen><i class="icon-tag"></i> Ch. Green</label>
+            <label for="node-input-channelGreen> Ch. Green</label>
             <input type="number" id="node-input-channelGreen" placeholder="0-512" style="width: 5em">
         </div>
         <div class="form-row RGB RGBW" data-lighttype="RGB RGBW">
-            <label for="node-input-channelBlue><i class="icon-tag"></i> Ch. Blue</label>
+            <label for="node-input-channelBlue>Ch. Blue</label>
             <input type="number" id="node-input-channelBlue" placeholder="0-512" style="width: 5em">
         </div>
     </div>

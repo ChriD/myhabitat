@@ -22,8 +22,9 @@ module.exports = function(RED) {
 
       var self = this
       this.config = {
-        host: '10.0.0.130',
-        port: '3671'
+        host            : _config.host ? _config.host : "224.0.23.12",
+        port            : _config.port ? _config.port : '3671',
+        forceTunneling  : _config.forceTunneling
       }
 
       self.isConnected = false
@@ -36,6 +37,7 @@ module.exports = function(RED) {
       this.knx = KNX.Connection({
         ipAddr : this.config.host,
         ipPort : this.config.port,
+        forceTunneling : this.config.forceTunneling,
         handlers: {
           connected: function() {
             self.logInfo("Connection to KNX-Bus extablished")

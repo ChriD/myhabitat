@@ -21,19 +21,19 @@ module.exports = function(RED) {
           blindDegree   : 0
         }
 
+        // the last state set by a gui or by a node-red flow
         self.lastStateSet = {
           blindPosition : 0,
           blindDegree   : 0
         }
 
+        self.isPositioningMode = false
         self.intervalPositioning = 0
         self.IntervalPositioningInterval = 1000
         self.intervalPositioningMS = 0
 
-        // TODO: @@@
-        self.config.adapterId   = "KNX_01"
-
         RED.nodes.createNode(self, _config)
+
 
         // we have to call the created event for some stuff which will be done in the base class
         // this is a 'have to'!
@@ -60,6 +60,7 @@ module.exports = function(RED) {
 
           self.applyState(newState)
         })
+
       }
 
 
@@ -122,6 +123,11 @@ module.exports = function(RED) {
         if(_ga == this.config.gaFeedbackBlindDegree)
           this.state.blindDegree = _value
 
+        // if we are not in positioning mode by ourselfs, we may update the 'lastStateSet' with the current info
+        // this is the case when soem other application is moving the blinds qithout habitat knowing of it.
+        // in fact this is not best practice but we keep the node able to handle that in a proper way
+        this.lastStateSet = this.copyObject(this.state)
+
         // the state has updated, so we have to update the node appearanec in the node-red gui and we have
         // to tell the habitat app thet tha state of this thing has changed
         this.updateNodeInfoState()
@@ -133,14 +139,18 @@ module.exports = function(RED) {
       {
         var self = this
         return new Promise((_resolve, _reject) => {
+          self.isPositioningMode = true
           self.setPosition(_position).then(function(){
             // after we have reached the position, we do have to set the degree value
             self.setDegree(_degree).then(function(){
+              self.isPositioningMode = false
               _resolve()
             }).catch(function(_exception){
+              self.isPositioningMode = false
               _reject(_exception)
             })
           }).catch(function(_exception){
+            self.isPositioningMode = false
             _reject(_exception)
           })
         })
@@ -153,8 +163,16 @@ module.exports = function(RED) {
         var posDifference = Math.abs(self.state.blindPosition - _position)
 
         return new Promise((_resolve, _reject) => {
+
+          // be sure we skip and give an error if there is no instance found we can use!
+          if(!self.hasValidAdapter())
+          {
+            _reject(new Error("No valid adapter!"))
+            return
+          }
+
           // we have update the kny bus with the ga given for the blind absolute positioning
-          this.getKnxAdapter().sendToKNX(this.config.gaActionBlindPosition, 'DPT5.001', _position)
+          self.getKnxAdapter().sendToKNX(self.config.gaActionBlindPosition, 'DPT5.001', _position)
           // after we have send the GA with its value to the bus, the blind should change it's position
           // and then when it has reached it's position we should update the blind degree (may be not done by the actor itself)
           // for this we are starting an intervall which will request the current position of the shutter
@@ -192,6 +210,14 @@ module.exports = function(RED) {
         var self = this
 
         return new Promise((_resolve, _reject) => {
+
+          // be sure we skip and give an error if there is no instance found we can use!
+          if(!self.hasValidAdapter())
+          {
+            _reject(new Error("No valid adapter!"))
+            return
+          }
+
           self.getKnxAdapter().sendToKNX(self.config.gaActionBlindDegree, 'DPT5.001', _degree)
           // be sure we do only wait for the last given position call, calls made prior will be dismissed
           if(self.intervalPositioning)

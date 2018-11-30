@@ -5,6 +5,7 @@
         defaults: {
             name: {value:""},
             thingId: { value: "", required: true },
+            adapterNode: { value: "", required: true, type: "habitat-adapter-knx"},
             gaActionBlindPosition: {value:""},
             gaActionBlindDegree: {value:""},
             gaFeedbackBlindPosition: {value:""},
@@ -22,29 +23,33 @@
 
 <script type="text/x-red" data-template-name="habitat-node-thing-knx-blind">
     <div class="form-row">
-        <label for="node-input-name" style="width:11em"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name" style="width:11em">Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
     </div>
     <div class="form-row">
-        <label for="node-input-thingId" style="width:11em"><i class="icon-tag"></i> Id</label>
+        <label for="node-input-thingId" style="width:11em">Id</label>
         <input type="text" id="node-input-thingId" placeholder="ThingId" style="width:60%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-adapterNode" style="width:11em">Adapter</label>
+        <input type="text" id="node-input-adapterNode" placeholder="" style="width:60%">
     </div>
 
     <div class="form-row">
-        <label for="node-input-gaActionBlindPosition" style="width:11em"><i class="icon-tag"></i>GA: Position setzen</label>
+        <label for="node-input-gaActionBlindPosition" style="width:11em">GA: Position setzen</label>
         <input type="text" id="node-input-gaActionBlindPosition" placeholder="0/0/0" style="width:60%">
     </div>
     <div class="form-row">
-        <label for="node-input-gaActionBlindDegree" style="width:11em"><i class="icon-tag"></i>GA: Winkel setzen</label>
+        <label for="node-input-gaActionBlindDegree" style="width:11em">GA: Winkel setzen</label>
         <input type="text" id="node-input-gaActionBlindDegree" placeholder="0/0/0" style="width:60%">
     </div>
 
     <div class="form-row">
-        <label for="node-input-gaFeedbackBlindPosition" style="width:11em"><i class="icon-tag"></i>GA: Position lesen</label>
+        <label for="node-input-gaFeedbackBlindPosition" style="width:11em">GA: Position lesen</label>
         <input type="text" id="node-input-gaFeedbackBlindPosition" placeholder="0/0/0" style="width:60%">
     </div>
     <div class="form-row">
-        <label for="node-input-gaFeedbackBlindDegree" style="width:11em"><i class="icon-tag"></i>GA: Winkel lesen</label>
+        <label for="node-input-gaFeedbackBlindDegree" style="width:11em">GA: Winkel lesen</label>
         <input type="text" id="node-input-gaFeedbackBlindDegree" placeholder="0/0/0" style="width:60%">
     </div>
 
