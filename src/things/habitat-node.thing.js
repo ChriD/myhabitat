@@ -88,6 +88,9 @@ class Habitat_Node_Thing extends Habitat_Node
       {
         if(_habitatEnvelope.type.toUpperCase() == "NODESTATE")
         {
+          // we have to store the originator of the state message we got, this is usefull to send when we do update
+          // the other clients so the client sent knows its data came from himself
+          self.stateOriginator = self.copyObject(_habitatEnvelope.originator)
           // set the state which is given by the gateway
           self.logDebug("Received node state from " + _habitatEnvelope.sender)
           self.setState(_habitatEnvelope.data, false)

@@ -34,9 +34,12 @@ module.exports = function(RED) {
 
         // timer id which will be > 0 when fading is currently running
         self.fadingTimerId = 0
-
         // intervall id for dimming to a specific brightness
         self.brightnessIntervallId = 0
+        //
+        self.isTaskRunning = false
+
+        //self.
 
         // TODO: @@@
         this.config.dimFadeDuration   = 254
@@ -56,6 +59,8 @@ module.exports = function(RED) {
             var value = _msg.payload
             switch(typeof value)
             {
+              // TODO: use apply state!!!
+
               // '1' turn on, '0' turn off
               case "number":
                 if(value == 0)
@@ -111,9 +116,25 @@ module.exports = function(RED) {
       }
 
 
-      /**
-       * applyState
-       */
+      stopAndWaitForTaskToFinish()
+      {
+        var self = this
+        return new Promise((_resolve, _reject) => {
+          // set the task abortion variable which will be checked by the tasks if set
+          // it it's set the tasks will abort
+          self.requestTaskAbortion = true
+          var checkInterval = setInterval(function(){
+            if(!self.isTaskRunning)
+            {
+              self.requestTaskAbortion = false
+              clearInterval(checkInterval)
+              _resolve()
+            }
+          }, 10)
+        })
+      }
+
+
       applyState(_newState)
       {
         var self = this
@@ -121,36 +142,106 @@ module.exports = function(RED) {
 
         return new Promise((_resolve, _reject) => {
 
-          try
-          {
-            if(_newState.isOn && !self.state.isOn)
-              proms.push(self.turnOn())
-            else if(!_newState.isOn && self.state.isOn)
-              proms.push(self.turnOff())
-            // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
-            else
+            // TODO: when there is a task (dim, fade,..) running, we have to stop the task before we are
+            // able to apply the new task
+            self.stopAndWaitForTaskToFinish().then(function(){
+
+              try
+              {
+
+                self.isTaskRunning = true
+
+                if(_newState.isOn && !self.state.isOn)
+                  proms.push(self.turnOn())
+                else if(!_newState.isOn && self.state.isOn)
+                  proms.push(self.turnOff())
+                // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
+                else
+                {
+                  self.logDebug("DIM---------------------")
+                  proms.push(self.dimTo(_newState.brightness))
+                  proms.push(self.fadeTo(_newState.color))
+                }
+
+                // if all the fading and dimming is done we do store/commit the new state as the last state
+                // we do not want to have a state saved when it's in dimming or fading mode
+                Promise.all(proms).then(function(){
+                  // be sure we do set the whole loaded state to the current state but do not loose any vars!
+                  self.state = self.combineStates( _newState, self.state)
+                  self.saveLastState()
+                  self.updateNodeInfoState()
+                  self.logDebug("END---------------------")
+                  _resolve()
+                }).catch(function(_exception){
+                  _reject(_exception)
+                })
+              }
+              catch(_exception)
+              {
+                self.logError(_exception.toString())
+                _reject(_exception)
+              }
+
+              self.isTaskRunning = false
+
+            })
+
+        })
+
+      }
+
+
+
+      /**
+       * applyState
+       */
+      DEL_applyState(_newState)
+      {
+        var self = this
+        var proms = new Array()
+
+        return new Promise((_resolve, _reject) => {
+
+            // TODO: when there is a task (dim, fade,..) running, we have to stop the task before we are
+            // able to apply the new task
+            self.stopAndWaitForTaskToFinish()
+
+            try
             {
-              proms.push(self.dimTo(_newState.brightness))
-              proms.push(self.fadeTo(_newState.color))
+              self.isInTransition = true
+
+              if(_newState.isOn && !self.state.isOn)
+                proms.push(self.turnOn())
+              else if(!_newState.isOn && self.state.isOn)
+                proms.push(self.turnOff())
+              // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
+              else
+              {
+                self.logDebug("DIM---------------------")
+                proms.push(self.dimTo(_newState.brightness))
+                proms.push(self.fadeTo(_newState.color))
+              }
+
+              // if all the fading and dimming is done we do store/commit the new state as the last state
+              // we do not want to have a state saved when it's in dimming or fading mode
+              Promise.all(proms).then(function(){
+                // be sure we do set the whole loaded state to the current state but do not loose any vars!
+                self.state = self.combineStates( _newState, self.state)
+                self.saveLastState()
+                self.updateNodeInfoState()
+                self.logDebug("END---------------------")
+                _resolve()
+              }).catch(function(_exception){
+                _reject(_exception)
+              })
+            }
+            catch(_exception)
+            {
+              self.logError(_exception.toString())
+              _reject(_exception)
             }
 
-            // if all the fading and dimming is done we do store/commit the new state as the last state
-            // we do not want to have a state saved when it's in dimming or fading mode
-            Promise.all(proms).then(function(){
-              // be sure we do set the whole loaded state to the current state but do not loose any vars!
-              self.state = self.combineStates( _newState, self.state)
-              self.saveLastState()
-              self.updateNodeInfoState()
-              _resolve()
-            }).catch(function(_exception){
-              _reject(_exception)
-            })
-          }
-          catch(_exception)
-          {
-            self.logError(_exception.toString())
-            _reject(_exception)
-          }
+            self.isInTransition = false
 
         })
 
@@ -329,6 +420,16 @@ module.exports = function(RED) {
             if(self.brightnessIntervallId)
               clearInterval(self.brightnessIntervallId)
 
+            var taskAbortionInterval = setInterval(function(){
+              if(self.requestTaskAbortion)
+              {
+                self.logDebug("CLAER DIM INTERVAL")
+                clearInterval(self.brightnessIntervallId)
+                clearInterval(taskAbortionInterval)
+                _resolve()
+              }
+            }, 5)
+
             // calculate brightness difference and step (decrease/increase) for 1ms
             var stepTime        = 1
             var brightnessDiff  = _brightness - _fromBrightness
@@ -353,6 +454,7 @@ module.exports = function(RED) {
                 if(_fromBrightness == _brightness)
                 {
                   clearInterval(self.brightnessIntervallId)
+                  clearInterval(taskAbortionInterval)
                   _resolve()
                 }
               }, stepTime)
@@ -362,12 +464,14 @@ module.exports = function(RED) {
             else
             {
               self.sendToArtnet(self.state.color, self.state.brightness)
+              clearInterval(taskAbortionInterval)
               _resolve()
             }
           }
           catch(_exception)
           {
               self.logError(_exception.toString())
+              clearInterval(taskAbortionInterval)
               _reject(_exception)
           }
         })
@@ -404,6 +508,16 @@ module.exports = function(RED) {
             if(self.fadingTimerId)
               clearInterval(self.fadingTimerId)
 
+            var taskAbortionInterval = setInterval(function(){
+              if(self.requestTaskAbortion)
+              {
+                self.logDebug("CLAER FADE INTERVAL")
+                clearInterval(self.fadingTimerId)
+                clearInterval(taskAbortionInterval)
+                _resolve()
+              }
+            }, 5)
+
             if(whiteDiff || warmWhiteDiff || redDiff || greenDiff || blueDiff)
             {
               var whiteMS     = Math.abs(Math.round(duration / whiteDiff))
@@ -432,7 +546,6 @@ module.exports = function(RED) {
                 if(blueMS && intervalTime % blueMS == 0 && source.blue != _target.blue)
                   source.blue += 1 * (_target.blue < source.blue ? -1 : 1)
 
-
                 // TODO: only update when something changed
                 self.sendToArtnet(source)
 
@@ -443,6 +556,7 @@ module.exports = function(RED) {
                     (_target.blue == source.blue || !blueMS))
                 {
                   clearInterval(self.fadingTimerId)
+                  clearInterval(taskAbortionInterval)
                   _resolve()
                 }
 
@@ -453,11 +567,13 @@ module.exports = function(RED) {
               // we also have to update the artnet if there is no difference in color
               // thats because we may come from a blackout and therefore there is not valid state (newState = state)
               self.sendToArtnet(self.state.color, self.state.brightness)
+              clearInterval(taskAbortionInterval)
               _resolve()
             }
           }
           catch(_exception)
           {
+              clearInterval(taskAbortionInterval)
               self.logError(_exception.toString())
               _reject(_exception)
           }
@@ -465,9 +581,7 @@ module.exports = function(RED) {
       }
 
 
-
-
-       /**
+      /**
        * should be called when the appearance of the node in the node-red gui has to be updated
        * in this case we do show  if the lamp is on/off and the brightness
        */

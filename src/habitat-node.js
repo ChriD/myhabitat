@@ -278,7 +278,9 @@ class Habitat_Node
    */
   copyObject(_object)
   {
-    return JSON.parse(JSON.stringify(_object))
+    if(_object)
+      return JSON.parse(JSON.stringify(_object))
+    return null
   }
 
   /**

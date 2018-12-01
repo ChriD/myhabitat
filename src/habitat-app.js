@@ -198,6 +198,7 @@ class Habitat_App extends Habitat_Base
     envelope.senderUnique = "HABITAT"
     envelope.nodeId       = _node.getNodeId()
     envelope.type         = "NODESTATE"
+    envelope.originator   = _node.stateOriginator
     envelope.data         = _node.state
 
     self.sendDataToClients(envelope, _clientIds)
