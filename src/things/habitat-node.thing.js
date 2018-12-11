@@ -59,7 +59,7 @@ class Habitat_Node_Thing extends Habitat_Node
    * should return true if the node does have a state object
    * @return {boolean} state enbaled or disabled
    */
-  stateEnabled()
+  stateStorageEnabled()
   {
     return true
   }

@@ -105,15 +105,13 @@ class Habitat_Node
    */
   close()
   {
-    // TODO: @@@
-    //self.habitat().removeListener("receivedDataFromClient")
   }
 
   /**
-   * should return true if the node does have a state object
+   * should return true if the node should save and load the state automatically
    * @return {boolean} state enbaled or disabled
    */
-  stateEnabled()
+  stateStorageEnabled()
   {
     return false
   }
@@ -128,7 +126,7 @@ class Habitat_Node
     var self = this
 
     // skip loading of states if node does not have the ability for it!
-    if(!self.stateEnabled())
+    if(!self.stateStorageEnabled())
       return
 
     self.habitat().loadState(self.getNodeId(), _stateId).then(function(_state){
@@ -157,7 +155,7 @@ class Habitat_Node
   saveState(_stateId, _state)
   {
     // skip saving of states if node does not have the ability for it!
-    if(!self.stateEnabled())
+    if(!self.stateStorageEnabled())
       return
 
     this.habitat().saveState(this.getNodeId(), _stateId, _state)
@@ -249,10 +247,20 @@ class Habitat_Node
    */
   stateUpdated()
   {
+    this.updateNodeInfoState()
+  }
+
+
+  /**
+   * should be called when the appearnce of the node in the node-red gui has to be updates
+   * in this case we do show the current position of the blind (position + degree)
+   */
+  updateNodeInfoState()
+  {
   }
 
   /**
-   * will be called when node is closing
+   *
    * @param {anytpe} _value the value which should be converted to integer
    * @return {Integer} the integer value of the given param
    */
@@ -291,6 +299,7 @@ class Habitat_Node
   {
     return ""
   }
+
 
   logInt(_type, _log, _object)
   {

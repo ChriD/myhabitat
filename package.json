@@ -16,7 +16,8 @@
       "habitat-adapter-knx": "src/adapters/habitat-node.adapter.knx.js",
       "habitat-thing-artnet-light": "src/things/habitat-node.thing.artnet.light.js",
       "habitat-thing-knx-gafilter": "src/things/habitat-node.thing.knx.gaFilter.js",
-      "habitat-thing-knx-blind": "src/things/habitat-node.thing.knx.blind.js"
+      "habitat-thing-knx-blind": "src/things/habitat-node.thing.knx.blind.js",
+      "habitat-thing-knx-light": "src/things/habitat-node.thing.knx.light.js"
     }
   },
   "dependencies": {

@@ -32,7 +32,7 @@ module.exports = function(RED) {
        * should return true if the node does have a state object
        * @return {boolean} state enbaled or disabled
        */
-      stateEnabled()
+      stateStorageEnabled()
       {
         return false
       }

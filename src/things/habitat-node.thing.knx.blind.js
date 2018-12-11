@@ -102,10 +102,8 @@ module.exports = function(RED) {
        * should return true if the node does have a state object
        * @return {boolean} state enbaled or disabled
        */
-      stateEnabled()
+      stateStorageEnabled()
       {
-        // TODO: rename method to??? allowStateSave???
-        // do we need a state? Yes i think so, but we maybe do not need to save it or we do not need apply here!
         return false
       }
 
@@ -124,13 +122,12 @@ module.exports = function(RED) {
           this.state.blindDegree = _value
 
         // if we are not in positioning mode by ourselfs, we may update the 'lastStateSet' with the current info
-        // this is the case when soem other application is moving the blinds qithout habitat knowing of it.
+        // this is the case when some other application is moving the blinds without habitat knowing of it.
         // in fact this is not best practice but we keep the node able to handle that in a proper way
         this.lastStateSet = this.copyObject(this.state)
 
         // the state has updated, so we have to update the node appearanec in the node-red gui and we have
         // to tell the habitat app thet tha state of this thing has changed
-        this.updateNodeInfoState()
         this.stateUpdated()
       }
 
@@ -193,7 +190,7 @@ module.exports = function(RED) {
             }
             self.dpBlindPos.read()
             // if we reach a timout, then we do a reject
-            // TODO: currently the toimeout is set to 30 seconds, we may change the timout value regarding the posDifference
+            // TODO: currently the timeout is set to 30 seconds, we may change the timout value regarding the posDifference
             if(self.intervalPositioningMS > 30000)
             {
               clearInterval(self.intervalPositioning)

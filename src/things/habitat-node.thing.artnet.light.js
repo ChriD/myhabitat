@@ -51,9 +51,6 @@ module.exports = function(RED) {
         // this is a 'have to'!
         self.created()
 
-        // TODO: when all nodes are loaded then subscribe to the event handlers of the gateways.
-        // this will be done in the base class and the base class will filter out the related maessages for the thing
-
         // TODO: attach the handler for the input wires (after all nodes are loaded)
         self.on('input', function(_msg) {
             var value = _msg.payload
@@ -142,7 +139,7 @@ module.exports = function(RED) {
 
         return new Promise((_resolve, _reject) => {
 
-            // TODO: when there is a task (dim, fade,..) running, we have to stop the task before we are
+            // when there is a task (dim, fade,..) running, we have to stop the task before we are
             // able to apply the new task
             self.stopAndWaitForTaskToFinish().then(function(){
 
@@ -158,7 +155,6 @@ module.exports = function(RED) {
                 // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
                 else
                 {
-                  self.logDebug("DIM---------------------")
                   proms.push(self.dimTo(_newState.brightness))
                   proms.push(self.fadeTo(_newState.color))
                 }
@@ -170,7 +166,6 @@ module.exports = function(RED) {
                   self.state = self.combineStates( _newState, self.state)
                   self.saveLastState()
                   self.updateNodeInfoState()
-                  self.logDebug("END---------------------")
                   _resolve()
                 }).catch(function(_exception){
                   _reject(_exception)
@@ -189,64 +184,6 @@ module.exports = function(RED) {
         })
 
       }
-
-
-
-      /**
-       * applyState
-       */
-      DEL_applyState(_newState)
-      {
-        var self = this
-        var proms = new Array()
-
-        return new Promise((_resolve, _reject) => {
-
-            // TODO: when there is a task (dim, fade,..) running, we have to stop the task before we are
-            // able to apply the new task
-            self.stopAndWaitForTaskToFinish()
-
-            try
-            {
-              self.isInTransition = true
-
-              if(_newState.isOn && !self.state.isOn)
-                proms.push(self.turnOn())
-              else if(!_newState.isOn && self.state.isOn)
-                proms.push(self.turnOff())
-              // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
-              else
-              {
-                self.logDebug("DIM---------------------")
-                proms.push(self.dimTo(_newState.brightness))
-                proms.push(self.fadeTo(_newState.color))
-              }
-
-              // if all the fading and dimming is done we do store/commit the new state as the last state
-              // we do not want to have a state saved when it's in dimming or fading mode
-              Promise.all(proms).then(function(){
-                // be sure we do set the whole loaded state to the current state but do not loose any vars!
-                self.state = self.combineStates( _newState, self.state)
-                self.saveLastState()
-                self.updateNodeInfoState()
-                self.logDebug("END---------------------")
-                _resolve()
-              }).catch(function(_exception){
-                _reject(_exception)
-              })
-            }
-            catch(_exception)
-            {
-              self.logError(_exception.toString())
-              _reject(_exception)
-            }
-
-            self.isInTransition = false
-
-        })
-
-      }
-
 
 
       sendToArtnet(_color = this.state.color, _brightness = this.state.brightness, _isOn = this.state.isOn)
@@ -482,7 +419,6 @@ module.exports = function(RED) {
        * fade option
        * TODO: should be made faster & better
        * */
-      // TODO: FOR RGBW!!!
       fadeTo(_target, _duration =  this.config.colorFadeDuration)
       {
         var self = this
