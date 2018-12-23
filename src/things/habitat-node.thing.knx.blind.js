@@ -74,7 +74,7 @@ module.exports = function(RED) {
           try
           {
             // we have to store the last state which was set by a user or node interaction (not by a feedback ga)
-            // this state will hold the position we are want to drive the blind to. Thi will also inclue seting position and
+            // this state will hold the position we are want to drive the blind to. This will also include setting position and
             // afterwards only setting the degree. Precondition for that is, that only the state items which are beeign set are sent
             self.lastStateSet = this.combineStates(_newState, self.lastStateSet)
 

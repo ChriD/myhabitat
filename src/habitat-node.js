@@ -188,8 +188,12 @@ class Habitat_Node
       })
     // if the state is loaded by user (scene change) we have to apply the new state values
     else
-      this.applyState(_state).then(function(){
-        self.stateUpdated()
+      this.applyState(_state).then(function(_dispatchState = true){
+        // when the state was applied, we have to call 'stateUpdated' which will deliver the data to all clients
+        // this may klead to multiple sending of a state when using KNX-Thing nodes with feddback ga's (due that feedback ga's will trigger 'stateUpdated') as well
+        // so we do have the '_dispatchState' var for denying sending of a status
+        if(_dispatchState)
+          self.stateUpdated()
       }).catch(function(_exception){
         self.logError("Error applying state: " + _exception.toString(), _state)
       })
