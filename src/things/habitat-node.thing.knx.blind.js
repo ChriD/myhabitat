@@ -1,3 +1,8 @@
+/*
+  TODO: *) be sure it works without feedback values too!
+*/
+
+
 /**
  *
  */
@@ -69,8 +74,8 @@ module.exports = function(RED) {
         super.knxConnectionStateChanged(_isConnected)
         if(_isConnected)
         {
-          // be sure the feedback is activated.There are some actors won which we do have to set a GA to get
-          // position change responses and to get corrcet updated return values
+          // be sure the feedback is activated.There are some actors which we do have to set a GA to get
+          // position change responses and to get corrcet updated return values while moving the blinds
           if(this.config.gaFeedbackEnabled)
             this.getKnxAdapter().sendToKNX(this.config.gaFeedbackEnabled, 'DPT1.001', 1)
         }
