@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-habitat",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Home Automation System powered by node-red",
   "author": "ChriD",
   "license": "ISC",
