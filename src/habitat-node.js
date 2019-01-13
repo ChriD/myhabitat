@@ -1,4 +1,6 @@
 
+const Logger = require('./libs/logger.js')
+
 "use strict"
 
 
@@ -304,38 +306,53 @@ class Habitat_Node
     return ""
   }
 
+  /**
+   * @return {String}
+   */
+  getLogUnique()
+  {
+    return ""
+  }
+
 
   logInt(_type, _log, _object)
   {
+    // redirect all logs from the node to the main habitat application node which will
+    // do the output of the log to clients or any other log related stuff.
     if(this.habitat())
-      this.habitat().log(_type, this.getLogPrefix() + " " + _log, _object)
-    else
-      this.log(this.getLogPrefix() + " " + _log)
-    //this.emit("log", _type, _log, _object)
+      this.habitat().nodeLog(_type, this.getLogPrefix(), this.getLogUnique(), _log, _object)
+    // TODO: @@@ what if the habitat instance is not already there?
+    // --> create a logger class which resides in the global varuiable scope???
   }
 
 
   logError(_log, _object)
   {
-    this.logInt(0, _log, _object)
+    this.logInt(Logger.LogType.ERROR, _log, _object)
   }
 
 
   logWarning(_log, _object)
   {
-    this.logInt(1, _log, _object)
+    this.logInt(Logger.LogType.WARNING, _log, _object)
   }
 
 
   logInfo(_log, _object)
   {
-    this.logInt(2, _log, _object)
+    this.logInt(Logger.LogType.INFO, _log, _object)
   }
 
 
   logDebug(_log, _object)
   {
-    this.logInt(3, _log, _object)
+    this.logInt(Logger.LogType.DEBUG, _log, _object)
+  }
+
+
+  logSilly(_log, _object)
+  {
+    this.logInt(Logger.LogType.SILLY, _log, _object)
   }
 
 }

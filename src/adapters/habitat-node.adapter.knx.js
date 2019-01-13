@@ -1,6 +1,8 @@
 // https://github.com/node-red/node-red/wiki/API-Reference
 // https://nodered.org/docs/creating-nodes/status
 
+// TODO: * There is a problem when there is a blackout! KNX connection is not restored until new redepoly!
+
 
 KNX = require('knx')
 
@@ -33,7 +35,7 @@ module.exports = function(RED) {
       // do the connect later on, but ist good as it is for now
       // Here's the API description 'https://bitbucket.org/ekarak/knx.js/src/master/README-API.md?fileviewer=file-view-default'
       // the underlaying knx lib is very reliable! if the connection is lost it will automatically try to reconnect
-      // and will trigger the right events aterwards
+      // and will trigger the right events afterwards
       this.knx = KNX.Connection({
         ipAddr : this.config.host,
         ipPort : this.config.port,

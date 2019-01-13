@@ -42,7 +42,7 @@ class Habitat_HTTPServer extends Habitat_Base
    */
   getLogPrefix()
   {
-    return "[GUI-Server]"
+    return "[GUI-SERVER]"
   }
 
 

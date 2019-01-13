@@ -88,8 +88,8 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
       self.knxConnectionStateChanged(_isConnected)
     })
 
-    // if the connection was already establishes by the knx adapter before we did attach the event handler for connectionStateChanged
-    // we have to 'simulate' the event by calling it directly
+    // if the connection was already establishes by the knx adapter before we did attach the event handler for
+    // connectionStateChanged we have to 'simulate' the event by calling it directly
     if(self.getKnxAdapter().isConnected)
       self.knxConnectionStateChanged(true)
   }

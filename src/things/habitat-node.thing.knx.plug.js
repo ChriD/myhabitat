@@ -22,9 +22,6 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(self, _config)
 
-
-
-
         // we have to call the created event for some stuff which will be done in the base class
         // this is a 'have to'!
         self.created()
@@ -33,7 +30,7 @@ module.exports = function(RED) {
         // those datapoints will call the "feedbackDatapointChanged" method if their value has been changed!
         self.dpPlugStatus= self.addFeedbackDatapoint(self.config.gaFeedbackPlugStatus, "DPT1.001")
 
-        //
+        // TODO:  0 = OFF / 1 = ON
         self.on('input', function(_msg) {
           // TODO: @@@
         })
@@ -54,7 +51,6 @@ module.exports = function(RED) {
               self.turnOn()
             else
               self.turnOff()
-
             // we do not allow the resolve to call 'updateState' if we do have a feedback GA (the feedback ga will do it for us)
             _resolve(self.config.gaFeedbackPlugStatus ? false : true)
           }
@@ -111,7 +107,7 @@ module.exports = function(RED) {
       updateNodeInfoState()
       {
         super.updateNodeInfoState();
-        let infoText = ""
+        let infoText = this.state.isOn ? "EIN" : "AUS"
         let infoFill = this.state.isOn ? "green" : "red"
         this.status({fill:infoFill, shape:"dot", text: infoText})
       }

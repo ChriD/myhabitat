@@ -64,6 +64,20 @@ module.exports = function(RED) {
       }
 
 
+      knxConnectionStateChanged(_isConnected)
+      {
+        super.knxConnectionStateChanged(_isConnected)
+        if(_isConnected)
+        {
+          // be sure the feedback is activated.There are some actors won which we do have to set a GA to get
+          // position change responses and to get corrcet updated return values
+          if(this.config.gaFeedbackEnabled)
+            this.getKnxAdapter().sendToKNX(this.config.gaFeedbackEnabled, 'DPT1.001', 1)
+        }
+
+      }
+
+
       /**
        * applyState
        */
@@ -83,6 +97,7 @@ module.exports = function(RED) {
             self.setBlindPosition(self.lastStateSet.blindPosition, self.lastStateSet.blindDegree).then(function(){
               _resolve()
             }).catch(function(_exception){
+              self.logError(_exception.toString())
               _reject(_exception)
             })
             // INFO: we do not combine the new state we got because it should be updated via the KNX State GA's
@@ -168,7 +183,7 @@ module.exports = function(RED) {
             return
           }
 
-          // we have update the kny bus with the ga given for the blind absolute positioning
+          // we have update the knx bus with the ga given for the blind absolute positioning
           self.getKnxAdapter().sendToKNX(self.config.gaActionBlindPosition, 'DPT5.001', _position)
           // after we have send the GA with its value to the bus, the blind should change it's position
           // and then when it has reached it's position we should update the blind degree (may be not done by the actor itself)

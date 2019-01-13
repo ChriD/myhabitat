@@ -2,7 +2,7 @@
 "use strict"
 
 const EventEmitter = require("events").EventEmitter;
-
+const Logger = require('./libs/logger.js')
 
 /**
  * This is the base class all habitat classes will be derived from.
@@ -24,34 +24,48 @@ class Habitat_Base extends EventEmitter
     return ""
   }
 
+  /**
+   * @return {String}
+   */
+  getLogUnique()
+  {
+    return ""
+  }
+
 
   log(_type, _log, _object)
   {
-    this.emit("log", _type, this.getLogPrefix() + " " + _log, _object)
+    this.emit("log", _type, this.getLogPrefix(), this.getLogUnique(), _log, _object)
   }
 
 
   logError(_log, _object)
   {
-    this.log(0, _log, _object)
+    this.log(Logger.LogType.ERROR, _log, _object)
   }
 
 
   logWarning(_log, _object)
   {
-    this.log(1, _log, _object)
+    this.log(Logger.LogType.WARNING, _log, _object)
   }
 
 
   logInfo(_log, _object)
   {
-    this.log(2, _log, _object)
+    this.log(Logger.LogType.INFO, _log, _object)
   }
 
 
   logDebug(_log, _object)
   {
-    this.log(3, _log, _object)
+    this.log(Logger.LogType.DEBUG, _log, _object)
+  }
+
+
+  logSilly(_log, _object)
+  {
+    this.log(Logger.LogType.SILLY, _log, _object)
   }
 
 }

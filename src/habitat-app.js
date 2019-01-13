@@ -5,6 +5,7 @@ const Habitat_Storage_File = require('./storage/habitat-storage.file.js')
 const Habitat_HTTPServer = require('./server/habitat-httpServer.js')
 const Glob = require('glob')
 const Path = require('path')
+const Logger = require('./libs/logger.js').Logger
 
 
 /**
@@ -15,6 +16,16 @@ class Habitat_App extends Habitat_Base
   constructor()
   {
     super()
+
+    var self = this
+
+    // create a basic logger which wil lhandle all logs from all nodes and therfore all modules
+    this.logger = new Logger()
+
+    this.on("log", function(_logType, _logPrefix, _logUnique, _log, _data) {
+      self.appLog(_logType, _logPrefix, _logUnique, _log, _data)
+    })
+
     // gateways are objects which communicate for example with a GUI
     // they are not present as nodes in node-red, they are built in into the app itself
     this.gateways = []
@@ -27,6 +38,16 @@ class Habitat_App extends Habitat_Base
     // this is the HTTP server for serving GUIs for the habitat app
     // it may not be used if the gui's are present on another server
     this.guiServer = new Habitat_HTTPServer(8080)
+  }
+
+  getLogPrefix()
+  {
+    return "[HABITAT]"
+  }
+
+  getLogUnique()
+  {
+    return ""
   }
 
   /**
@@ -51,6 +72,24 @@ class Habitat_App extends Habitat_Base
 
   }
 
+  // all logs from nodes are gathered here in following method and will be hand over to the
+  // main logger object which will do the logging for us
+  nodeLog(_type, _logPrefix, _logUnique, _log, _object)
+  {
+    this.logger.add(_type, _logPrefix, _logUnique, _log, _object)
+    //log.add(_type, _logPrefix, _logUnique, _log, _object)
+    // send log to clients who are subscribed to the log event
+  }
+
+
+  appLog(_type, _logPrefix, _logUnique, _log, _object)
+  {
+    this.logger.add(_type, _logPrefix, _logUnique, _log, _object)
+  }
+
+
+
+
   initGUIServer()
   {
     var self = this
@@ -58,12 +97,11 @@ class Habitat_App extends Habitat_Base
     if(!self.guiServer)
       return
     // the logs of the webserver should be redirected to the application main log
-    self.guiServer.on("log", function(_logType, _log, _data) {
-      self.log(_logType, _log, _data)
+    // the main log is stored in an array of log objects
+    self.guiServer.on("log", function(_logType, _logSource, _logSourceId, _log, _additonalData) {
+      self.appLog(_logType, _logSource, _logSourceId, _log, _additonalData)
     })
-
     self.guiServer.listen()
-
   }
 
   closeGUIServer()
@@ -84,6 +122,7 @@ class Habitat_App extends Habitat_Base
 
     try
     {
+      self.logSilly("Init Gateways")
       // get all files which are gateway classes and create an object for each of them
       // INFO:  This may change in the future, i am not sure if we do need it like this
       //        I think its better to create nodes for the gateway and to find them in the main node?!
@@ -96,19 +135,21 @@ class Habitat_App extends Habitat_Base
       {
         try
         {
+          self.logSilly("Creating gateway object from file: " + files[i])
           var GatewayDesc = new require(Path.resolve(files[i]))
           var gateway = new GatewayDesc()
           self.gateways.push(gateway)
 
           // the logs of the gateways should be redirected to the application main log
-          gateway.on("log", function(_logType, _log, _data){
-            self.log(_logType, _log, _data)
+          gateway.on("log", function(_logType, _logSource, _logSourceId, _log, _additionalData) {
+            self.appLog(_logType, _logSource, _logSourceId, _log, _additionalData)
           })
 
           // the received messages should be known by the app and the app will create an emit itself too
-          // do all the clients may subscrive to the event
+          // do all the clients may subscribe to the event
           gateway.on("clientMessageReceived", function(_clientInfo, _habitatEnvelope){
             self.logInfo("Received data from " + _habitatEnvelope.sender)
+            self.clientMessageReceived(_clientInfo, _habitatEnvelope)
             self.emit("receivedDataFromClient", _clientInfo, _habitatEnvelope)
           })
 
@@ -119,6 +160,7 @@ class Habitat_App extends Habitat_Base
           })
 
           // start/run the gateway
+          self.logSilly("Starting gateway :" + gateway.name())
           gateway.run()
 
           self.logInfo("Gateway " + gateway.name() + " started")
@@ -159,6 +201,24 @@ class Habitat_App extends Habitat_Base
   }
 
 
+  clientMessageReceived(_clientInfo, _habitatEnvelope)
+  {
+    // a client may have some specific data requests which will be sent to him only like logs or a list off all state changed
+    /*
+    if(_habitatEnvelope.type == "DATAREQUEST")
+    {
+        if(_habitatEnvelope.data.type == "LOG")
+        {
+          if(_habitatEnvelope.data.level == "NONE")
+          this.logSubscribers.remove
+          this.logSubscribers.
+          // TODO: add client to the log level data requestors
+        }
+    }
+    */
+  }
+
+
    /**
    * send data to clients via the registered gateways
    * @param {Object} _data data to send (JSON Object)
@@ -171,7 +231,7 @@ class Habitat_App extends Habitat_Base
     {
       try
       {
-        self.gateways[i].send(JSON.stringify(_data))
+        self.gateways[i].send(JSON.stringify(_data), _clientIds)
       }
       catch(_exception)
       {
@@ -187,6 +247,25 @@ class Habitat_App extends Habitat_Base
    * @param {String[]} _clientIds array of client ids where the data has to be sent
    */
   sendNodeStateToClients(_node, _clientIds = [])
+  {
+    var self = this
+    var envelope = {}
+
+    // pack the current state into a data envelope and send it to all clients
+    envelope.protocol     = "HABITAT_ENVELOPE"
+    envelope.version      = 1
+    envelope.sender       = "HABITAT"
+    envelope.senderUnique = "HABITAT"
+    envelope.nodeId       = _node.getNodeId()
+    envelope.type         = "NODESTATE"
+    envelope.originator   = _node.stateOriginator
+    envelope.data         = _node.state
+
+    self.sendDataToClients(envelope, _clientIds)
+  }
+
+
+  sendLogToClients(_node, _clientIds = [])
   {
     var self = this
     var envelope = {}
