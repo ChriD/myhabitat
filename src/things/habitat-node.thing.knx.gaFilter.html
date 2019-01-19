@@ -3,7 +3,9 @@
         category: 'Habitat Thing',
         color: '#9999FF',
         defaults: {
-            name: {value:""}
+            name: { value: "" },
+            adapterNode: { value: "", required: true, type: "habitat-adapter-knx"},
+            gaToFilter: {value:""}
         },
         inputs:0,
         outputs:1,
@@ -16,9 +18,20 @@
 </script>
 
 <script type="text/x-red" data-template-name="habitat-node-thing-knx-gafilter">
+    <div id="habitat-node-thing-knx-light">
+        <div class="form-row">
+            <label for="node-input-name" style="width:11em"> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
+        </div>
+        <div class="form-row">
+            <label for="node-input-adapterNode" style="width:11em">Adapter</label>
+            <input type="text" id="node-input-adapterNode" placeholder="" style="width:60%">
+        </div>
+    </div>
+
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-gaToFilter" style="width:11em">GA: </label>
+        <input type="text" id="node-input-gaToFilter" placeholder="0/0/0" style="width:60%">
     </div>
 </script>
 

@@ -75,7 +75,11 @@ module.exports = function(RED) {
               // a string should be a scene identifier. a scene is stored with its name to a state file, so we can use
               // the name directly and load the 'scene' (state)
               case "string":
-                self.loadState(value)
+                // TODO: Stuff @@@@
+                if(value.toUpperCase() == "TOGGLE")
+                  self.toggleOnOff()
+                else
+                  self.loadState(value)
                 break
               // an object should be a "state" object
               // this will be merged and applied to the current state object
@@ -235,6 +239,14 @@ module.exports = function(RED) {
         if(_color.blue)       _color.blue       = parseInt(_color.blue)
       }
 
+
+      toggleOnOff()
+      {
+        if(this.state.isOn)
+          this.turnOff();
+        else
+          this.turnOn();
+      }
 
 
       /**
