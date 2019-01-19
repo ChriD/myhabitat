@@ -1,0 +1,5 @@
+systemctl stop node-red
+cd /mnt/dietpi_userdata/node-red
+npm outdated
+npm install node-red-contrib-habitat
+systemctl start node-red
