@@ -1,5 +1,7 @@
 /**
  *
+ *
+ * TODO:  * Dimming (currently only on off is supported, so no dimming actor is implemented right now)
  */
 module.exports = function(RED) {
 
@@ -23,14 +25,12 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(self, _config)
 
-
         // we have to call the created event for some stuff which will be done in the base class
         // this is a 'have to'!
         self.created()
 
-        // add the group addresses which will deliver the status for the blind state (positions)
-        // those datapoints will call the "feedbackDatapointChanged" method if their value has been changed!
-        // TODO: @@@
+        // add the group addresses which will get us the on/off state
+        self.dpOnOff = self.addFeedbackDatapoint(self.config.gaFeedbackOnOff, "DPT5.001")
 
         //
         self.on('input', function(_msg) {
@@ -49,7 +49,10 @@ module.exports = function(RED) {
         return new Promise((_resolve, _reject) => {
           try
           {
-            // TODO: @@@
+            if(_newState.isOn && !self.state.isOn)
+              self.turnOn()
+            else if(!_newState.isOn && self.state.isOn)
+              self.turnOff()
             _resolve()
           }
           catch(_exception)
@@ -59,6 +62,8 @@ module.exports = function(RED) {
           }
         })
       }
+
+
 
 
       /**
@@ -79,11 +84,12 @@ module.exports = function(RED) {
        */
       feedbackDatapointChanged(_ga, _oldValue, _value)
       {
+        if(_ga == this.config.gaFeedbackOnOff)
+          this.state.isOn =_value
         // the state has updated, so we have to update the node appearanec in the node-red gui and we have
         // to tell the habitat app thet tha state of this thing has changed
         this.stateUpdated()
       }
-
 
        /**
        * should be called when the appearnce of the node in the node-red gui has to be updates
@@ -91,10 +97,31 @@ module.exports = function(RED) {
        */
       updateNodeInfoState()
       {
-        super.updateNodeInfoState();
+        super.updateNodeInfoState()
         //let infoText = "Pos.:" + (this.state.blindPosition).toString() + "% / Deg.: " + (this.state.blindDegree).toString() + "%"
         //let infoFill = this.state.blindPosition ? "green" : "red"
         //this.status({fill:infoFill, shape:"dot", text: infoText})
+      }
+
+
+      toggleOnOff()
+      {
+        if(this.state.isOn)
+          this.turnOff()
+        else
+          this.turnOn()
+      }
+
+
+      turnOn()
+      {
+        self.getKnxAdapter().sendToKNX(self.config.gaFeedbackOnOff, 'DPT5.001', 1)
+      }
+
+
+      turnOff()
+      {
+        self.getKnxAdapter().sendToKNX(self.config.gaFeedbackOnOff, 'DPT5.001', 0)
       }
 
 

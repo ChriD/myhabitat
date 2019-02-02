@@ -8,6 +8,8 @@
             adapterNode: { value: "", required: true, type: "habitat-adapter-knx"},
             lightType: { value: "ONE", required: true },
             autoBrightness : { value: 0 },
+            gaActionOnOff: {value:""},
+            gaFeedbackOnOff: {value:""}
         },
         inputs: 1,
         outputs: 0,
@@ -92,6 +94,15 @@
         <div class="form-row" data-lighttype="ONE">
             <label for="node-input-autoBrightness style="width:11em">auto. Brightness</label>
             <input type="checkbox" id="node-input-autoBrightness" placeholder="" style="width:60%">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-gaActionOnOff" style="width:11em">GA: Ein/Aus</label>
+            <input type="text" id="node-input-gaActionOnOff" placeholder="0/0/0" style="width:60%">
+        </div>
+        <div class="form-row">
+            <label for="node-input-gaFeedbackOnOff" style="width:11em">GA: Rückmeldung Ein/Aus</label>
+            <input type="text" id="node-input-gaFeedbackOnOff" placeholder="0/0/0" style="width:60%">
         </div>
 
     </div>
