@@ -21,9 +21,15 @@ class Habitat_App extends Habitat_Base
 
     // create a basic logger which wil lhandle all logs from all nodes and therfore all modules
     this.logger = new Logger()
+    // the logger object will have all logs gathered together, and if any log appears we have to
+    // send them to the clients which have subscribed to logging
+    this.logger.on("log", function(_logData) {
+      self.sendLogToClients(_logData)
+    })
 
+    // logs from the app class will be redirected to the logger object
     this.on("log", function(_logType, _logPrefix, _logUnique, _log, _data) {
-      self.appLog(_logType, _logPrefix, _logUnique, _log, _data)
+      self.logger.add(_type, _logPrefix, _logUnique, _log, _data)
     })
 
     // gateways are objects which communicate for example with a GUI
@@ -77,17 +83,7 @@ class Habitat_App extends Habitat_Base
   nodeLog(_type, _logPrefix, _logUnique, _log, _object)
   {
     this.logger.add(_type, _logPrefix, _logUnique, _log, _object)
-    //log.add(_type, _logPrefix, _logUnique, _log, _object)
-    // send log to clients who are subscribed to the log event
   }
-
-
-  appLog(_type, _logPrefix, _logUnique, _log, _object)
-  {
-    this.logger.add(_type, _logPrefix, _logUnique, _log, _object)
-  }
-
-
 
 
   initGUIServer()
@@ -99,7 +95,7 @@ class Habitat_App extends Habitat_Base
     // the logs of the webserver should be redirected to the application main log
     // the main log is stored in an array of log objects
     self.guiServer.on("log", function(_logType, _logSource, _logSourceId, _log, _additonalData) {
-      self.appLog(_logType, _logSource, _logSourceId, _log, _additonalData)
+      self.logger.add(_logType, _logSource, _logSourceId, _log, _additonalData)
     })
     self.guiServer.listen()
   }
@@ -140,9 +136,9 @@ class Habitat_App extends Habitat_Base
           var gateway = new GatewayDesc()
           self.gateways.push(gateway)
 
-          // the logs of the gateways should be redirected to the application main log
+          // the logs of the gateways should be redirected to the logger
           gateway.on("log", function(_logType, _logSource, _logSourceId, _log, _additionalData) {
-            self.appLog(_logType, _logSource, _logSourceId, _log, _additionalData)
+            self.logger.add(_logType, _logSource, _logSourceId, _log, _additonalData)
           })
 
           // the received messages should be known by the app and the app will create an emit itself too
@@ -204,6 +200,7 @@ class Habitat_App extends Habitat_Base
   clientMessageReceived(_clientInfo, _habitatEnvelope)
   {
     // a client may have some specific data requests which will be sent to him only like logs or a list off all state changed
+    // state messages of the nodes are handled directly by the node base classes
     /*
     if(_habitatEnvelope.type == "DATAREQUEST")
     {
@@ -265,22 +262,24 @@ class Habitat_App extends Habitat_Base
   }
 
 
-  sendLogToClients(_node, _clientIds = [])
+  sendLogToClients(_logData)
   {
+    // TODO: get clients who subscribed to logging and send by log level
     var self = this
     var envelope = {}
+    var clientIds = []
 
     // pack the current state into a data envelope and send it to all clients
     envelope.protocol     = "HABITAT_ENVELOPE"
     envelope.version      = 1
     envelope.sender       = "HABITAT"
     envelope.senderUnique = "HABITAT"
-    envelope.nodeId       = _node.getNodeId()
-    envelope.type         = "NODESTATE"
-    envelope.originator   = _node.stateOriginator
-    envelope.data         = _node.state
+    envelope.nodeId       = ""
+    envelope.type         = "LOG"
+    envelope.originator   = ""
+    envelope.data         = _logData
 
-    self.sendDataToClients(envelope, _clientIds)
+    self.sendDataToClients(envelope, clientIds)
   }
 
    /**
