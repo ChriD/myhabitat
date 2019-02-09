@@ -28,7 +28,8 @@ module.exports = function(RED) {
 
         // add the group addresses which will deliver the status for the blind state (positions)
         // those datapoints will call the "feedbackDatapointChanged" method if their value has been changed!
-        self.dpPlugStatus= self.addFeedbackDatapoint(self.config.gaFeedbackPlugStatus, "DPT1.001")
+        if(self.config.gaFeedbackPlugStatus)
+          self.dpPlugStatus= self.addFeedbackDatapoint(self.config.gaFeedbackPlugStatus, "DPT1.001")
 
         // TODO:  0 = OFF / 1 = ON
         self.on('input', function(_msg) {

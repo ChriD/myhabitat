@@ -16,6 +16,8 @@ class Habitat_Node
     self.config   = _config
     self.stateId  = ''
 
+    // adapters may have a lot of listeners due nodes do attach to them
+    _RED.events.setMaxListeners(100)
     _RED.events.once("nodes-started",function() { self.nodesStarted() })
   }
 

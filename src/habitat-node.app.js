@@ -23,14 +23,14 @@ module.exports = function(RED) {
         node.habitat = new Habitat_App()
 
         // the habitat instance does have a logger which logs we do redirect to the node-red log output
-        node.habitat.logger.on("log", function(_logType, _logSource, _logSourceId, _log, _additionalData){
-          let log = _logType.toString() + " " + _logSource + " : " + _log
-          if(_logType <= 10)
-            node.error(log)
-          else if(_logType <= 20)
-            node.warning(log)
+        node.habitat.logger.on("log", function(_log){
+          let log = _log.type.toString() + " " + _log.sourceId + " : " + _log.log
+          if(_log.type <= 10)
+            node.error(_log.log)
+          else if(_log.type <= 20)
+            node.warning(_log.log)
           else
-            node.log(log)
+            node.log(_log.log)
         })
 
         // update some default path for several modules

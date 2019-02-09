@@ -30,11 +30,48 @@ module.exports = function(RED) {
         self.created()
 
         // add the group addresses which will get us the on/off state
-        self.dpOnOff = self.addFeedbackDatapoint(self.config.gaFeedbackOnOff, "DPT5.001")
+        if(self.config.gaFeedbackOnOff)
+          self.dpOnOff = self.addFeedbackDatapoint(self.config.gaFeedbackOnOff, "DPT1.001")
 
         //
         self.on('input', function(_msg) {
-          // TODO: @@@
+          var value = _msg.payload
+          switch(typeof value)
+          {
+            // TODO: use apply state!!!
+
+            // '1' turn on, '0' turn off
+            case "number":
+              if(value == 0)
+                self.turnOff()
+              else
+                self.turnOn()
+              break
+            // 'true' turn on, 'false' turn off
+            case "boolean":
+              if(!value)
+                self.turnOff()
+              else
+                self.turnOn()
+              break
+            // a string should be a scene identifier. a scene is stored with its name to a state file, so we can use
+            // the name directly and load the 'scene' (state)
+            case "string":
+              // TODO: Stuff @@@@
+              if(value.toUpperCase() == "TOGGLE")
+                self.toggleOnOff()
+              else
+                self.loadState(value)
+              break
+            // an object should be a "state" object
+            // this will be merged and applied to the current state object
+            case "object":
+              var newState = self.combineStates(value, this.state)
+              self.setState(newState, false)
+              break
+            default:
+              self.logWarning("Wrong input type for " + self.getThingId())
+          }
         })
 
       }
@@ -85,9 +122,9 @@ module.exports = function(RED) {
       feedbackDatapointChanged(_ga, _oldValue, _value)
       {
         if(_ga == this.config.gaFeedbackOnOff)
-          this.state.isOn =_value
+          this.state.isOn =_value > 0 ? true : false
         // the state has updated, so we have to update the node appearanec in the node-red gui and we have
-        // to tell the habitat app thet tha state of this thing has changed
+        // to tell the habitat app that tha state of this thing has changed
         this.stateUpdated()
       }
 
@@ -98,9 +135,9 @@ module.exports = function(RED) {
       updateNodeInfoState()
       {
         super.updateNodeInfoState()
-        //let infoText = "Pos.:" + (this.state.blindPosition).toString() + "% / Deg.: " + (this.state.blindDegree).toString() + "%"
-        //let infoFill = this.state.blindPosition ? "green" : "red"
-        //this.status({fill:infoFill, shape:"dot", text: infoText})
+        let infoText = Math.round((this.state.brightness * 100)).toString() + "%"
+        let infoFill = this.state.isOn ? "green" : "red"
+        this.status({fill:infoFill, shape:"dot", text: infoText})
       }
 
 
@@ -115,13 +152,13 @@ module.exports = function(RED) {
 
       turnOn()
       {
-        self.getKnxAdapter().sendToKNX(self.config.gaFeedbackOnOff, 'DPT5.001', 1)
+        this.getKnxAdapter().sendToKNX(this.config.gaActionOnOff, 'DPT1.001', 1)
       }
 
 
       turnOff()
       {
-        self.getKnxAdapter().sendToKNX(self.config.gaFeedbackOnOff, 'DPT5.001', 0)
+        this.getKnxAdapter().sendToKNX(this.config.gaActionOnOff, 'DPT1.001', 0)
       }
 
 

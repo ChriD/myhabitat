@@ -19,17 +19,21 @@ class Habitat_App extends Habitat_Base
 
     var self = this
 
+    // the app may have a lot of listeners due nodes do attach to them
+    this.setMaxListeners(100)
+
     // create a basic logger which wil lhandle all logs from all nodes and therfore all modules
     this.logger = new Logger()
     // the logger object will have all logs gathered together, and if any log appears we have to
     // send them to the clients which have subscribed to logging
     this.logger.on("log", function(_logData) {
-      self.sendLogToClients(_logData)
+      // @@@ ERROR!!!!
+      //self.sendLogToClients(_logData)
     })
 
     // logs from the app class will be redirected to the logger object
     this.on("log", function(_logType, _logPrefix, _logUnique, _log, _data) {
-      self.logger.add(_type, _logPrefix, _logUnique, _log, _data)
+      self.logger.add(_logType, _logPrefix, _logUnique, _log, _data)
     })
 
     // gateways are objects which communicate for example with a GUI
@@ -138,7 +142,7 @@ class Habitat_App extends Habitat_Base
 
           // the logs of the gateways should be redirected to the logger
           gateway.on("log", function(_logType, _logSource, _logSourceId, _log, _additionalData) {
-            self.logger.add(_logType, _logSource, _logSourceId, _log, _additonalData)
+            self.logger.add(_logType, _logSource, _logSourceId, _log, _additionalData)
           })
 
           // the received messages should be known by the app and the app will create an emit itself too
@@ -204,6 +208,7 @@ class Habitat_App extends Habitat_Base
     /*
     if(_habitatEnvelope.type == "DATAREQUEST")
     {
+        if(_habitatEnvelope.data.type == "SYSTEM")
         if(_habitatEnvelope.data.type == "LOG")
         {
           if(_habitatEnvelope.data.level == "NONE")

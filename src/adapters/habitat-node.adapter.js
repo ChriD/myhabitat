@@ -9,6 +9,8 @@ class Habitat_Node_Adapter extends Habitat_Node
   constructor(_RED, _config)
   {
     super(_RED, _config)
+    // adapters may have a lot of listeners due nodes do attach to them
+    this.setMaxListeners(100)
   }
 
 
