@@ -44,11 +44,18 @@ class Habitat_App extends Habitat_Base
     // this is the storage object for storing data and states
     // currently the storage is a file storage, if we do want to have another (maybe db) we have to
     // create a new inheritance from the storage base class
+    // TODO: save of states currently is done very often, so we may consier to save the 'states' object
     this.storage = new Habitat_Storage_File()
 
     // the scene manager object
     // it is a class which does have some functions for getting scene data and it stores the scene data too
     this.sceneManager = new Habitat_SceneManager()
+
+    // a multidimensional array  which does have (copies of) all current states of all nodes
+    // first level is the nodeId and the second level is the current node state
+    // TODO: make this array observeable for debugging issues
+    // TODO: eventually use this object for all states in the nodes (no copies?)
+    this.nodeStates = []
 
     // this is the HTTP server for serving GUIs for the habitat app
     // it may not be used if the gui's are present on another server

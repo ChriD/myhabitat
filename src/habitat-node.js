@@ -298,10 +298,14 @@ class Habitat_Node
 
   /**
    * will be called when the state object has changed
-   * there is no oserver on the state object, it has to be done manually!
+   * there is no observer on the state object, it has to be done manually!
    */
   stateUpdated()
   {
+    // the state of the object has changed by any kind of stuff
+    // we have to be sure that the state on the storage is up to date
+    this.habitat().nodeStates[this.getNodeId()] = this.copyObject(this.state)
+
     this.updateNodeInfoState()
   }
 
