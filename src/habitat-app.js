@@ -3,6 +3,7 @@
 const Habitat_Base = require('./habitat-base.js')
 const Habitat_Storage_File = require('./storage/habitat-storage.file.js')
 const Habitat_HTTPServer = require('./server/habitat-httpServer.js')
+const Habitat_SceneManager   = require('./libs/sceneManager.js')
 const Glob = require('glob')
 const Path = require('path')
 const Logger = require('./libs/logger.js').Logger
@@ -44,6 +45,10 @@ class Habitat_App extends Habitat_Base
     // currently the storage is a file storage, if we do want to have another (maybe db) we have to
     // create a new inheritance from the storage base class
     this.storage = new Habitat_Storage_File()
+
+    // the scene manager object
+    // it is a class which does have some functions for getting scene data and it stores the scene data too
+    this.sceneManager = new Habitat_SceneManager()
 
     // this is the HTTP server for serving GUIs for the habitat app
     // it may not be used if the gui's are present on another server
@@ -308,6 +313,15 @@ class Habitat_App extends Habitat_Base
   loadState(_objectId, _stateId)
   {
     return this.storage.loadState(_objectId, _stateId)
+  }
+
+  /**
+   * returns the scene manager object for the scenes
+   * @return {Object} the scene manager
+   */
+  getSceneManager()
+  {
+    return this.sceneManager;
   }
 
 }

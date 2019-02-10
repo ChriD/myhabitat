@@ -79,7 +79,7 @@ module.exports = function(RED) {
                 if(value.toUpperCase() == "TOGGLE")
                   self.toggleOnOff()
                 else
-                  self.loadState(value)
+                  self.applyScene(value.toUpperCase())
                 break
               // an object should be a "state" object
               // this will be merged and applied to the current state object

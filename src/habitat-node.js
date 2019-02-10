@@ -129,26 +129,45 @@ class Habitat_Node
   {
     var self = this
 
-    // skip loading of states if node does not have the ability for it!
-    if(!self.stateStorageEnabled())
-      return
-
-    self.habitat().loadState(self.getNodeId(), _stateId).then(function(_state){
-      self.setState(_state, _isInit)
-    })
-    .catch(function(_exception){
-      self.logError("Error loading state " + self.getLastStateId() + " for node " + self.getNodeId() +  ": " + _exception.toString(), _exception)
+    return new Promise((_resolve, _reject) => {
+      try
+      {
+        // skip loading of states if node does not have the ability for it!
+        if(!self.stateStorageEnabled())
+        {
+          _resolve()
+        }
+        else
+        {
+          self.habitat().loadState(self.getNodeId(), _stateId).then(function(_state){
+            self.setState(_state, _isInit).then(function(){
+              _resolve()
+            }).catch(function(_exception){
+              _reject(_exception)
+            })
+          }).catch(function(_exception){
+            self.logError("Error loading state " + self.getLastStateId() + " for node " + self.getNodeId() +  ": " + _exception.toString(), _exception)
+            _reject(_exception)
+          })
+        }
+      }
+      catch(_exception)
+      {
+        self.logError(_exception.toString())
+        _reject(_exception)
+      }
     })
   }
 
    /**
    * use this method to load a specific state for the node
    * @param {boolean} _isInit indicates if the loaded state was loaded because of initialization of the node
+   * @return {Promise}
    */
   loadLastState(_isInit)
   {
     var self = this
-    self.loadState(self.getLastStateId(), _isInit)
+    return self.loadState(self.getLastStateId(), _isInit)
   }
 
   /**
@@ -158,11 +177,18 @@ class Habitat_Node
    */
   saveState(_stateId, _state)
   {
+    var self = this
+
     // skip saving of states if node does not have the ability for it!
     if(!self.stateStorageEnabled())
       return
 
-    this.habitat().saveState(this.getNodeId(), _stateId, _state)
+    // don't save the last state if we have loaded a scene, a scene should never
+    // ovewrite tha last state object (we do need it again when scene was cleared)
+    if(self.sceneId)
+      return
+
+    self.habitat().saveState(self.getNodeId(), _stateId, _state)
   }
 
   /**
@@ -170,7 +196,12 @@ class Habitat_Node
    */
   saveLastState()
   {
-    this.habitat().saveState(this.getNodeId(), this.getLastStateId(), this.state)
+    // don't save the last state if we have loaded a scene, a scene should never
+    // ovewrite tha last state object (we do need it again when scene was cleared)
+    if(this.sceneId)
+      return
+
+    return this.habitat().saveState(this.getNodeId(), this.getLastStateId(), this.state)
   }
 
   /**
@@ -181,26 +212,42 @@ class Habitat_Node
   setState(_state, _isInit = false)
   {
     var self = this
-    // be sure the loaded state object is on the correct version
-    this.upgradeState(_state)
-    // if the state was 'loaded' by a init command we have to restore the old state values
-    if(_isInit)
-      this.restoreState(_state).then(function(){
-        self.stateUpdated()
-      }).catch(function(_exception){
-        self.logError("Error restoring state: " + _exception.toString(), _state)
-      })
-    // if the state is loaded by user (scene change) we have to apply the new state values
-    else
-      this.applyState(_state).then(function(_dispatchState = true){
-        // when the state was applied, we have to call 'stateUpdated' which will deliver the data to all clients
-        // this may klead to multiple sending of a state when using KNX-Thing nodes with feddback ga's (due that feedback ga's will trigger 'stateUpdated') as well
-        // so we do have the '_dispatchState' var for denying sending of a status
-        if(_dispatchState)
-          self.stateUpdated()
-      }).catch(function(_exception){
-        self.logError("Error applying state: " + _exception.toString(), _state)
-      })
+
+    return new Promise((_resolve, _reject) => {
+      try
+      {
+        // be sure the loaded state object is on the correct version
+        self.upgradeState(_state)
+        // if the state was 'loaded' by a init command we have to restore the old state values
+        if(_isInit)
+          self.restoreState(_state).then(function(){
+            self.stateUpdated()
+            _resolve()
+          }).catch(function(_exception){
+            self.logError("Error restoring state: " + _exception.toString(), _state)
+            _reject(_exception)
+          })
+        // if the state is loaded by user we have to apply the new state values
+        else
+          self.applyState(_state).then(function(_dispatchState = true){
+            // when the state was applied, we have to call 'stateUpdated' which will deliver the data to all clients
+            // this may lead to multiple sending of a state when using KNX-Thing nodes with feddback ga's (due that feedback ga's will trigger 'stateUpdated') as well
+            // so we do have the '_dispatchState' var for denying sending of a status
+            if(_dispatchState)
+              self.stateUpdated()
+            _resolve()
+          }).catch(function(_exception){
+            self.logError("Error applying state: " + _exception.toString(), _state)
+            _reject(_exception)
+          })
+
+      }
+      catch(_exception)
+      {
+        self.logError(_exception.toString())
+        _reject(_exception)
+      }
+    })
   }
 
 

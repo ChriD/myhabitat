@@ -42,9 +42,22 @@ module.exports = function(RED) {
        */
       knxDataReceived(_source, _destination, _value, _valueObject)
       {
-        //if(_destination == this.config.ga)
         this.send({payload :_value })
+        this.lastReceived = {
+          "value"   : _value,
+          "source"  : _source
+        }
+        this.updateNodeInfoState()
       }
+
+
+      updateNodeInfoState()
+      {
+        super.updateNodeInfoState();
+        let infoText = this.lastReceived.source + " -> " + this.lastReceived.value
+        this.status({text: infoText})
+      }
+
     }
 
 

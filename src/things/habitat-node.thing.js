@@ -10,6 +10,10 @@ class Habitat_Node_Thing extends Habitat_Node
   {
     super(_RED, _config)
 
+    // every "Thing" does have a var which indicates the current scene on this thing
+    // if the sceneIs is empty, there is no scene active
+    this.sceneId = ''
+
     // get the defined adapter from the config
     // we will retrieve the adpater node and we can use the id of the node for the link
     var adapterNode = _RED.nodes.getNode(this.config.adapterNode)
@@ -125,6 +129,96 @@ class Habitat_Node_Thing extends Habitat_Node
   {
     super.stateUpdated()
     this.habitat().sendNodeStateToClients(this)
+  }
+
+
+  /**
+   * returns true if a scene is loaded for the thing
+   */
+  isSceneActive()
+  {
+    return this.sceneId == "" ? false : true
+  }
+
+
+  /**
+   * applies the scene (the scene state) to the thing state
+   */
+  applyScene(_sceneId)
+  {
+    var self = this
+    var stateToApply = {}
+    var oldSceneId  = self.sceneId
+
+    return new Promise((_resolve, _reject) => {
+      try
+      {
+        // save the current state to the last state (this will only be done if there is no scene loaded)
+        self.saveLastState()
+
+        // get the scene data from the scene manager, if there is no scene data we stay at the current scene
+        // of the current state
+        if(_sceneId)
+        {
+          stateToApply = self.habitat().getSceneManager().getSceneData(_sceneId, self.getNodeId())
+          if(stateToApply)
+          {
+            // the scene id has to be set before call of 'setSate' otherwise the setStat will trigger a save of the new values to the
+            // default values, what we do not want in this case!
+            self.sceneId = _sceneId
+            self.setState(stateToApply).then(function(){
+                self.logDebug("Scene '" + _sceneId + "' for thing '" + self.getNodeId() + "' applied!")
+                _resolve()
+            }).catch(function(_exception){
+              self.logError("Error applying state: " + _exception.toString(), _state)
+              self.sceneId = oldSceneId
+              _reject()
+            })
+          }
+          // there is no such scene for the thing in the scene storage, so we do nothing
+          // but thats okay, we do only give some warning
+          else
+          {
+            self.logWarning("Scene '" + _sceneId + "' for thing '" + self.getNodeId() + "' not found! Let's keep current state values!")
+            _resolve()
+          }
+
+        }
+        // if no sceneid is given, we load the last state without any scene
+        else
+        {
+          self.sceneId = ""
+          self.loadLastState()
+          self.logDebug("Original state for '" + self.getNodeId() + "' loaded")
+          _resolve()
+        }
+      }
+      catch(_exception)
+      {
+        self.logError(_exception.toString())
+        _reject(_exception)
+      }
+    })
+
+
+
+
+
+
+      /*
+      this.setState(sceneState)
+
+      this.applyState(sceneState).then(function(_dispatchState = true){
+        // when the state was applied, we have to call 'stateUpdated' which will deliver the data to all clients
+        // this may lead to multiple sending of a state when using KNX-Thing nodes with feddback ga's (due that feedback ga's will trigger 'stateUpdated') as well
+        // so we do have the '_dispatchState' var for denying sending of a status
+        if(_dispatchState)
+          self.stateUpdated()
+      }).catch(function(_exception){
+        self.logError("Error applying state: " + _exception.toString(), _state)
+      })
+      */
+
   }
 
 }

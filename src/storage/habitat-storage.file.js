@@ -33,14 +33,14 @@ class Habitat_Storage_File extends Habitat_Storage
       {
           if(self.createDirectory(self.defaultPath))
           {
-              Fs.writeFileSync(self.defaultPath + self.getFilename(_objectId, _stateId), JSON.stringify(_state))
+              Fs.writeFileSync(self.defaultPath + self.getFilename(_objectId, _stateId), JSON.stringify(_state), {encoding:'utf8',flag:'w'})
               _resolve()
           }
       }
       catch(_exception)
       {
           self.logError(_exception.toString())
-          _reject()
+          _reject(_exception)
       }
     })
   }

@@ -1,8 +1,6 @@
 "use strict"
 
 const Habitat_Base = require('../habitat-base.js')
-const Path = require('path')
-const Fs = require("fs");
 
 
 /**

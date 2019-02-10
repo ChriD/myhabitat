@@ -4,6 +4,7 @@
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "node",
             "request": "attach",
@@ -27,6 +28,12 @@
             "request": "launch",
             "name": "Client Connection Test starten",
             "program": "${workspaceFolder}\\src\\test.clientConnection.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Scene Manager Test starten",
+            "program": "${workspaceFolder}\\src\\test.sceneManager.js"
         }
     ]
 }

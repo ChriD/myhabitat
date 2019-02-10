@@ -26,7 +26,7 @@ class Logger extends EventEmitter
   add(_type, _source, _sourceId, _log, _additionalData)
   {
     // check base log level and skip logging if not active
-    if(_type < this.logLevelType)
+    if(_type > this.logLevelType)
       return
     // be sure we do not exceed the log buffer count, if we would exceed we do pop the vai FIFO style
     if(this.logStack.length >= this.logBufferCountMax )
