@@ -81,9 +81,22 @@ module.exports = function(RED) {
                 else
                   self.applyScene(value.toUpperCase())
                 break
+                // TODO: object may be action object too!
               // an object should be a "state" object
               // this will be merged and applied to the current state object
               case "object":
+                // a habitat node should be able to handle the "habitat multi purpose object"
+                // TODO: restscene: do in base class: reset scene to "" before doing action!
+                // TODO: @@@
+                /*
+                {
+                  "action"      : "TOGGLE"
+                  "actiondata"  : {}
+                  "sceneId"     : ""
+                  "resetscene"  : true
+                }
+                */
+
                 var newState = self.combineStates(value, this.state)
                 self.setState(newState, false)
                 break

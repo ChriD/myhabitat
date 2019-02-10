@@ -51,7 +51,7 @@ class Habitat_App extends Habitat_Base
     // it is a class which does have some functions for getting scene data and it stores the scene data too
     this.sceneManager = new Habitat_SceneManager()
 
-    // a multidimensional array  which does have (copies of) all current states of all nodes
+    // a multidimensional array which does have (copies of) all current states of all nodes
     // first level is the nodeId and the second level is the current node state
     // TODO: make this array observeable for debugging issues
     // TODO: eventually use this object for all states in the nodes (no copies?)
