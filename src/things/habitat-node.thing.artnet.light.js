@@ -166,7 +166,12 @@ module.exports = function(RED) {
                 self.isTaskRunning = true
 
                 if(_newState.isOn && !self.state.isOn)
+                {
+                  // TODO: what if we have to turn on to a new state?!?!?!
+                  // e.g. SZENE!!!!
+                  // --> always dim and fade to stuff if brightness or color has changed?!?!? @@@@@
                   proms.push(self.turnOn())
+                }
                 else if(!_newState.isOn && self.state.isOn)
                   proms.push(self.turnOff())
                 // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color

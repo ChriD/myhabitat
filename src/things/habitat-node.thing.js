@@ -163,7 +163,7 @@ class Habitat_Node_Thing extends Habitat_Node
           stateToApply = self.habitat().getSceneManager().getSceneData(_sceneId, self.getNodeId())
           if(stateToApply)
           {
-            // the scene id has to be set before call of 'setSate' otherwise the setStat will trigger a save of the new values to the
+            // the scene id has to be set before call of 'setSate' otherwise the setState will trigger a save of the new values to the
             // default values, what we do not want in this case!
             self.sceneId = _sceneId
             self.setState(stateToApply).then(function(){
