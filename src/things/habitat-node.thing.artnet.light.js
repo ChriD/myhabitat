@@ -51,58 +51,74 @@ module.exports = function(RED) {
         // this is a 'have to'!
         self.created()
 
-        // TODO: attach the handler for the input wires (after all nodes are loaded)
         self.on('input', function(_msg) {
-            var value = _msg.payload
-            switch(typeof value)
-            {
-              // TODO: use apply state!!!
+          // we have to create a new state object wwhere we do change the values given from the input
+          // with this state we can call the applystate function
+          var newState    = self.copyObject(this.state)
+          var value       = _msg.payload
+          var updateState = true
 
-              // '1' turn on, '0' turn off
-              case "number":
-                if(value == 0)
-                  self.turnOff()
-                else
-                  self.turnOn()
-                break
-              // 'true' turn on, 'false' turn off
-              case "boolean":
-                if(!value)
-                  self.turnOff()
-                else
-                  self.turnOn()
-                break
-              // a string should be a scene identifier. a scene is stored with its name to a state file, so we can use
-              // the name directly and load the 'scene' (state)
-              case "string":
-                // TODO: Stuff @@@@
-                if(value.toUpperCase() == "TOGGLE")
-                  self.toggleOnOff()
-                else
-                  self.applyScene(value.toUpperCase())
-                break
-                // TODO: object may be action object too!
-              // an object should be a "state" object
-              // this will be merged and applied to the current state object
-              case "object":
-                // a habitat node should be able to handle the "habitat multi purpose object"
-                // TODO: restscene: do in base class: reset scene to "" before doing action!
-                // TODO: @@@
-                /*
+          switch(typeof value)
+          {
+            // if we get a number we do interpret it as ON/OFF value (0=OFF / >0=ON)
+            case "number":
+              newState.isOn = (value == 0 ? false : true)
+              break
+
+            // if we get a boolean we do interpret it as ON/OFF value
+            case "boolean":
+              newState.isOn = value
+              break
+
+            // if we get a string it may be a predefined action or a scene identifier
+            // predefined actions are : "TOGGLE"
+            case "string":
+              if(value.toUpperCase() == "TOGGLE")
+              {
+                newState.isOn != newState.isOn
+              }
+              else
+              {
+                self.applyScene(value.toUpperCase())
+                updateState = false
+              }
+              break
+
+            // if the input is an object, we assume that it is a "habitat multi purpose object"
+            // a multi purpose object has a type which let's us know what the data is for
+            case "object":
+              if(value.type && value.data)
+              {
+                switch(value.type.toUpperCase())
                 {
-                  "action"      : "TOGGLE"
-                  "actiondata"  : {}
-                  "sceneId"     : ""
-                  "resetscene"  : true
+                  case "STATE":
+                    newState = self.combineStates(value.data, self.state)
+                    break
+                  case "SCENE":
+                    self.applyScene(value.data.sceneId)
+                    updateState = false
+                    break
                 }
-                */
+              }
+              else
+              {
+                  self.logWarning("Wrong object type for " + self.getThingId())
+                  updateState = false
+              }
+              break
 
-                var newState = self.combineStates(value, this.state)
-                self.setState(newState, false)
-                break
-              default:
-                self.logWarning("Wrong input type for " + self.getThingId())
-            }
+            // give some warning if we do not have any valid input
+            default:
+              self.logWarning("Wrong input type for " + self.getThingId())
+              updateState = false
+              break
+          }
+
+          // apply the new state set updated by the input if no other action has updated
+          // the state or if there are any errors or wrong inputs
+          if(updateState)
+            self.setState(newState, false)
+
         });
       }
 
@@ -162,21 +178,28 @@ module.exports = function(RED) {
 
               try
               {
-
+                // set a marker so thet the object knows that there is an ongoing task
+                // if another task is started while some task is running, the running tast will be stopped
                 self.isTaskRunning = true
 
                 if(_newState.isOn && !self.state.isOn)
                 {
-                  // TODO: what if we have to turn on to a new state?!?!?!
-                  // e.g. SZENE!!!!
-                  // --> always dim and fade to stuff if brightness or color has changed?!?!? @@@@@
-                  proms.push(self.turnOn())
+                  // if the state has toggled the light to on, we have to turn on the lamp to the new brightness value
+                  // and the new? color
+                  proms.push(self.turnOn(_newState.brightness, _newState.color))
                 }
                 else if(!_newState.isOn && self.state.isOn)
+                {
+                  // when turning off we do not need to fade to any color, no matter if another color is given or not
+                  // the color will aplly on the next turn on of the lamp due the state wi be combined anyway
                   proms.push(self.turnOff())
-                // when the on/off state of the lamp is is not changeing we can dim to brightness and fade to color
+                }
                 else
                 {
+                  // when the on/off state of the lamp is is not changeing we dim to brightness and fade to color
+                  // TODO: @@@  dimming and fading at the same time should use the same dimming and color values!!!
+                  //            use a tmporary "task state" as member var which will be set on start of applyState to the
+                  //            current state. and this state will be altered!
                   proms.push(self.dimTo(_newState.brightness))
                   proms.push(self.fadeTo(_newState.color))
                 }
@@ -184,7 +207,8 @@ module.exports = function(RED) {
                 // if all the fading and dimming is done we do store/commit the new state as the last state
                 // we do not want to have a state saved when it's in dimming or fading mode
                 Promise.all(proms).then(function(){
-                  // be sure we do set the whole loaded state to the current state but do not loose any vars!
+                  // be sure we do set the whole new state to the current state but do not loose any vars!
+                  // so we do combine the new state with the old one
                   self.state = self.combineStates( _newState, self.state)
                   self.saveLastState()
                   self.updateNodeInfoState()
@@ -258,19 +282,11 @@ module.exports = function(RED) {
       }
 
 
-      toggleOnOff()
-      {
-        if(this.state.isOn)
-          this.turnOff();
-        else
-          this.turnOn();
-      }
-
 
       /**
        * turn on the light
        */
-      turnOn()
+      turnOn(_brightness = this.state.brightness, _color = null)
       {
         var self = this
 
@@ -278,20 +294,39 @@ module.exports = function(RED) {
         {
           try
           {
-            // in fact if the light is already on we do not have to do anything, but to be sure (in case of blackout or somehting like that)
+            // in fact if the light is already on we do not have to do anything, but to be sure (in case of blackout or something like that)
             // we do update the values on the artnet
             if(self.state.isOn)
             {
-              self.sendToArtnet()
-              _resolve()
+              // if the lamp was already on and we got a color object, we try to fade to that color object
+              // in fact this is very rare stuff
+              if(_color)
+              {
+                self.fadeTo(_color).then(function(){
+                  _resolve()
+                }).catch(function(_exception){
+                  _reject(_exception)
+                })
+              }
+              else
+              {
+                // only a fallback for "blackout"
+                self.sendToArtnet()
+                _resolve()
+              }
               return
             }
+
+            // if we got a color we do set it before we turn on the lamp
+            // on turn on there should be no color fading so we can set it directly
+            if(_color)
+              self.state.color = self.copyObject(_color)
 
             // we have to set the state to 'on' before we start the dimming to the dim value, otherwise the
             // values wont be calculated in the 'sendToArtnet' method
             // Be aware that the on/off dimming will not affect the brightness value on the state
             self.state.isOn = true
-            self.dimTo(self.state.brightness, 0).then(function(){
+            self.dimTo(_brightness, 0).then(function(){
               self.stateUpdated()
               self.saveLastState()
               self.updateNodeInfoState()
@@ -417,6 +452,8 @@ module.exports = function(RED) {
                 // levels[n] = int(pow(Pmax * ((float)n/(float)N), 1/a) + 0.5);
                 // a = 0.33 -> 0.5
 
+                // TODO: @@@ update taskState with the new brightness value
+
                 self.sendToArtnet(self.state.color, _fromBrightness)
                 if(_fromBrightness == _brightness)
                 {
@@ -457,6 +494,14 @@ module.exports = function(RED) {
         {
           try
           {
+            // if there is no target object then resolve and leave immediately
+            // this should not be the case at all but there may be corrupt or wrong states given!
+            if(!_target)
+            {
+              _resolve()
+              return
+            }
+
             var duration      = _duration
             var intervalTime  = 0
             var source        = self.state.color
@@ -511,6 +556,8 @@ module.exports = function(RED) {
                   source.green += 1 * (_target.green < source.green ? -1 : 1)
                 if(blueMS && intervalTime % blueMS == 0 && source.blue != _target.blue)
                   source.blue += 1 * (_target.blue < source.blue ? -1 : 1)
+
+                // TODO: @@@ update taskState with the new color values
 
                 // TODO: only update when something changed
                 self.sendToArtnet(source)
