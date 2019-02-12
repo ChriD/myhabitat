@@ -3,6 +3,8 @@
 
 const EventEmitter = require("events").EventEmitter;
 
+// #DEV: #TODO: allow overall scenes e.g NIGHT-SPOT without relation to a node id (use a fixed node id e.g. "GLOBAL" ?!)
+
 class SceneManager extends EventEmitter
 {
   constructor()

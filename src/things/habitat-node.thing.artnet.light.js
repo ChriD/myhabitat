@@ -32,6 +32,10 @@ module.exports = function(RED) {
           'brightness' : 1.0,
          }
 
+        // we do need a state which all transitions/tast will access when they do their stuff whcih
+        // should/dioes not affect tjhe main state
+        self.transitionState = {}
+
         // timer id which will be > 0 when fading is currently running
         self.fadingTimerId = 0
         // intervall id for dimming to a specific brightness
@@ -75,7 +79,7 @@ module.exports = function(RED) {
             case "string":
               if(value.toUpperCase() == "TOGGLE")
               {
-                newState.isOn != newState.isOn
+                newState.isOn = !newState.isOn
               }
               else
               {
@@ -172,60 +176,62 @@ module.exports = function(RED) {
 
         return new Promise((_resolve, _reject) => {
 
-            // when there is a task (dim, fade,..) running, we have to stop the task before we are
-            // able to apply the new task
-            self.stopAndWaitForTaskToFinish().then(function(){
+          // when there is a task (dim, fade,..) running, we have to stop the task before we are
+          // able to apply the new task
+          self.stopAndWaitForTaskToFinish().then(function(){
 
-              try
+            try
+            {
+              // set a marker so thet the object knows that there is an ongoing task
+              // if another task is started while some task is running, the running tast will be stopped
+              self.isTaskRunning = true
+
+              // prepare the transition state for all the actions the apply eill call
+              self.transitionState = self.copyObject(self.state)
+
+              if(_newState.isOn && !self.state.isOn)
               {
-                // set a marker so thet the object knows that there is an ongoing task
-                // if another task is started while some task is running, the running tast will be stopped
-                self.isTaskRunning = true
-
-                if(_newState.isOn && !self.state.isOn)
-                {
-                  // if the state has toggled the light to on, we have to turn on the lamp to the new brightness value
-                  // and the new? color
-                  proms.push(self.turnOn(_newState.brightness, _newState.color))
-                }
-                else if(!_newState.isOn && self.state.isOn)
-                {
-                  // when turning off we do not need to fade to any color, no matter if another color is given or not
-                  // the color will aplly on the next turn on of the lamp due the state wi be combined anyway
-                  proms.push(self.turnOff())
-                }
-                else
-                {
-                  // when the on/off state of the lamp is is not changeing we dim to brightness and fade to color
-                  // TODO: @@@  dimming and fading at the same time should use the same dimming and color values!!!
-                  //            use a tmporary "task state" as member var which will be set on start of applyState to the
-                  //            current state. and this state will be altered!
-                  proms.push(self.dimTo(_newState.brightness))
-                  proms.push(self.fadeTo(_newState.color))
-                }
-
-                // if all the fading and dimming is done we do store/commit the new state as the last state
-                // we do not want to have a state saved when it's in dimming or fading mode
-                Promise.all(proms).then(function(){
-                  // be sure we do set the whole new state to the current state but do not loose any vars!
-                  // so we do combine the new state with the old one
-                  self.state = self.combineStates( _newState, self.state)
-                  self.saveLastState()
-                  self.updateNodeInfoState()
-                  _resolve()
-                }).catch(function(_exception){
-                  _reject(_exception)
-                })
+                // if the state has toggled the light to on, we have to turn on the lamp to the new brightness value
+                // and the new? color
+                proms.push(self.turnOn(_newState.brightness, _newState.color))
               }
-              catch(_exception)
+              else if(!_newState.isOn && self.state.isOn)
               {
-                self.logError(_exception.toString())
+                // when turning off we do not need to fade to any color, no matter if another color is given or not
+                // the color will aplly on the next turn on of the lamp due the state wi be combined anyway
+                proms.push(self.turnOff())
+              }
+              else
+              {
+                // when the on/off state of the lamp is is not changeing we dim to brightness and fade to color
+                // dimming and fading at the same time should use the same dimming and color values!
+                // so we do use the self.transitionState inside of dimTo and fadeTo
+                proms.push(self.dimTo(_newState.brightness))
+                proms.push(self.fadeTo(_newState.color))
+              }
+
+              // if all the fading and dimming is done we do store/commit the new state as the last state
+              // we do not want to have a state saved when it's in dimming or fading mode
+              Promise.all(proms).then(function(){
+                // be sure we do set the whole new state to the current state but do not loose any vars!
+                // so we do combine the new state with the old one
+                self.state = self.combineStates( _newState, self.state)
+                self.saveLastState()
+                self.updateNodeInfoState()
+                _resolve()
+              }).catch(function(_exception){
                 _reject(_exception)
-              }
+              })
+            }
+            catch(_exception)
+            {
+              self.logError(_exception.toString())
+              _reject(_exception)
+            }
 
-              self.isTaskRunning = false
+            self.isTaskRunning = false
 
-            })
+          })
 
         })
 
@@ -452,7 +458,8 @@ module.exports = function(RED) {
                 // levels[n] = int(pow(Pmax * ((float)n/(float)N), 1/a) + 0.5);
                 // a = 0.33 -> 0.5
 
-                // TODO: @@@ update taskState with the new brightness value
+                // update taskState with the new brightness value
+                self.transitionState.brightness = _fromBrightness
 
                 self.sendToArtnet(self.state.color, _fromBrightness)
                 if(_fromBrightness == _brightness)
@@ -557,9 +564,11 @@ module.exports = function(RED) {
                 if(blueMS && intervalTime % blueMS == 0 && source.blue != _target.blue)
                   source.blue += 1 * (_target.blue < source.blue ? -1 : 1)
 
-                // TODO: @@@ update taskState with the new color values
+                // update taskState with the new color values.
+                // #DEV: we may use a direct link to instead of deep copying the object (performance?!)
+                self.transitionState.color = self.copyObject(source)
 
-                // TODO: only update when something changed
+                // #DEV: #TODO: only update when something changed
                 self.sendToArtnet(source)
 
                 if( (_target.warmwhite == source.warmwhite || !whiteMS)  &&
