@@ -43,8 +43,6 @@ module.exports = function(RED) {
         //
         self.isTaskRunning = false
 
-        //self.
-
         // TODO: @@@
         this.config.dimFadeDuration   = 254
         this.config.colorFadeDuration = 254
@@ -461,7 +459,7 @@ module.exports = function(RED) {
                 // update taskState with the new brightness value
                 self.transitionState.brightness = _fromBrightness
 
-                self.sendToArtnet(self.state.color, _fromBrightness)
+                self.sendToArtnet(self.transitionState.color, _fromBrightness)
                 if(_fromBrightness == _brightness)
                 {
                   clearInterval(self.brightnessIntervallId)
@@ -474,7 +472,7 @@ module.exports = function(RED) {
             // thats because we may come from a blackout and theerfore therefore is not valid state (newState = state)
             else
             {
-              self.sendToArtnet(self.state.color, self.state.brightness)
+              self.sendToArtnet(self.transitionState.color, self.transitionState.brightness)
               clearInterval(taskAbortionInterval)
               _resolve()
             }
@@ -569,7 +567,7 @@ module.exports = function(RED) {
                 self.transitionState.color = self.copyObject(source)
 
                 // #DEV: #TODO: only update when something changed
-                self.sendToArtnet(source)
+                self.sendToArtnet(self.transitionState.color, self.transitionState.brightness)
 
                 if( (_target.warmwhite == source.warmwhite || !whiteMS)  &&
                     (_target.white == source.white || !warmWhiteMS) &&
@@ -588,7 +586,7 @@ module.exports = function(RED) {
             {
               // we also have to update the artnet if there is no difference in color
               // thats because we may come from a blackout and therefore there is not valid state (newState = state)
-              self.sendToArtnet(self.state.color, self.state.brightness)
+              self.sendToArtnet(self.transitionState.color, self.transitionState.brightness)
               clearInterval(taskAbortionInterval)
               _resolve()
             }
