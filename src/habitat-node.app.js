@@ -24,27 +24,26 @@ module.exports = function(RED) {
 
         // the habitat instance does have a logger which logs we do redirect to the node-red log output
         node.habitat.logger.on("log", function(_log){
-          let log = _log.type.toString() + " " + _log.sourceId + " : " + _log.log
+          let log = "[" + _log.moduleId + "]" + (_log.sourceId ? ("(" + _log.sourceId + ") ") : " ")  + _log.log
           if(_log.type <= 10)
-            node.error(_log.log)
+            node.error(log)
           else if(_log.type <= 20)
-            node.warning(_log.log)
+            node.warning(log)
           else
-            node.log(_log.log)
+            node.log(log)
         })
 
         // update some default path for several modules
-        node.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat/states") + "/"
+        node.habitat.storage.defaultPath    = Path.join(RED.settings.userDir, "habitat/storage") + "/"
         node.habitat.guiServer.defaultPath  = Path.join(RED.settings.userDir, "habitat/webclients") + "/"
 
         node.habitat.init()
 
-        //
         node.on('input', function(){ node.onInput() })
         node.on('close', function(){ node.onClose() })
 
         // we have to store this instance to the global context so every habitat child node
-        // does have access to it
+        // does have access to the habitat app
         node.context().global.set(node.getHabitatGlobalContextId(), node)
       }
 
@@ -68,6 +67,7 @@ module.exports = function(RED) {
       }
 
     }
+
 
     RED.nodes.registerType("habitat-app", Habitat_Node_App);
 }

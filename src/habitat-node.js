@@ -13,8 +13,9 @@ class Habitat_Node
   {
     var self = this
 
-    self.config   = _config
-    self.stateId  = ''
+    self.state        = {}
+    self.defaultState = {}
+    self.config       = _config
 
     // adapters may have a lot of listeners due nodes do attach to them
     _RED.events.setMaxListeners(100)
@@ -49,15 +50,6 @@ class Habitat_Node
     throw Error("getNodeId has to be overwitten!")
   }
 
-  /**
-   * returns the id for the 'default' (last) state of the node
-   * this is the one which will be stored and loaded automatically
-   * @return {string}
-   */
-  getLastStateId()
-  {
-    return "LAST"
-  }
 
   /**
    * returns the habitat application node
@@ -120,89 +112,27 @@ class Habitat_Node
     return false
   }
 
-  /**
-   * use this method to load a specific state for the node
-   * @param {string} _stateId the stateId
-   * @param {boolean} _isInit indicates if the loaded state was loaded because of initialization of the node
-   */
-  loadState(_stateId, _isInit)
-  {
-    var self = this
 
-    return new Promise((_resolve, _reject) => {
-      try
-      {
-        // skip loading of states if node does not have the ability for it!
-        if(!self.stateStorageEnabled())
-        {
-          _resolve()
-        }
-        else
-        {
-          self.habitat().loadState(self.getNodeId(), _stateId).then(function(_state){
-            self.setState(_state, _isInit).then(function(){
-              _resolve()
-            }).catch(function(_exception){
-              _reject(_exception)
-            })
-          }).catch(function(_exception){
-            self.logError("Error loading state " + self.getLastStateId() + " for node " + self.getNodeId() +  ": " + _exception.toString(), _exception)
-            _reject(_exception)
-          })
-        }
-      }
-      catch(_exception)
-      {
-        self.logError(_exception.toString())
-        _reject(_exception)
-      }
-    })
-  }
-
-   /**
-   * use this method to load a specific state for the node
-   * @param {boolean} _isInit indicates if the loaded state was loaded because of initialization of the node
-   * @return {Promise}
-   */
-  loadLastState(_isInit)
+  getDefaultState()
   {
-    var self = this
-    return self.loadState(self.getLastStateId(), _isInit)
+    return this.defaultState;
   }
 
   /**
-   * use this method to save a specific state for the node
-   * @param {string} _stateId the stateId
-   * @param {Object} _state the state
+   * gets the last state from the state storage object and applies it to the node
    */
-  saveState(_stateId, _state)
+  applyStateFromLastStateStorage()
   {
-    var self = this
-
-    // skip saving of states if node does not have the ability for it!
-    if(!self.stateStorageEnabled())
+    if(!this.stateStorageEnabled())
       return
-
-    // don't save the last state if we have loaded a scene, a scene should never
-    // ovewrite tha last state object (we do need it again when scene was cleared)
-    if(self.sceneId)
-      return
-
-    self.habitat().saveState(self.getNodeId(), _stateId, _state)
+    var nodeState = this.habitat().getNodeStates()[this.getNodeId()]
+    // if we do not have any state saved, we use the default state which should be defined within the node
+    // if there is no default state the node may not work proper!
+    if(!nodeState)
+      nodeState = this.copyObject(this.getDefaultState())
+    this.setState(nodeState, true)
   }
 
-  /**
-   * use this method to save the current state
-   */
-  saveLastState()
-  {
-    // don't save the last state if we have loaded a scene, a scene should never
-    // ovewrite tha last state object (we do need it again when scene was cleared)
-    if(this.sceneId)
-      return
-
-    return this.habitat().saveState(this.getNodeId(), this.getLastStateId(), this.state)
-  }
 
   /**
    * does set a new state to a node
@@ -305,6 +235,7 @@ class Habitat_Node
     // the state of the object has changed by any kind of stuff
     // we have to be sure that the state on the storage is up to date
     this.habitat().nodeStates[this.getNodeId()] = this.copyObject(this.state)
+    this.habitat().nodeStateUpdated(this)
 
     this.updateNodeInfoState()
   }
@@ -333,7 +264,7 @@ class Habitat_Node
       }
       catch(_exception)
       {
-        this.logError("Cant parse" + _value + " to integer")
+        this.logError("Can't parse" + _value + " to integer")
       }
       return 0
   }
@@ -368,12 +299,21 @@ class Habitat_Node
   }
 
 
+  /**
+   * @return {String}
+   */
+  getModuleId()
+  {
+    return ""
+  }
+
+
   logInt(_type, _log, _object)
   {
     // redirect all logs from the node to the main habitat application node which will
     // do the output of the log to clients or any other log related stuff.
     if(this.habitat())
-      this.habitat().nodeLog(_type, this.getLogPrefix(), this.getLogUnique(), _log, _object)
+      this.habitat().nodeLog(_type, this.getModuleId(), this.getLogPrefix(), this.getLogUnique(), _log, _object)
     // TODO: @@@ what if the habitat instance is not already there?
     // --> create a logger class which resides in the global varuiable scope???
   }

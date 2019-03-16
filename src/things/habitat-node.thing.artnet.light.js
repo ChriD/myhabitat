@@ -19,8 +19,8 @@ module.exports = function(RED) {
 
         var self = this
 
-        // INFO: The brightness value on the state will not change on "on / off"
-        self.state = {
+        // set the default state data
+        self.defaultState = {
           'isOn'    : false,
           'color' : {
                       'white'     : 127,
@@ -214,7 +214,7 @@ module.exports = function(RED) {
                 // be sure we do set the whole new state to the current state but do not loose any vars!
                 // so we do combine the new state with the old one
                 self.state = self.combineStates( _newState, self.state)
-                self.saveLastState()
+                self.stateUpdated();
                 self.updateNodeInfoState()
                 _resolve()
               }).catch(function(_exception){
@@ -332,7 +332,6 @@ module.exports = function(RED) {
             self.state.isOn = true
             self.dimTo(_brightness, 0).then(function(){
               self.stateUpdated()
-              self.saveLastState()
               self.updateNodeInfoState()
               _resolve()
             })
@@ -370,7 +369,6 @@ module.exports = function(RED) {
             self.dimTo(0).then(function(){
               self.state.isOn = false
               self.stateUpdated()
-              self.saveLastState()
               self.updateNodeInfoState()
               _resolve()
             })
@@ -398,7 +396,6 @@ module.exports = function(RED) {
             self.dimTo(_brightness).then(function(){
               self.state.brightness = _brightness
               self.stateUpdated()
-              self.saveLastState()
               _resolve()
             })
 

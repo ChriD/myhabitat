@@ -52,6 +52,15 @@ class Habitat_Node_Adapter extends Habitat_Node
   }
 
 
+    /**
+     * @return {String}
+    */
+   getModuleId()
+   {
+     return this.getAdapterType()
+   }
+
+
    /**
    * will be called after the createNode of the RED application
    */

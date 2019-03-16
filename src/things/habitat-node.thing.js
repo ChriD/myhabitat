@@ -42,6 +42,14 @@ class Habitat_Node_Thing extends Habitat_Node
   }
 
   /**
+   * @return {String}
+   */
+  getModuleId()
+  {
+    return this.getThingType()
+  }
+
+  /**
    * should return a unique persistant id of the node
    * @return {string}
    */
@@ -68,6 +76,9 @@ class Habitat_Node_Thing extends Habitat_Node
     return true
   }
 
+
+
+
   /**
    * will be called when all nodes are started
    */
@@ -77,16 +88,24 @@ class Habitat_Node_Thing extends Habitat_Node
 
     super.nodesStarted()
 
-    // after all nodes are started we are trying to load the last state of the node
-    this.loadLastState(true)
+    // after all nodes are started we are trying to get the last state of the node from the habitat application
+    // it may be the case that the state is not loaded already, the the subscription to the 'nodeStateLoaded' event
+    // will take care of this
+    if(self.habitat().nodeStatesLoaded)
+      self.applyStateFromLastStateStorage()
+    // the habitat app will give us info whenn the state of the node was loaded from the storage
+    // in this case the think has to update it's state to
+    self.habitat().on("nodeStatesLoaded", function(){
+      self.applyStateFromLastStateStorage()
+    })
 
-    // the node has to be aware of new clients so it may send its current state to it
-    this.habitat().on("clientConnected", function(_clientInfo){
+    // the node has to be aware of new clients so it may send its current state to new cliwnts which are connecting
+    self.habitat().on("clientConnected", function(_clientInfo){
       self.habitat().sendNodeStateToClients(self)
     })
 
     // the node has to be aware when a client wants to update the state of the node
-    this.habitat().on("receivedDataFromClient", function(_clientInfo, _habitatEnvelope){
+    self.habitat().on("receivedDataFromClient", function(_clientInfo, _habitatEnvelope){
       // only process messages which are designated to be for the current node
       if(_habitatEnvelope.nodeId === self.getNodeId())
       {
@@ -117,13 +136,11 @@ class Habitat_Node_Thing extends Habitat_Node
   close()
   {
     super.close()
-    // be sure we are saving the current state when the node is going to be destroyed
-    this.saveLastState()
   }
 
    /**
    * will be called when the state object has changed
-   * there is no oserver on the state object, it has to be done manually!
+   * there is no observer on the state object, it has to be done manually!
    */
   stateUpdated()
   {
@@ -153,9 +170,6 @@ class Habitat_Node_Thing extends Habitat_Node
     return new Promise((_resolve, _reject) => {
       try
       {
-        // save the current state to the last state (this will only be done if there is no scene loaded)
-        self.saveLastState()
-
         // get the scene data from the scene manager, if there is no scene data we stay at the current scene
         // of the current state
         if(_sceneId)
@@ -188,7 +202,7 @@ class Habitat_Node_Thing extends Habitat_Node
         else
         {
           self.sceneId = ""
-          self.loadLastState()
+          //self.loadLastState() // TODO: @@@
           self.logDebug("Original state for '" + self.getNodeId() + "' loaded")
           _resolve()
         }

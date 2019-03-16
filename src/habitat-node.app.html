@@ -1,4 +1,7 @@
+<!-- https://github.com/sbarwe/node-red-contrib-contextbrowser/blob/master/contextbrowser.html -->
+
 <script type="text/javascript">
+
     RED.nodes.registerType('habitat-app',{
         category: 'Habitat',
         color: '#9999FF',
@@ -11,7 +14,7 @@
         paletteLabel: 'Habitat',
         label: function() {
             return this.name || 'Habitat';
-        }
+        },
     });
 </script>
 
@@ -23,5 +26,6 @@
 </script>
 
 <script type="text/x-red" data-help-name="habitat-app">
-    <p>This node adds a unique id from the config to a message</p>
+    <p>This node is the main habitat application node. In future this node may be a configuration node</p>
 </script>
+

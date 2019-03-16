@@ -34,7 +34,7 @@ class Habitat_App extends Habitat_Base
 
     // logs from the app class will be redirected to the logger object
     this.on("log", function(_logType, _logPrefix, _logUnique, _log, _data) {
-      self.logger.add(_logType, _logPrefix, _logUnique, _log, _data)
+      self.logger.add(_logType, "APP", _logPrefix, _logUnique, _log, _data)
     })
 
     // gateways are objects which communicate for example with a GUI
@@ -44,8 +44,10 @@ class Habitat_App extends Habitat_Base
     // this is the storage object for storing data and states
     // currently the storage is a file storage, if we do want to have another (maybe db) we have to
     // create a new inheritance from the storage base class
-    // TODO: save of states currently is done very often, so we may consier to save the 'states' object
+    // ATTENTION: Currently the storage object does not have any type of "memory managament"
     this.storage = new Habitat_Storage_File()
+    this.storageAutoSaveTime    = 10
+    this.storageAutoSavePending = false
 
     // the scene manager object
     // it is a class which does have some functions for getting scene data and it stores the scene data too
@@ -55,7 +57,8 @@ class Habitat_App extends Habitat_Base
     // first level is the nodeId and the second level is the current node state
     // TODO: make this array observeable for debugging issues
     // TODO: eventually use this object for all states in the nodes (no copies?)
-    this.nodeStates = []
+    this.nodeStates = {}
+    this.nodeStatesLoaded = false
 
     // this is the HTTP server for serving GUIs for the habitat app
     // it may not be used if the gui's are present on another server
@@ -80,6 +83,7 @@ class Habitat_App extends Habitat_Base
   {
     this.initGateways()
     this.initGUIServer()
+    this.loadNodeStates()
   }
 
 
@@ -89,16 +93,22 @@ class Habitat_App extends Habitat_Base
    */
   close()
   {
+    this.saveNodeStates()
     this.closeGateways()
     this.closeGUIServer()
+  }
 
+
+  getNodeStates()
+  {
+    return this.nodeStates
   }
 
   // all logs from nodes are gathered here in following method and will be hand over to the
   // main logger object which will do the logging for us
-  nodeLog(_type, _logPrefix, _logUnique, _log, _object)
+  nodeLog(_type, _moduleId, _logPrefix, _logUnique, _log, _object)
   {
-    this.logger.add(_type, _logPrefix, _logUnique, _log, _object)
+    this.logger.add(_type, _moduleId, _logPrefix, _logUnique, _log, _object)
   }
 
 
@@ -111,7 +121,7 @@ class Habitat_App extends Habitat_Base
     // the logs of the webserver should be redirected to the application main log
     // the main log is stored in an array of log objects
     self.guiServer.on("log", function(_logType, _logSource, _logSourceId, _log, _additonalData) {
-      self.logger.add(_logType, _logSource, _logSourceId, _log, _additonalData)
+      self.logger.add(_logType, "GUI", _logSource, _logSourceId, _log, _additonalData)
     })
     self.guiServer.listen()
   }
@@ -154,7 +164,7 @@ class Habitat_App extends Habitat_Base
 
           // the logs of the gateways should be redirected to the logger
           gateway.on("log", function(_logType, _logSource, _logSourceId, _log, _additionalData) {
-            self.logger.add(_logType, _logSource, _logSourceId, _log, _additionalData)
+            self.logger.add(_logType, "GATEWAY", _logSource, _logSourceId, _log, _additionalData)
           })
 
           // the received messages should be known by the app and the app will create an emit itself too
@@ -299,29 +309,6 @@ class Habitat_App extends Habitat_Base
     self.sendDataToClients(envelope, clientIds)
   }
 
-   /**
-   * this method stores a state
-   * @param {string} _objectId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @param {Object} _state the state object
-   * @return {Promise} a promise
-   */
-  saveState(_objectId, _stateId, _state)
-  {
-    return this.storage.saveState(_objectId, _stateId, _state)
-  }
-
-  /**
-   * this method loads a state
-   * @param {string} _objectId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @return {Promise} a promise
-   */
-  loadState(_objectId, _stateId)
-  {
-    return this.storage.loadState(_objectId, _stateId)
-  }
-
   /**
    * returns the scene manager object for the scenes
    * @return {Object} the scene manager
@@ -329,6 +316,69 @@ class Habitat_App extends Habitat_Base
   getSceneManager()
   {
     return this.sceneManager;
+  }
+
+  /**
+   * saves the current states array of the habitat app to a file or database
+   * @return {Promise}
+   */
+  saveNodeStates()
+  {
+    var self = this
+    if(!self.storage)
+    {
+      self.logError("Node states can't be saved because there is no storage defined!")
+      return
+    }
+    self.storage.save("nodeStates", self.nodeStates).then(function(){
+      self.logDebug("Node states saved");
+    }).catch(function(_exception){
+      self.logError("Error saving node states: " + _exception.toString(), _exception)
+    });
+  }
+
+  /**
+   * loads the last states array of the nodes into the nodeStates object
+   * @return {Promise}
+   */
+  loadNodeStates()
+  {
+    var self = this
+    if(!self.storage)
+    {
+      self.logError("Node states can't be loaded because there is no storage defined!")
+      return
+    }
+    self.storage.load("nodeStates").then(function(_storageData){
+      self.nodeStates = self.copyObject(_storageData)
+      self.nodeStatesLoaded = true
+      self.emit("nodeStatesLoaded")
+      self.logDebug("Node states loaded")
+    }).catch(function(_exception){
+      self.logError("Error loading node states: " + _exception.toString(), _exception)
+    });
+  }
+
+  /**
+   * is called when a state of the node was updated and the state was stored in the 'nodeSates' object
+   * on the habitat instance
+   * @return {Promise}
+   */
+  nodeStateUpdated(_node)
+  {
+    var self = this
+    // not every state updated should be stored to file or database immediatelly to increase performance and
+    // liftime of SD-cards if a storageAutoSaveTime is given
+    if(!self.storageAutoSaveTime)
+      self.saveNodeStates()
+    else if(!self.storageAutoSavePending)
+    {
+      self.storageAutoSavePending = true
+      setTimeout(function(){
+        self.saveNodeStates()
+        self.storageAutoSavePending = false
+      }, self.storageAutoSaveTime * 1000)
+    }
   }
 
 }

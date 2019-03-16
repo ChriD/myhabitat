@@ -16,24 +16,20 @@ class Habitat_Storage_File extends Habitat_Storage
     this.defaultPath = _path
   }
 
-
   /**
-   * this method stores a state
-   * @param {string} _storeId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @param {Object} _state the state object
-   * @return {Promise} a promise
-   */
-  saveState(_objectId, _stateId, _state)
+  * @param {string} _id the id for the storage data
+  * @param {Object} _data the storage id
+  * @return {Promise} a promise
+  */
+  save(_id, _data)
   {
     var self = this
-
     return new Promise(function(_resolve, _reject){
       try
       {
           if(self.createDirectory(self.defaultPath))
           {
-              Fs.writeFileSync(self.defaultPath + self.getFilename(_objectId, _stateId), JSON.stringify(_state), {encoding:'utf8',flag:'w'})
+              Fs.writeFileSync(self.defaultPath + self.getFilename(_id), JSON.stringify(_data, null, 4), {encoding:'utf8',flag:'w'})
               _resolve()
           }
       }
@@ -45,21 +41,17 @@ class Habitat_Storage_File extends Habitat_Storage
     })
   }
 
-  /**
-   * this method loads a state
-   * has to be overwritten
-   * @param {string} _objectId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @return {Object} the object if found, otherwise returns null
+ /**
+   * @param {string} _id the id for the storage data
+   * @return {Promise} the object if found, otherwise empty data object
    */
-  loadState(_objectId, _stateId)
+  load(_id, _data)
   {
     var self = this
-
     return new Promise(function(_resolve, _reject){
       try
       {
-        var data = Fs.readFileSync(self.defaultPath + self.getFilename(_objectId, _stateId))
+        var data = Fs.readFileSync(self.defaultPath + self.getFilename(_id))
         _resolve(JSON.parse(data))
       }
       catch(_exception)
@@ -95,13 +87,12 @@ class Habitat_Storage_File extends Habitat_Storage
 
   /**
    * returns a valid filename from the object and state id
-   * @param {String} _objectId
-   * @param {String} _stateId
+   * @param {String} _id
    * @return {String} filename
    */
-  getFilename(_objectId, _stateId)
+  getFilename(_id)
   {
-    var filename = _objectId + "_" + _stateId
+    var filename = _id
     return filename.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".store"
   }
 

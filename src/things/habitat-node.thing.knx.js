@@ -26,7 +26,6 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
     return "KNX"
   }
 
-
    /**
    * returns the type of the thing
    * @return {string}
@@ -37,7 +36,6 @@ class Habitat_Node_Thing_KNX extends Habitat_Node_Thing
       return this.config.adapterId
     return "KNX_01"
   }
-
 
   /**
    * returns the knx adapter node

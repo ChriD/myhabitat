@@ -68,6 +68,14 @@ class Habitat_Base extends EventEmitter
     this.log(Logger.LogType.SILLY, _log, _object)
   }
 
+
+  copyObject(_object)
+  {
+    if(_object)
+      return JSON.parse(JSON.stringify(_object))
+    return null
+  }
+
 }
 
 module.exports = Habitat_Base

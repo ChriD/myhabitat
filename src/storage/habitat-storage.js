@@ -13,27 +13,24 @@ class Habitat_Storage extends Habitat_Base
     super()
   }
 
-
   /**
    * this method stores a state
    * has to be overwritten
-   * @param {string} _storeId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @param {Object} _state the state object
-   * @return {Promise} true when save was ok
+   * @param {string} _id the id for the storage data
+   * @param {Object} _data the state object
+   * @return {Promise} a promise which will resolve if save was ok
    */
-  saveState(_objectId, _stateId, _state)
+  save(_id, _data)
   {
   }
 
   /**
    * this method loads a state
    * has to be overwritten
-   * @param {string} _storeId the object id where the state will be stored
-   * @param {string} _stateId the stateId
-   * @return {Promise} true when save was ok
+   * @param {string} _id the id for the storage data
+   * @return {Promise} a promise with the stored data as parameter, if there is no data the parameter will be null
    */
-  loadState(_storeId, _stateId)
+  load(_id)
   {
   }
 }

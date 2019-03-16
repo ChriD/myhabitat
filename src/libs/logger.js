@@ -23,7 +23,7 @@ class Logger extends EventEmitter
   }
 
 
-  add(_type, _source, _sourceId, _log, _additionalData)
+  add(_type, _moduleId, _source, _sourceId, _log, _additionalData)
   {
     // check base log level and skip logging if not active
     if(_type > this.logLevelType)
@@ -32,9 +32,11 @@ class Logger extends EventEmitter
     if(this.logStack.length >= this.logBufferCountMax )
         this.logStack.shift()
     // push the log onto the stack
-    this.logStack.push({ "type" : _type, "source" : _source, "sourceId" : _sourceId, "text" : _log, "data" : _additionalData })
-    this.log(_type, _source, _sourceId, _log, _additionalData)
+    this.logStack.push({ "type" : _type, "moduleId" : _moduleId, "source" : _source, "sourceId" : _sourceId, "text" : _log, "data" : _additionalData })
+    this.log(_type, _moduleId, _source, _sourceId, _log, _additionalData)
     this.emit("log", {  "type"            : _type,
+                        "moduleId"        : _moduleId,
+                        "source"          : _source,
                         "sourceId"        : _sourceId,
                         "log"             : _log,
                         "additionalData"  : _additionalData
@@ -43,7 +45,7 @@ class Logger extends EventEmitter
   }
 
 
-  log(_type, _source, _sourceId, _log, _additionalData)
+  log(_type, _moduleId, _source, _sourceId, _log, _additionalData)
   {
     //console.log(_type.toString() + " | " + _source + " | " + _sourceId + " : " + _log)
   }
