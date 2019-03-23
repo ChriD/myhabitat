@@ -287,7 +287,7 @@ class Habitat_Node
    */
   getLogPrefix()
   {
-    return ""
+    return "[" + this.getModuleId() + "] " + this.getNodeId() + ":"
   }
 
   /**

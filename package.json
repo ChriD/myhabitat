@@ -18,7 +18,8 @@
       "habitat-thing-knx-gafilter": "src/things/habitat-node.thing.knx.gaFilter.js",
       "habitat-thing-knx-blind": "src/things/habitat-node.thing.knx.blind.js",
       "habitat-thing-knx-light": "src/things/habitat-node.thing.knx.light.js",
-      "habitat-thing-knx-plug": "src/things/habitat-node.thing.knx.plug.js"
+      "habitat-thing-knx-plug": "src/things/habitat-node.thing.knx.plug.js",
+      "habitat-common-selector": "src/commonNodes/habitat-node.common.selector.js"
     }
   },
   "dependencies": {
@@ -26,10 +27,13 @@
     "cloner": "^0.4.0",
     "fs": "0.0.1-security",
     "glob": "^7.1.3",
-    "knx": "^2.3.1",
+    "knx": "^2.3.2",
+    "loadsh": "0.0.4",
+    "lodash": "^4.17.11",
+    "machina": "^4.0.2",
     "path": "^0.12.7",
     "tiny-queue": "^0.2.1",
-    "ws": "^6.1.2"
+    "ws": "^6.2.0"
   },
   "devDependencies": {},
   "main": "index.js",
