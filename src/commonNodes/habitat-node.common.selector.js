@@ -19,7 +19,7 @@ module.exports = function(RED)
       var self = this
 
       // a selector does hve an index which represents the current selection
-      self.selectedIdx  = 0
+      self.selectedIdx  = -1
       self.maxIdx       = _config.rows.length - 1
 
       RED.nodes.createNode(self, _config)
@@ -57,6 +57,8 @@ module.exports = function(RED)
               self.selectionUp()
             else if(value.toUpperCase() == "DOWN")
               self.selectionDown()
+            else if(value.toUpperCase() == "RESET")
+              self.reset()
             break
 
           // if the input is an object, we assume that it is a "habitat multi purpose object"
@@ -71,6 +73,12 @@ module.exports = function(RED)
         }
       });
 
+    }
+
+    reset()
+    {
+      this.selectedIdx = -1
+      this.updateNodeInfoState()
     }
 
 
@@ -120,7 +128,7 @@ module.exports = function(RED)
     updateNodeInfoState()
       {
         super.updateNodeInfoState()
-        let infoText = this.selectedIdx.toString() + " -> " + this.config.rows[this.selectedIdx].v.toString()
+        let infoText = this.selectedIdx.toString() + " -> " + (this.selectedIdx >= 0 ? this.config.rows[this.selectedIdx].v.toString() : "")
         this.status({text: infoText})
       }
   }
