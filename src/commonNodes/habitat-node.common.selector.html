@@ -2,37 +2,13 @@
 <script type="text/javascript">
 (function() {
 
-    function clipValueLength(v) {
-        if (v.length > 15) {
-            return v.substring(0,15)+"...";
-        }
-        return v;
-    }
-    function prop2name(key) {
-        var result = RED.utils.parseContextKey(key);
-        return result.key;
-    }
-    function getValueLabel(t,v) {
-        if (t === 'str') {
-            return '"'+clipValueLength(v)+'"';
-        } else if (t === 'msg') {
-            return t+"."+clipValueLength(v);
-        } else if (t === 'flow' || t === 'global') {
-            return t+"."+clipValueLength(prop2name(v));
-        }
-        return clipValueLength(v);
-    }
-
     RED.nodes.registerType('habitat-node-common-selector', {
         color: "#E2D96E",
         category: 'Habitat Common',
         defaults: {
             name: {value:""},
-            property: {value:"payload", required:true, validate: RED.validators.typedInput("propertyType")},
-            propertyType: { value:"msg" },
             rows: {value:[{v:"", vt:"str"}]},
-            checkall: {value:"true", required:true},
-            repair: {value:false},
+            allowLoop: {value:"true"},
             outputs: {value:1}
         },
         inputs: 1,
@@ -161,8 +137,8 @@
 <script type="text/x-red" data-template-name="habitat-node-common-selector">
     <div id="habitat-node-common-selector">
         <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-            <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+            <label for="node-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+            <input type="text" id="node-input-name">
             <input type="hidden" id="node-input-outputs"/>
         </div>
         <div class="form-row node-input-rule-container-row">
