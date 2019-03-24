@@ -48,6 +48,17 @@ module.exports = function(RED) {
       }
 
 
+      /**
+       * should return a unique persistant id of the node
+       * has to be overwritten!
+       * @return {string}
+       */
+      getNodeId()
+      {
+        return "HABITAT APP"
+      }
+
+
       close()
       {
         this.log("Shutting down habitat")
