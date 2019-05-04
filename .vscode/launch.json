@@ -7,33 +7,9 @@
 
         {
             "type": "node",
-            "request": "attach",
-            "name": "Attach",
-            "port": 9229
-        },
-        {
-            "type": "node",
             "request": "launch",
-            "name": "Habitat Test starten",
-            "program": "${workspaceFolder}\\src\\test.habitat.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Gateway Test starten",
-            "program": "${workspaceFolder}\\src\\test.gateway.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Client Connection Test starten",
-            "program": "${workspaceFolder}\\src\\test.clientConnection.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Scene Manager Test starten",
-            "program": "${workspaceFolder}\\src\\test.sceneManager.js"
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\src\\habitat.js"
         }
     ]
 }

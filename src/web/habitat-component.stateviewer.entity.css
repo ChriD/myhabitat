@@ -1,0 +1,28 @@
+:host{
+}
+
+table {
+  width: 100%
+}
+
+table thead .entity {
+  background-color: lightgray
+}
+
+
+table tbody .path {
+  width: 50%
+}
+
+.signalAnimation {
+  animation: signal 5s;
+  animation-play-state: running;
+}
+
+
+@keyframes signal
+{
+  0%   {background: white;}
+  25%  {background: rgb(173, 197, 106);}
+  100%  {background: white;}
+}

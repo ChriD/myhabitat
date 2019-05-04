@@ -1,0 +1,48 @@
+<!-- https://github.com/sbarwe/node-red-contrib-contextbrowser/blob/master/contextbrowser.html -->
+
+<script type="text/javascript">
+  RED.nodes.registerType('habitat-app',{
+    category: 'Habitat Application',
+    color: '#9999FF',
+    defaults: {
+      name                    : { value: '' },
+      comgatewayPort          : { value: 3030,    required: true },
+      comgatewayPingInterval  : { value: 30000,   required: true },
+      webserverEnabled        : { value: true },
+      webserverPort           : { value: 8090,    required: true },
+      webserverPath           : { value: '' },
+      sysinfoEnabled          : { value: true },
+      sysinfoInterval         : { value: 2500,    required: true}
+    },
+    inputs:0,
+    outputs:0,
+    icon: 'white-globe.png',
+    paletteLabel: 'Habitat',
+    label: function() {
+        return this.name || 'Habitat'
+    },
+  });
+</script>
+
+
+<script type="text/x-red" data-template-name="habitat-app">
+  <div class="form-row">
+    <label for="node-input-name">Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-comgatewayPort">Port</label>
+    <input type="text" id="node-input-comgatewayPort" placeholder="Port">
+  </div>
+  <div class="form-row">
+    <label for="node-input-comgatewayPingInterval">Alive ping interval</label>
+    <input type="text" id="node-input-comgatewayPingInterval" placeholder="Ping Interval">
+  </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="habitat-app">
+  <p>This node is the main habitat application node</p>
+</script>
+

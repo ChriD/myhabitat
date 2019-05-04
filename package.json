@@ -1,7 +1,11 @@
 {
-  "name": "node-red-contrib-habitat",
-  "version": "0.0.13",
-  "description": "Home Automation System powered by node-red",
+  "name": "habitat",
+  "version": "0.0.1",
+  "description": "home automation system powered by node-red",
+  "main": "src/habitat-startup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "author": "ChriD",
   "license": "ISC",
   "keywords": [
@@ -11,38 +15,20 @@
   ],
   "node-red": {
     "nodes": {
-      "habitat-app": "src/habitat-node.app.js",
-      "habitat-adapter-artnet": "src/adapters/habitat-node.adapter.artnet.js",
-      "habitat-adapter-knx": "src/adapters/habitat-node.adapter.knx.js",
-      "habitat-thing-artnet-light": "src/things/habitat-node.thing.artnet.light.js",
-      "habitat-thing-knx-gafilter": "src/things/habitat-node.thing.knx.gaFilter.js",
-      "habitat-thing-knx-blind": "src/things/habitat-node.thing.knx.blind.js",
-      "habitat-thing-knx-light": "src/things/habitat-node.thing.knx.light.js",
-      "habitat-thing-knx-plug": "src/things/habitat-node.thing.knx.plug.js",
-      "habitat-common-selector": "src/commonNodes/habitat-node.common.selector.js"
+      "habitat-app": "src/nodes/app/habitat.node.habitatApp.js"
     }
   },
   "dependencies": {
     "artnet": "^1.4.0",
-    "cloner": "^0.4.0",
-    "fs": "0.0.1-security",
-    "glob": "^7.1.3",
-    "knx": "^2.3.2",
-    "path": "^0.12.7",
-    "tiny-queue": "^0.2.1",
-    "ws": "^6.2.0"
-  },
-  "devDependencies": {},
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ChriD/habitat.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ChriD/habitat/issues"
-  },
-  "homepage": "https://github.com/ChriD/habitat#readme"
+    "connect": "^3.6.6",
+    "knx": "^2.3.3",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
+    "lodash.merge": "^4.6.1",
+    "lodash.set": "^4.3.2",
+    "on-change": "^1.3.0",
+    "serve-static": "^1.13.2",
+    "systeminformation": "^4.1.6",
+    "ws": "^6.2.1"
+  }
 }

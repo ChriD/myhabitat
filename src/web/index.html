@@ -1,0 +1,79 @@
+<!---
+
+--->
+
+<DOCTYPE! html>
+<html lang="en">
+  <head>
+    <title>State Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Mobile client for habitat">
+    <meta name="author" content="ChriD">
+
+    <script type="text/javascript" src="js/habitat.eventEmitter.js"></script>
+    <script type="text/javascript" src="js/habitat.client.js"></script>
+
+    <script type="module" src="habitat-component.stateviewer.entity.js"></script>
+    <script type="module" src="habitat-component.stateviewer.js"></script>
+
+  </head>
+
+  <body>
+
+    <script>
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        habitatClient.connect()
+    }, false)
+
+
+
+      habitatClient.on('entitystatechanged', function(_entityId, _entity, _pathDetail, _entityState, _originator, _specification){
+        console.log('###STATECHANGE### ' + _entityId)
+
+        //
+
+        const stateViewers = document.getElementsByTagName('habitat-stateviewer')
+        for (let i = 0; i < stateViewers.length; i++) {
+          stateViewers[i].updateState(_entityId, _entity, _pathDetail, _entityState)
+        }
+
+      })
+
+    </script>
+
+
+    <!--  ----------------------------------------------------------------------------   -->
+    <div id="stateviewer">
+      <habitat-stateviewer></habitat-stateviewer>
+    </div>
+
+
+
+    <!--  ----------------------------------------------------------------------------   -->
+    <div id="log"></div>
+    <script>
+        logger = document.getElementById("log")
+
+        window.onerror = function (msg, url, line) {
+            console.log("Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line);
+            logger.innerHTML += "Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line
+            return true; // same as preventDefault
+        };
+
+        window.addEventListener('error', function (evt) {
+            console.log("Caught[via 'error' event]:  '" + evt.message + "' from " + evt.filename + ":" + evt.lineno);
+            console.log(evt);
+            logger.innerHTML += "Caught[via 'error' event]:  '" + evt.message + "' from " + evt.filename + ":" + evt.lineno
+            evt.preventDefault();
+        });
+    </script>
+    <!--  ----------------------------------------------------------------------------   -->
+
+  </body>
+
+</html>
+
+
