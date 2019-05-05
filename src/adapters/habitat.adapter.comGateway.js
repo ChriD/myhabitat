@@ -153,7 +153,7 @@ class HabitatAdapter_ComGateway extends HabitatAdapter
     // store some unique id information to the websocket connection
     self.setClientInfo(_webSocket)
 
-    self.logDebug("New client connected: " + _webSocket.id)
+    self.logInfo("New client connected: " + _webSocket.id)
 
     // create a detection of broken client connections
     _webSocket.isAlive = true

@@ -36,11 +36,21 @@ class HabitatAdapter_Webserver extends HabitatAdapter
     self.adapterState.connection.port = _configuration.port
     self.adapterState.connection.path = _configuration.path
 
-    self.server = Connect()
-    self.server.use(ServeStatic(_configuration.path))
-    self.server.listen(_configuration.port, function(){
-      self.logInfo('Webserver is running on port: ' + _configuration.port +  ' serving ' + _configuration.path)
-    })
+    try
+    {
+      self.server = Connect()
+      self.server.use(ServeStatic(_configuration.path))
+      self.server.on('error', function(_err){
+        self.logError("Starting webserver failed: " + _err)
+      })
+      self.server.listen(_configuration.port, function(){
+        self.logInfo('Webserver is running on port: ' + _configuration.port +  ' serving ' + _configuration.path)
+      })
+    }
+    catch(_exception)
+    {
+      self.logError("Starting webserver failed: " + _exception.toString(), exception)
+    }
 
     super.setup(_configuration)
   }

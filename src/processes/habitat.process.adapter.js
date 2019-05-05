@@ -26,8 +26,13 @@ exports.processSetup = function(_process, _adapter)
   process.on('SIGUSR2', exitHandler.bind(null, {exit:true}))
 
   process.on('uncaughtException', function (err) {
-    console.error('An uncaught error occurred!')
-    console.error(err.stack);
+    if(_adapter.getEntityModuleId() != "LOG")
+      _adapter.logError('An uncaught error occurred: ' + err.stack)
+    else
+    {
+      console.error('An uncaught error occurred!')
+      console.error(err.stack)
+    }
   })
 
 }

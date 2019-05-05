@@ -25,9 +25,27 @@ class HabitatNode
   }
 
 
-  close(_removed, _done)
+  close(_removed)
   {
-    _done()
+    return new Promise(function(_resolve, _reject) { _resolve() })
+  }
+
+  /**
+   * should return a ID where the habitat application node instance is stored in the global context
+   * @return {string} the id of the context storage
+   */
+  getHabitatAppNodeContextId()
+  {
+    return "HABITATAPPNODE"
+  }
+
+  /**
+   * returns the habitat application node
+   * @return {Object} the habitat application node
+   */
+  habitatAppNode()
+  {
+    return this.context().global.get(this.getHabitatAppNodeContextId())
   }
 
 

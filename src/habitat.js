@@ -4,7 +4,6 @@
  *
  * TODOS: - log system does use some ressources even if it is disabled, maybe we find a better solution?
  *        - allow external adapter files to be loaded
- *        - get settings for the built in adapters from extern
  *
  */
 
@@ -17,6 +16,7 @@ const Package       = require('../package.json')
 const OnChange      = require('on-change')
 const Merge         = require('lodash.merge')
 const CloneDeep     = require('lodash.clonedeep');
+const LogLevel      = require("./globals/habitat.global.log.js").LogLevel
 
 
 class Habitat extends HabitatBase
@@ -66,23 +66,12 @@ class Habitat extends HabitatBase
   {
     const self = this
 
-    self.configuration = CloneDeep(_configuration)
-
-    self.configuration.comgateway                     = self.configuration.comgateway                     ? self.configuration.comgateway : {}
-    self.configuration.comgateway.port                = self.configuration.comgateway.port                ? self.configuration.comgateway.port : 3030
-    self.configuration.comgateway.clientPingInterval  = self.configuration.comgateway.clientPingInterval  ? self.configuration.comgateway.clientPingInterval : 30000
-
-    self.configuration.webserver          = self.configuration.webserver          ? self.configuration.webserver : {}
-    self.configuration.webserver.enabled  = self.configuration.webserver.enabled  ? self.configuration.webserver.enabled : true
-    self.configuration.webserver.port     = self.configuration.webserver.port     ? self.configuration.webserver.port : 8090
-    self.configuration.webserver.path     = self.configuration.webserver.path     ? self.configuration.webserver.path :  __dirname + '/web/build/default'
-
-    self.configuration.sysinfo            = self.configuration.sysinfo            ? self.configuration.sysinfo : {}
-    self.configuration.sysinfo.enabled    = self.configuration.enabled            ? self.configuration.enabled : true
-    self.configuration.sysinfo.interval   = self.configuration.sysinfo.interval   ? self.configuration.sysinfo.interval : 2500
+    // be sure all configuration values are set to a standard value if not given on init
+    self.updateConfiguration(_configuration)
 
     // habitat comes with a log adapter, this adapter has to be started before logging is possible
-    self.registerAdapter('log.js', "LOG", { logLevel : process.env.HABITAT_LOGLEVEL })
+    if(self.configuration.logger.enabled)
+      self.registerAdapter('log.js', "LOG", { logLevel : self.configuration.logger.logLevel })
 
     // logs from the habitat instance should be sent to the logger process
     self.on('log', function(_type, _moduleId, _entityId, _log, _object){
@@ -107,6 +96,29 @@ class Habitat extends HabitatBase
   }
 
 
+  updateConfiguration(_configuration)
+  {
+    const self = this
+
+    // use external configuration for the built in adapters
+    self.configuration = CloneDeep(_configuration)
+
+    self.configuration.comgateway                     = self.configuration.comgateway                     ? self.configuration.comgateway : {}
+    self.configuration.comgateway.port                = self.configuration.comgateway.port                ? self.configuration.comgateway.port : 3030
+    self.configuration.comgateway.clientPingInterval  = self.configuration.comgateway.clientPingInterval  ? self.configuration.comgateway.clientPingInterval : 30000
+
+    self.configuration.webserver          = self.configuration.webserver          ? self.configuration.webserver : { enabled : true }
+    self.configuration.webserver.port     = self.configuration.webserver.port     ? self.configuration.webserver.port : 8090
+    self.configuration.webserver.path     = self.configuration.webserver.path     ? self.configuration.webserver.path :  __dirname + '/web/build/default'
+
+    self.configuration.sysinfo            = self.configuration.sysinfo            ? self.configuration.sysinfo : { enabled : true }
+    self.configuration.sysinfo.interval   = self.configuration.sysinfo.interval   ? self.configuration.sysinfo.interval : 2500
+
+    self.configuration.logger             = self.configuration.logger             ? self.configuration.logger : { enabled : true }
+    self.configuration.logger.logLevel    = self.configuration.logger.logLevel    ? self.configuration.logger.logLevel : (process.env.HABITAT_LOGLEVEL ? process.env.HABITAT_LOGLEVEL :  LogLevel.ERROR)
+  }
+
+
   sendStateUpdateToComGatewayProcess(_path, _value, _previousValue)
   {
     if(this.adapterEntityProcesses['COMGATEWAY'])
@@ -124,6 +136,31 @@ class Habitat extends HabitatBase
                                                           moduleId  : _moduleId,
                                                           entityId  : _entityId,
                                                           text      : _log } })
+  }
+
+
+  unregisterAdapter(_adapterEntityId)
+  {
+    const self = this
+
+    self.logDebug('Unregister adapter process \'' + _adapterEntityId +'\'')
+
+    return new Promise(function(_resolve, _reject) {
+      if(self.adapterEntityProcesses[_adapterEntityId])
+      {
+        self.adapterEntityProcesses[_adapterEntityId].send( { adapter : { action : 'close' } })
+        setTimeout(function(){
+          self.adapterEntityProcesses[_adapterEntityId].kill()
+          _resolve()
+        }, 750)
+      }
+      else
+      {
+        self.logWarning('Unregister of adapter process \'' + _adapterEntityId +'\' failed: No such process for the given entityId')
+        _resolve()
+      }
+
+    })
   }
 
 
@@ -187,7 +224,7 @@ class Habitat extends HabitatBase
     // can send on every state change, but it would be better to keep the state traffic low!
     if(_message.adapter && _message.adapter.state)
     {
-      // every adapter does have an 'adapter state object' which shopuld include infos like connection status aso...
+      // every adapter does have an 'adapter state object' which should include infos like connection status aso...
       // we do store this data into the global entity state object too
       this.updateEntityState(_message.adapter.entity.id, _message.adapter.entity, _message.adapter.state, {}, {} )
       this.emit("adapterState", _message.adapter.entity, _message.adapter.state)
@@ -196,6 +233,12 @@ class Habitat extends HabitatBase
     // we may get an entity state from an adapter (for e.g. comGateway)
     if(_message.data && _message.data.entityState)
       this.updateEntityState(_message.data.entityState.entityId, _message.data.entityState.entity, _message.data.entityState.state, _message.data.entityState.originator, _message.data.entityState.specification)
+  }
+
+
+    // TODO: @@@ ???
+  onNodeMessage()
+  {
 
   }
 

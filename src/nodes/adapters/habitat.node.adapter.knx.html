@@ -1,8 +1,9 @@
 <!-- https://github.com/sbarwe/node-red-contrib-contextbrowser/blob/master/contextbrowser.html -->
+<!-- TODO: @@@@@ -->
 
 <script type="text/javascript">
-  RED.nodes.registerType('habitat-app',{
-    category: 'Habitat Application',
+  RED.nodes.registerType('habitat-adapter-knx',{
+    category: 'config',
     color: '#9999FF',
     defaults: {
       name                    : { value: '' },
@@ -21,13 +22,13 @@
     icon: 'white-globe.png',
     paletteLabel: 'Habitat',
     label: function() {
-        return this.name || 'Habitat'
+        return this.name || 'Habitat KNX'
     },
   });
 </script>
 
 
-<script type="text/x-red" data-template-name="habitat-app">
+<script type="text/x-red" data-template-name="habitat-adapter-knx">
 
 
   <div class="palette-category palette-category-expanded" style="display: block;">
@@ -142,8 +143,8 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="habitat-app">
-  <p>This node is the main habitat application node</p>
+<script type="text/x-red" data-help-name="habitat-adapter-knx">
+  <p>KNX ADAPTER</p>
   <p></p>
   <div class="form-tips"><b>Tip:</b> This is here to help.</div>
 </script>

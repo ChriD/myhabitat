@@ -1,6 +1,7 @@
 'use strict'
 
-const HabitatAdapter = require("./habitat.adapter.js")
+const HabitatAdapter  = require("./habitat.adapter.js")
+const LogLevel        = require("../globals/habitat.global.log.js").LogLevel
 
 
 class HabitatAdapter_Log extends HabitatAdapter
@@ -50,18 +51,19 @@ class HabitatAdapter_Log extends HabitatAdapter
 
     switch(_data.type)
     {
-      case 0:
+      case LogLevel.FATAL:
         this.adapterState.counters.logFatal++
         break
-      case 10:
+      case LogLevel.ERROR:
         this.adapterState.counters.logError++
         break
-      case 30:
+      case LogLevel.WARNING:
         this.adapterState.counters.logWarning++
         break
     }
 
-    console.log(JSON.stringify(new Date()) + ' [' + _data.moduleId + '] (' + _data.entityId + ')' + ' : ' + _data.text)
+    if(_data.type <= this.configuration.logLevel)
+      console.log(JSON.stringify(new Date()) + ' [' + _data.moduleId + '] (' + _data.entityId + ')' + ' : ' + _data.text)
   }
 
 }
