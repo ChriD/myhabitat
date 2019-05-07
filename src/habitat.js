@@ -427,37 +427,40 @@ class Habitat extends HabitatBase
 }*/
     let entityId = this.getEntityId()
 
-    // calc overall message count
-    let overallMessageCount = this.statistics.counters.messages.adapters.in + this.statistics.counters.messages.adapters.out
+    // calc the overall message count from the adapters and all other messages that are beeing processed by the habitat app
+    let msgCountOverall = this.statistics.counters.messages.adapters.in + this.statistics.counters.messages.adapters.out
 
-    // calc overall msg count per interval
-    let intervalIn  =  this.statistics.counters.messages.adapters.in  - this.statistics.counters.messages.adapters.inPrev
-    let intervalOut =  this.statistics.counters.messages.adapters.out - this.statistics.counters.messages.adapters.outPrev
+    // calc the overall message count per interval
+    let msgCountIntervalIn      =  this.statistics.counters.messages.adapters.in  - this.statistics.counters.messages.adapters.inPrev
+    let msgCountIntervalOut     =  this.statistics.counters.messages.adapters.out - this.statistics.counters.messages.adapters.outPrev
+    let msgCountIntervalOverall = msgCountIntervalIn + msgCountIntervalOut
 
-    // calculate average msg count thoughput
-    let avgMsgCount = 0
-    this.statistics.counters.messages.overallCount.unshift((intervalIn + intervalOut))
+    // calc the overall average throughput of messages per intervall, we will use a sample of 5 intervalls for that
+    // TODO: @@@
+    let msgCountIntervalAvg = 0
+    this.statistics.counters.messages.overallCount.unshift(msgCountIntervalOverall)
     if(this.statistics.counters.messages.overallCount.length > 5)
       this.statistics.counters.messages.overallCount.pop()
     for(let idx=0; idx<this.statistics.counters.messages.overallCount.length; idx++)
-      avgMsgCount += this.statistics.counters.messages.overallCount[idx]
-    avgMsgCount = avgMsgCount / 5
-    // TODO: @@@
+      msgCountIntervalAvg += this.statistics.counters.messages.overallCount[idx]
+    msgCountIntervalAvg = msgCountIntervalAvg / 5
 
     // store previous
     this.statistics.counters.messages.adapters.inPrev   = this.statistics.counters.messages.adapters.in
     this.statistics.counters.messages.adapters.outPrev  = this.statistics.counters.messages.adapters.out
 
-    //
+    // create the system 'APP' ntry as state
     if(!this.getEntityStates()[entityId])
     {
       this.getEntityStates()[entityId] = {}
       this.getEntityStates()[entityId].entity = { id : entityId, moduleId : this.getEntityModuleId() }
-      this.getEntityStates()[entityId].state = {}
+      this.getEntityStates()[entityId].state  = { system : { messages : {} } }
     }
-    this.getEntityStates()[entityId].state.overallMsgeCount         = overallMessageCount
-    this.getEntityStates()[entityId].state.msgCountPerInterval      = (intervalIn + intervalOut)
-    this.getEntityStates()[entityId].state.avgMsgCountPerInterval   = avgMsgCount
+
+    // update the message counter states
+    this.getEntityStates()[entityId].state.system.messages.overall          = msgCountOverall
+    this.getEntityStates()[entityId].state.system.messages.perInterval      = msgCountIntervalOverall
+    this.getEntityStates()[entityId].state.system.messages.perIntervalAvg   = msgCountIntervalAvg
   }
 
 
