@@ -1,0 +1,12 @@
+
+TODOS v1.0
+
+* KNX-Adapter           : Better Connection handling (endless reconnect + info when connection error!)
+* KNX-Adapter           : redirect logs from the underlaying knx library
+* ADAPTERS              : allow and implement external ADAPTERS
+* RAUMFELD-Adapter      : create external raumfeld adapter
+* WEBGUI                : show logs
+* WEBGUI                : Better design
+
+TODOS Future
+* GENRAL                : localization

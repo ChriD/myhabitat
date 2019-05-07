@@ -1,7 +1,7 @@
 
 /**
  * This class is an adapter for the habitat system which provides access to the KNX bus
- * it uses the knx library from https://bitbucket.org/ekarak/knx.js
+ * It uses the knx library from https://bitbucket.org/ekarak/knx.js
  *
  *
  * TODOS: - Better Connection handling (endless reconnect + info when connection error!)

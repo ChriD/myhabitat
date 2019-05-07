@@ -42,6 +42,11 @@ class HabitatBase extends EventEmitter
     }
   }
 
+  logFatal(_log, _object)
+  {
+    this.log(LogType.FATAL, _log, _object)
+  }
+
   logError(_log, _object)
   {
     this.log(LogType.ERROR, _log, _object)

@@ -18,6 +18,13 @@ class HabitatAdapter extends HabitatBase
     self.adapterStateInterval       = 2500
     self.adapterStateOutputEnabled  = true
 
+    // create a interval to send a ping to the main process each defined time,
+    // so the main process does know that we are working bravely for its satisfaction
+    self.adapterPingIntervalId = setInterval(function(){
+      self.outputAdapterPing()
+    }, 1000)
+
+
     self.on('log', function(_type, _moduleId, _entityId, _log, _object){
       process.send({adapter : {   entity    : self.createEntityObject(),
                                   log       : { type      : _type,
@@ -78,6 +85,16 @@ class HabitatAdapter extends HabitatBase
   }
 
 
+  outputAdapterPing()
+  {
+    const output =  { adapter : { entity  : this.createEntityObject(),
+                                  ping    : true
+                                }
+                    }
+    process.send(output)
+  }
+
+
   outputAdapterState()
   {
     const output =  { adapter : { entity  : this.createEntityObject(),
@@ -124,6 +141,8 @@ class HabitatAdapter extends HabitatBase
   {
     if(this.adapterStateIntervalId)
       clearInterval(this.adapterStateIntervalId)
+    if(this.adapterPingIntervalId)
+      clearInterval(this.adapterPingIntervalId )
   }
 
 

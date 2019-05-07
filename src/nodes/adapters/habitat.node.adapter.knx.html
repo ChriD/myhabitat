@@ -6,21 +6,15 @@
     category: 'config',
     color: '#9999FF',
     defaults: {
-      name                    : { value: '' },
-      comgatewayPort          : { value: 3030,    required: true, validate: RED.validators.number() },
-      comgatewayPingInterval  : { value: 30000,   required: true, validate: RED.validators.number() },
-      webserverEnabled        : { value: true },
-      webserverPort           : { value: 8090,    required: true, validate: RED.validators.number() },
-      webserverPath           : { value: '' },
-      sysinfoEnabled          : { value: true },
-      sysinfoInterval         : { value: 2500,    required: true, validate: RED.validators.number() },
-      loggerEnabled           : { value: true },
-      loggerLogLevel          : { value: 10 }
+      adapterId         : { value: 'KNX01',   required: true },
+      host              : { value: '',        required: true },
+      port              : { value: 0,         required: true, validate:RED.validators.number() },
+      forceTunneling    : { value: 0,         validate:RED.validators.number() },
     },
     inputs:0,
     outputs:0,
     icon: 'white-globe.png',
-    paletteLabel: 'Habitat',
+    paletteLabel: 'Habitat KNX',
     label: function() {
         return this.name || 'Habitat KNX'
     },
@@ -30,116 +24,24 @@
 
 <script type="text/x-red" data-template-name="habitat-adapter-knx">
 
-
-  <div class="palette-category palette-category-expanded" style="display: block;">
-    <div class="palette-header">
-      <span>General</span>
-    </div>
-    <div style="position: relative; display: block;">
-      <div style="padding: 6px; padding-top: 12px;">
-
-        <div class="form-row">
-          <label style="width:39%;" for="node-input-name">Name</label>
-          <input style="width:60%;" type="text" id="node-input-name" placeholder="Name">
-        </div>
-
-      </div>
-    </div>
+  <div class="form-row">
+    <label for="node-config-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
+    <input type="text" id="node-config-input-adapterId" placeholder="Adapter ID">
   </div>
 
-  <div class="palette-category palette-category-expanded" style="display: block;">
-    <div class="palette-header">
-      <span>Logging</span>
-    </div>
-    <div style="position: relative; display: block;">
-      <div style="padding: 6px; padding-top: 12px;">
-
-        <div class="form-row">
-          <label style="width:39%;" for="node-input-loggerEnabled">Enabled</label>
-          <input style="width:60%;" type="checkbox" id="node-input-loggerEnabled" placeholder="">
-        </div>
-        <div class="form-row">
-          <label style="width:39%;" for="node-input-loggerLogLevel">Log level</label>
-          <select style="width:60%;" id="node-input-loggerLogLevel">
-              <option value="60">TRACE</option>
-              <option value="50">DEBUG</option>
-              <option value="40">INFO</option>
-              <option value="30">WARNING</option>
-              <option value="10">ERROR</option>
-              <option value="0">FATAL</option>
-            </select>
-        </div>
-
-      </div>
-    </div>
+  <div class="form-row">
+      <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
+      <input type="text" id="node-config-input-host" placeholder="">
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-port"><i class="icon-tag"></i> Port</label>
+      <input type="text" id="node-config-input-port" placeholder="3671">
   </div>
 
-  <div class="palette-category palette-category-expanded" style="display: block;">
-    <div class="palette-header">
-      <span>Message Gateway (Socket)</span>
-    </div>
-    <div style="position: relative; display: block;">
-      <div style="padding: 6px; padding-top: 12px;">
-
-        <div class="form-row">
-          <label style="width:39%;" for="node-input-comgatewayPort">Port</label>
-          <input style="width:60%;" type="text" id="node-input-comgatewayPort" placeholder="Port">
-        </div>
-        <div class="form-row">
-          <label style="width:39%;" for="node-input-comgatewayPingInterval">Alive ping interval</label>
-          <input style="width:60%;" type="text" id="node-input-comgatewayPingInterval" placeholder="Ping Interval">
-        </div>
-
-      </div>
-    </div>
+  <div class="form-row">
+      <label for="node-config-input-forceTunneling><i class="icon-tag"></i>Tunneling</label>
+      <input type="checkbox" id="node-config-input-forceTunneling" placeholder="">
   </div>
-
-  <div class="palette-category palette-category-expanded" style="display: block;">
-      <div class="palette-header">
-        <span>Webserver</span>
-      </div>
-      <div style="position: relative; display: block;">
-        <div style="padding: 6px; padding-top: 12px;">
-
-          <div class="form-row">
-            <label style="width:39%;" for="node-input-webserverEnabled">Enabled</label>
-            <input style="width:60%;" type="checkbox" id="node-input-webserverEnabled" placeholder="">
-          </div>
-          <div class="form-row">
-            <label style="width:39%;" for="node-input-webserverPort">Port</label>
-            <input style="width:60%;" type="text" id="node-input-webserverPort" placeholder="Port">
-          </div>
-          <div class="form-row">
-            <label style="width:39%;" for="node-input-webserverPath">Path to serve</label>
-            <input style="width:60%;" type="text" id="node-input-webserverPath" placeholder="Path">
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="palette-category palette-category-expanded" style="display: block;">
-      <div class="palette-header">
-        <span>Calculate system info states</span>
-      </div>
-      <div style="position: relative; display: block;">
-        <div style="padding: 6px; padding-top: 12px;">
-
-          <div class="form-row">
-            <label style="width:39%;" for="node-input-sysinfoEnabled">Enabled</label>
-            <input style="width:60%;" type="checkbox" id="node-input-sysinfoEnabled" placeholder="">
-          </div>
-          <div class="form-row">
-            <label style="width:39%;" for="node-input-sysinfoInterval">Data query interval</label>
-            <input style="width:60%;" type="text" id="node-input-sysinfoInterval" placeholder="Port">
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-
-
 
 </script>
 

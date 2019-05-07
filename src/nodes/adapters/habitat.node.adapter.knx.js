@@ -16,21 +16,24 @@ module.exports = function(RED) {
     }
 
 
-    allNodesStarted()
+    getEntityModuleId()
     {
-        super.allNodesStarted()
-        // TODO: @@@ to adapter base class
-        // when all nodes are started we can be sure that the habitat node is ready
-        this.habitatAppNode().registerAdapter('knx.js', 'KNX001', { host : "10.0.0.130", port : 3671, forceTunneling : false })
+      return "KNX"
     }
 
-
-    close(_removed)
+    getEntityId()
     {
-      // TODO: @@@ to adapter base class
-      // on close we have to wait until the habitat system has done it's shutdown until we
-      // can close the the main node
-      return this.habitatAppNode().unregisterAdapter('KNX001')
+      return this.config.adapterId ? this.config.adapterId : "KNX01"
+    }
+
+    getAdapterProcessFile()
+    {
+      return 'knx.js'
+    }
+
+    getAdapterConfiguration()
+    {
+      return { host : this.config.host , port : this.config.port, forceTunneling : this.config.forceTunneling }
     }
 
   }

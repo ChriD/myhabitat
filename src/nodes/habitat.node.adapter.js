@@ -8,6 +8,32 @@ class HabitatNode_Adapter extends HabitatNode_Entity
   {
     super(_RED, _config)
   }
+
+  getAdapterConfiguration()
+  {
+    throw "Adapter configuration is not specified"
+  }
+
+  getAdapterProcessFile()
+  {
+    throw "Adapter process file is not specified"
+  }
+
+  allNodesStarted()
+  {
+      super.allNodesStarted()
+      // when all nodes are started we can be sure that the habitat node is ready
+      // then we can register the adapter
+      this.habitatAppNode().registerAdapter(this.getAdapterProcessFile(), this.getEntityId(), this.getAdapterConfiguration())
+  }
+
+  close(_removed)
+  {
+      // on close we have to wait until the adapter was unregistered, so we do return a
+      // promise that will resolve if the adapter was closed nad cleaned up its stuff
+      return this.habitatAppNode().unregisterAdapter(this.getEntityId())
+  }
+
 }
 
 

@@ -1,10 +1,20 @@
 "use strict"
 
-const Habitat = require("./habitat.js")
+const Habitat       = require("./habitat.js")
+const LogLevel      = require("./globals/habitat.global.log.js").LogLevel
+
+
 
 const habitat = new Habitat()
 
-habitat.init()
+habitat.init({
+  logger: {
+            logLevel: LogLevel.TRACE
+          },
+  adapterProcessWatchdog :  {
+                              enabled: true
+                            }
+})
 
 habitat.registerAdapter('knx.js', 'KNX001', { host : "10.0.0.130", port : 3671, forceTunneling : false })
 habitat.registerAdapter('artnet.js', 'ARTNET001', { host : "10.0.0.125", port : 6454, universe : 0, refresh : 4000 })

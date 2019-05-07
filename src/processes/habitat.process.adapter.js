@@ -25,14 +25,20 @@ exports.processSetup = function(_process, _adapter)
   process.on('SIGUSR1', exitHandler.bind(null, {exit:true}))
   process.on('SIGUSR2', exitHandler.bind(null, {exit:true}))
 
-  process.on('uncaughtException', function (err) {
+  // on uncaught errors the adapter proceses have to close
+  // if the watchdog is active, they will be respawned by the main habitat process
+  process.on('uncaughtException', function (_err) {
     if(_adapter.getEntityModuleId() != "LOG")
-      _adapter.logError('An uncaught error occurred: ' + err.stack)
+      _adapter.logFatal('An uncaught error occurred: ' + _err.stack)
     else
     {
       console.error('An uncaught error occurred!')
-      console.error(err.stack)
+      console.error(_err.stack)
     }
+    // no async functions here are allowed, so we can not do a nice cleanup but at least we do try!
+    _adapter.close()
+    // generate a throw so that the process kills immediately
+    throw "KILL PROCESS"
   })
 
 }
