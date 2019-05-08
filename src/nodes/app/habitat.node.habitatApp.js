@@ -54,6 +54,11 @@ module.exports = function(RED) {
       this.habitat.registerAdapter(_adapterFile, _adapterEntityId, _adapterConfiguration)
     }
 
+    close()
+    {
+      return this.habitat.close()
+    }
+
   }
 
   RED.nodes.registerType("habitat-app", HabitatNode_HabitatApp)

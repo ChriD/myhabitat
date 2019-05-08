@@ -213,6 +213,11 @@ class Habitat extends HabitatBase
 
   sendToAdapter(_adapterEntityId, _message)
   {
+    if(!this.getAdapterProcess(_adapterEntityId))
+    {
+      this.logError('Failed sending data to process! Adapter entity process \'' + _adapterEntityId + '\' not present!' )
+      return
+    }
     // check if the adapter process is connected before sending to it, otherwise this would lead
     // to bad exceptions we cant catch and we dont like at all here
     if(this.getAdapterProcess(_adapterEntityId).connected && !this.getAdapterProcess(_adapterEntityId).killed)
@@ -239,7 +244,8 @@ class Habitat extends HabitatBase
 
         self.sendToAdapter(_adapterEntityId, { adapter : { action : 'close' } } )
         setTimeout(function(){
-          self.getAdapterProcess(_adapterEntityId).kill()
+          if(self.getAdapterProcess(_adapterEntityId))
+            self.getAdapterProcess(_adapterEntityId).kill()
           // remove the process and its settings from the process list
           delete self.adapterEntityProcesses[_adapterEntityId]
           _resolve()
@@ -312,7 +318,9 @@ class Habitat extends HabitatBase
 
   getAdapterProcess(_adapterEntityId)
   {
-    return this.adapterEntityProcesses[_adapterEntityId].process
+    if(this.adapterEntityProcesses[_adapterEntityId])
+      return this.adapterEntityProcesses[_adapterEntityId].process
+    return null
   }
 
 
@@ -490,7 +498,8 @@ class Habitat extends HabitatBase
         // that doesn't mean that they will be forced to close, but let's have some trust in our child processes
         for(let procIdx=0; procIdx<processEntityIds.length; procIdx++)
         {
-          self.getAdapterProcess(processEntityIds[procIdx]).kill()
+          if(self.getAdapterProcess(processEntityIds[procIdx]))
+            self.getAdapterProcess(processEntityIds[procIdx]).kill()
           delete self.adapterEntityProcesses[processEntityIds[procIdx]]
         }
         _resolve()

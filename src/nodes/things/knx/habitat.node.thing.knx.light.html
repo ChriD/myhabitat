@@ -1,0 +1,114 @@
+<script type="text/javascript">
+  RED.nodes.registerType('habitat-thing-knx-light', {
+    category: 'Habitat',
+    color: '#9999FF',
+    defaults: {
+      name:                   { value: '' },
+      thingId:                { value: '',        required: true },
+      adapterNode:            { value: '',        required: true,  type: "habitat-adapter-knx" },
+      lightType:              { value: 'SIMPLE',  required: true },
+      gaActionOnOff:          { value: '' },
+      gaFeedbackOnOff:        { value: '' }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "light.png",
+    paletteLabel: 'Habitat KNX Light',
+    label: function () {
+        return this.name || 'Habitat KNX Light';
+    },
+
+
+    oneditprepare: function () {
+
+      var self = this
+      var lightTypeElement = document.getElementById("node-input-lightType")
+      updateDesign()
+
+      // when selection of the type of light is changed, we have to store it back into our default value
+      // because this is not done automatically in this case
+      lightTypeElement.onchange = function () {
+        //if(lightTypeElement.selectedIndex >= 0)
+        //  self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
+        updateDesign()
+      }
+
+      function updateDesign() {
+        // hide all elements which have a data-lightType attribute and make only those visible which have the correct type!
+        var container = document.getElementById('habitat-thing-knx-light')
+        var elements = container.querySelectorAll('[data-lighttype]')
+        for(var i=0; i<elements.length; i++)
+        {
+            var types = elements[i].dataset.lighttype.split(" ")
+            if(types.indexOf(self.lightType) != -1)
+              elements[i].style.display = 'block'
+            else
+              elements[i].style.display = 'none'
+        }
+      }
+
+    }
+  })
+
+
+
+</script>
+
+<script type="text/x-red" data-template-name="habitat-thing-knx-light">
+
+    <div id="habitat-thing-knx-light">
+
+        <div class="palette-category palette-category-expanded" style="display: block;">
+          <div class="palette-header">
+            <span>General</span>
+          </div>
+          <div style="position: relative; display: block;">
+            <div style="padding: 6px; padding-top: 12px;">
+              <div class="form-row">
+                  <label for="node-input-name" style="width:11em"> Name</label>
+                  <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-thingId" style="width:11em">Id</label>
+                  <input type="text" id="node-input-thingId" placeholder="ThingId" style="width:60%">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-adapterNode" style="width:11em">Adapter</label>
+                  <input type="text" id="node-input-adapterNode" placeholder="" style="width:60%">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-lightType" style="width:11em">Type</label>
+                  <select style="width:60%;" id="node-input-lightType">
+                      <option value="SIMPLE">Simple light</option>
+                      <option value="SIMPLEDIM">Simple dimmable light</option>
+                    </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="palette-category palette-category-expanded" style="display: block;">
+          <div class="palette-header">
+            <span>GA's</span>
+          </div>
+          <div style="position: relative; display: block;">
+            <div style="padding: 6px; padding-top: 12px;">
+              <div class="form-row">
+                  <label for="node-input-gaActionOnOff" style="width:11em">On/Off</label>
+                  <input type="text" id="node-input-gaActionOnOff" placeholder="0/0/0" style="width:60%">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-gaFeedbackOnOff" style="width:11em">On/Off [RM]</label>
+                  <input type="text" id="node-input-gaFeedbackOnOff" placeholder="0/0/0" style="width:60%">
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="habitat-thing-knx-light">
+    <p>This node adds a unique id from the config to a message</p>
+</script>

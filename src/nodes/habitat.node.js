@@ -21,7 +21,7 @@ class HabitatNode
   created()
   {
     const self = this
-    self.on('close', function(_removed, _done){ self.close(_removed, _done) })
+    self.on('close', function(_removed){ self.close(_removed) })
   }
 
 

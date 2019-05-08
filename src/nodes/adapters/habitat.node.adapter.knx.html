@@ -1,11 +1,9 @@
-<!-- https://github.com/sbarwe/node-red-contrib-contextbrowser/blob/master/contextbrowser.html -->
-<!-- TODO: @@@@@ -->
-
 <script type="text/javascript">
   RED.nodes.registerType('habitat-adapter-knx',{
     category: 'config',
     color: '#9999FF',
     defaults: {
+      name              : { value: '' },
       adapterId         : { value: 'KNX01',   required: true },
       host              : { value: '',        required: true },
       port              : { value: 0,         required: true, validate:RED.validators.number() },
@@ -25,29 +23,32 @@
 <script type="text/x-red" data-template-name="habitat-adapter-knx">
 
   <div class="form-row">
-    <label for="node-config-input-adapterId"><i class="icon-tag"></i> Adapter ID</label>
+    <label for="node-input-name">Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-adapterId">Adapter ID</label>
     <input type="text" id="node-config-input-adapterId" placeholder="Adapter ID">
   </div>
-
   <div class="form-row">
-      <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
+      <label for="node-config-input-host">Host</label>
       <input type="text" id="node-config-input-host" placeholder="">
   </div>
   <div class="form-row">
-      <label for="node-config-input-port"><i class="icon-tag"></i> Port</label>
+      <label for="node-config-input-port">Port</label>
       <input type="text" id="node-config-input-port" placeholder="3671">
-  </div>
-
-  <div class="form-row">
-      <label for="node-config-input-forceTunneling><i class="icon-tag"></i>Tunneling</label>
-      <input type="checkbox" id="node-config-input-forceTunneling" placeholder="">
   </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="habitat-adapter-knx">
-  <p>KNX ADAPTER</p>
-  <p></p>
-  <div class="form-tips"><b>Tip:</b> This is here to help.</div>
+  <p>
+    This is the configuration node for a KNX adapter instance which will be created by the habitat application
+    You may have multiple instances if you have more than one KNX universes
+  </p>
+  <div class="form-tips">
+    <p>Credits to the author of the underlaying knx library</p>
+    <p><b><a href="https://bitbucket.org/ekarak/knx.js">https://bitbucket.org/ekarak/knx.js</a></b></p>
+  </div>
 </script>
 
