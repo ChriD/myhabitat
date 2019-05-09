@@ -364,14 +364,12 @@ class Habitat extends HabitatBase
     // TODO: we may get entity input data. This data will be redirected to the nodes 'input' method
     // if(_message.data && _message.data.entityInput)
     //  this.doEntityInput(_message.data.entityInput.entityId, _message.data.entityInput.entity, _message.data.entityInput.input, _message.data.entityInput.originator)
+
+
     // TODO: @@@
-  // messages with data are emited
-    //console.log('ADAPTER MSG DATA ### ' + JSON.stringify(_message))
+    // messages with data are emited
     if(_message.data)
-    {
-      console.log('ADAPTER MSG DATA ###')
       this.emit('adapterMessage', _message.adapter.entity, _message.data)
-    }
 
 
   }

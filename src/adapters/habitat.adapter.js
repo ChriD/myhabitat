@@ -111,7 +111,7 @@ class HabitatAdapter extends HabitatBase
                                 },
                       data    : _data
                     }
-    this.dataOut(_data)
+    this.dataOut(output)
   }
 
 

@@ -83,7 +83,6 @@ module.exports = function(RED) {
 
     onAdapterMessage(_adapterEntity, _data)
     {
-      console.log('ADAPTER MSG')
       // pass the message to the appropriate adapter node if found, otherwise give some node-red error
       if(!this.habitatContextObject().nodes[_adapterEntity.id])
       {
