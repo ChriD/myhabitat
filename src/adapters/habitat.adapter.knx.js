@@ -119,12 +119,18 @@ class HabitatAdapter_KNX extends HabitatAdapter
 
   }
 
+  knxConnectionStateChanged()
+  {
+    this.output( { connectionState : this.adapterState.connection.connected } )
+  }
+
 
   knxConnected()
   {
     this.logDebug('Connected to: ' + this.configuration.host + ':' + this.configuration.port)
     this.adapterState.connection.connected  = true
     this.adapterState.times.lastConnect     = new Date()
+    this.knxConnectionStateChanged()
   }
 
 
@@ -133,6 +139,7 @@ class HabitatAdapter_KNX extends HabitatAdapter
     this.logError("Error: " + _connstatus.toString())
     this.adapterState.connection.connected  = false
     this.adapterState.times.lastConnect     = null
+    this.knxConnectionStateChanged()
   }
 
 
@@ -164,7 +171,6 @@ class HabitatAdapter_KNX extends HabitatAdapter
     {
       self.logError("Error converting incoming value to DPT: " + (dptId ? dptId : "No DPT value defined!"), _exception)
     }
-
 
     self.adapterState.counters.receivedObserved++
     self.adapterState.times.lastReceivedObserved = now

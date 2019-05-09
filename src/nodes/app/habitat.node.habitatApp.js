@@ -1,15 +1,17 @@
 "use strict"
 
- const HabitatNode   = require('../habitat.node.js')
- const Habitat       = require("../../habitat.js")
+ const HabitatNode_Entity = require('../habitat.node.entity.js')
+ const Habitat            = require("../../habitat.js")
 
 module.exports = function(RED) {
 
-  class HabitatNode_HabitatApp extends HabitatNode
+  class HabitatNode_HabitatApp extends HabitatNode_Entity
   {
     constructor(_config)
     {
       super(RED, _config)
+
+      var self = this
 
       RED.nodes.createNode(this, _config)
 
@@ -34,13 +36,33 @@ module.exports = function(RED) {
       this.habitatConfig.logger.logLevel                = parseInt(_config.loggerLogLevel)
 
       this.habitat = new Habitat()
-      this.habitat.init(this.habitatConfig)
+
+      this.habitat.on('adapterMessage', function(_adapterEntityId, _data){
+        self.onAdapterMessage(_adapterEntityId, _data)
+      })
 
       this.created()
+    }
 
-      // we have to store this instance to the global context so every habitat child node
-      // does have access to the habitat app node
-      this.context().global.set(this.getHabitatAppNodeContextId(), this)
+    created()
+    {
+      // the habitat app node should be the first one which is beeing added to the global context
+      // that's because the other nodes do need to call some functions on it, so we do add the app
+      // reference directly on creation and not on 'ready' as the other nodes will do
+      this.addNodeReferenceToHabitatContext()
+
+      // init the habitat application
+      this.habitat.init(this.habitatConfig)
+    }
+
+    getEntityModuleId()
+    {
+      return "HABITAT"
+    }
+
+    getEntityId()
+    {
+      return "HABITATAPP"
     }
 
     unregisterAdapter(_adapterEntityId)
@@ -57,6 +79,18 @@ module.exports = function(RED) {
     close()
     {
       return this.habitat.close()
+    }
+
+    onAdapterMessage(_adapterEntity, _data)
+    {
+      console.log('ADAPTER MSG')
+      // pass the message to the appropriate adapter node if found, otherwise give some node-red error
+      if(!this.habitatContextObject().nodes[_adapterEntity.id])
+      {
+        this.error('No adapter node for entityId \'' + _adapterEntity.id + '\' found!')
+        return
+      }
+      this.habitatContextObject().nodes[_adapterEntity.id].adapterMessage(_adapterEntity, _data)
     }
 
   }

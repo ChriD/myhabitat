@@ -356,9 +356,24 @@ class Habitat extends HabitatBase
       this.emit("adapterState", _message.adapter.entity, _message.adapter.state)
     }
 
-    // we may get an entity state from an adapter (for e.g. comGateway)
-    if(_message.data && _message.data.entityState)
-      this.updateEntityState(_message.data.entityState.entityId, _message.data.entityState.entity, _message.data.entityState.state, _message.data.entityState.originator, _message.data.entityState.specification)
+    // we may get an entity state update info from an adapter (e.g. comGateway)
+    // be aware thet a direct state update will not trigger any actions on the entity object
+    //if(_message.data && _message.data.entityState)
+    //  this.updateEntityState(_message.data.entityState.entityId, _message.data.entityState.entity, _message.data.entityState.state, _message.data.entityState.originator, _message.data.entityState.specification)
+
+    // TODO: we may get entity input data. This data will be redirected to the nodes 'input' method
+    // if(_message.data && _message.data.entityInput)
+    //  this.doEntityInput(_message.data.entityInput.entityId, _message.data.entityInput.entity, _message.data.entityInput.input, _message.data.entityInput.originator)
+    // TODO: @@@
+  // messages with data are emited
+    //console.log('ADAPTER MSG DATA ### ' + JSON.stringify(_message))
+    if(_message.data)
+    {
+      console.log('ADAPTER MSG DATA ###')
+      this.emit('adapterMessage', _message.adapter.entity, _message.data)
+    }
+
+
   }
 
 

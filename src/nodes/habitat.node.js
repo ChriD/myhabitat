@@ -24,19 +24,29 @@ class HabitatNode
     self.on('close', function(_removed){ self.close(_removed) })
   }
 
+  ready()
+  {
+  }
+
+  async cleanup()
+  {
+  }
 
   close(_removed)
   {
-    return new Promise(function(_resolve, _reject) { _resolve() })
+    return this.cleanup()
   }
 
-  /**
-   * should return a ID where the habitat application node instance is stored in the global context
-   * @return {string} the id of the context storage
-   */
-  getHabitatAppNodeContextId()
+
+  habitatContextObject()
   {
-    return "HABITATAPPNODE"
+    let habitat = this.context().global.get('HABITAT')
+    if(!habitat)
+    {
+      this.context().global.set('HABITAT', {  nodes : {} } )
+      habitat = this.context().global.get('HABITAT')
+    }
+    return habitat
   }
 
   /**
@@ -45,12 +55,13 @@ class HabitatNode
    */
   habitatAppNode()
   {
-    return this.context().global.get(this.getHabitatAppNodeContextId())
+    return this.habitatContextObject().nodes['HABITATAPP']
   }
 
 
   allNodesStarted()
   {
+    this.ready()
   }
 
 }

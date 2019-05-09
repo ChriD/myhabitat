@@ -4,7 +4,7 @@
     color: '#9999FF',
     defaults: {
       name:                   { value: '' },
-      thingId:                { value: '',        required: true },
+      entityId:               { value: '',        required: true },
       adapterNode:            { value: '',        required: true,  type: "habitat-adapter-knx" },
       lightType:              { value: 'SIMPLE',  required: true },
       gaActionOnOff:          { value: '' },
@@ -69,8 +69,8 @@
                   <input type="text" id="node-input-name" placeholder="Name" style="width:60%">
               </div>
               <div class="form-row">
-                  <label for="node-input-thingId" style="width:11em">Id</label>
-                  <input type="text" id="node-input-thingId" placeholder="ThingId" style="width:60%">
+                  <label for="node-input-entityId" style="width:11em">Id</label>
+                  <input type="text" id="node-input-entityId" placeholder="EntityId" style="width:60%">
               </div>
               <div class="form-row">
                   <label for="node-input-adapterNode" style="width:11em">Adapter</label>

@@ -16,11 +16,24 @@ module.exports = function(RED) {
       this.created()
     }
 
+    input()
+    {
+      // Input can come from socket or from node gui itself!?!?
+    }
+
 
     ready()
     {
+      super.ready()
       // TODO: register the gas to watch (Feeback gas)
     }
+
+    /*
+    stateChanged()
+    {
+      // TODO: if state of entity (thing) has chaned we have to do something
+    }
+    */
 
 
   }

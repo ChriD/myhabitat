@@ -27,11 +27,12 @@ class HabitatNode_Adapter extends HabitatNode_Entity
       this.habitatAppNode().registerAdapter(this.getAdapterProcessFile(), this.getEntityId(), this.getAdapterConfiguration())
   }
 
-  close(_removed)
+  async cleanup()
   {
-      // on close we have to wait until the adapter was unregistered, so we do return a
-      // promise that will resolve if the adapter was closed nad cleaned up its stuff
-      return this.habitatAppNode().unregisterAdapter(this.getEntityId())
+    await super.cleanup()
+    // on close/cleanup we have to wait until the adapter was unregistered, so we do return a
+    // promise that will resolve if the adapter was closed nad cleaned up its stuff
+    return this.habitatAppNode().unregisterAdapter(this.getEntityId())
   }
 
 }

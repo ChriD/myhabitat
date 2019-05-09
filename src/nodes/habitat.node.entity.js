@@ -7,7 +7,6 @@ class HabitatNode_Entity extends HabitatNode
   constructor(_RED, _config)
   {
     super(_RED, _config)
-    this.entityId = ''
   }
 
   getEntityModuleId()
@@ -17,10 +16,37 @@ class HabitatNode_Entity extends HabitatNode
 
   getEntityId()
   {
-    if(!this.entityId)
+    if(!this.config.entityId)
       throw "Entity-ID is not specified"
-    return this.entityId
+    return this.config.entityId
   }
+
+  addNodeReferenceToHabitatContext()
+  {
+    this.habitatContextObject().nodes[this.getEntityId()] = this
+  }
+
+  removeNodeReferenceFromHabitatContext()
+  {
+    delete this.habitatContextObject().nodes[this.getEntityId()]
+  }
+
+  ready()
+  {
+    // every thing node stores a reference in the global context within the habitat object
+    // this is good for distributing the messages via entityId. The reference is beeing removed when
+    // the node is closed/destroyed
+    this.addNodeReferenceToHabitatContext()
+  }
+
+  async cleanup()
+  {
+    await super.cleanup()
+
+    // closing/destroying the node leads to removing the instance from the global context
+    this.removeNodeReferenceFromHabitatContext()
+  }
+
 }
 
 module.exports = HabitatNode_Entity
