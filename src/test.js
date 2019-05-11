@@ -1,26 +1,25 @@
 "use strict"
 
-const Cloner        = require('cloner')
-const merge         = require('lodash.merge')
+var knx = require('knx');
+var connection = knx.Connection({
+ipAddr          : "10.0.0.130",
+ipPort          : 3671,
+loglevel        : "trace", // error
+ handlers: {
+  connected: function() {
+    console.log('######################## CONNECTED');
+  },
+  event: function (evt, src, dest, value) {
+  console.log("%s **** KNX EVENT: %j, src: %j, dest: %j, value: %j",
+    new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+    evt, src, dest, value);
+  }
+ }
+});
 
-
-
-
-var a = {a: 1, b: 2}
-var b = {b: 7, c: 3}
-
-//var c = Cloner.shallow.merge({a: 3}, a);
-
-merge(a, b)
-
-b.b = 12
-
-console.log(JSON.stringify(a))
-console.log(JSON.stringify(b))
-//console.log(JSON.stringify(c))
-
-
-
+connection.on('disconnected', function(){
+    console.log("######################## DISCONNECTED ")
+  })
 
 
 process.stdin.resume()

@@ -41,6 +41,10 @@ module.exports = function(RED) {
         self.onAdapterMessage(_adapterEntityId, _data)
       })
 
+      //this.habitat.on('adapterState', function(_adapterEntityId, _state){
+      //  self.onAdapterState(_adapterEntityId, _state)
+      //})
+
       this.created()
     }
 
@@ -76,9 +80,19 @@ module.exports = function(RED) {
       this.habitat.registerAdapter(_adapterFile, _adapterEntityId, _adapterConfiguration)
     }
 
+    getAdapterProcess(_adapterEntityId)
+    {
+      return this.habitat.getAdapterProcess(_adapterEntityId)
+    }
+
     close()
     {
       return this.habitat.close()
+    }
+
+    getEntityStates()
+    {
+      return this.habitat.getEntityStates()
     }
 
     onAdapterMessage(_adapterEntity, _data)
@@ -90,6 +104,19 @@ module.exports = function(RED) {
         return
       }
       this.habitatContextObject().nodes[_adapterEntity.id].adapterMessage(_adapterEntity, _data)
+    }
+
+    onAdapterState(_adapterEntity, _state)
+    {
+      // TODO: @@ not sure if we should do this like that?!?!?
+      /*
+      if(!this.habitatContextObject().nodes[_adapterEntity.id])
+      {
+        this.error('No adapter node for entityId \'' + _adapterEntity.id + '\' found!')
+        return
+      }
+      this.habitatContextObject().nodes[_adapterEntity.id].adapterState(_adapterEntity, _state)
+      */
     }
 
   }

@@ -24,7 +24,8 @@ class HabitatAdapter_KNX extends HabitatAdapter
 
     this.knx                  = null
     this.globalObservation    = false
-    this.observedGA           = new Array()
+    this.observedGA           = []
+    this.feedbackDatapoints   = []
 
     this.adapterState.connection = {}
     this.adapterState.connection.connected        = false
@@ -71,14 +72,11 @@ class HabitatAdapter_KNX extends HabitatAdapter
 
     switch(_data.action)
     {
-      case "READ":
-        this.knxRead(_data.ga, _data.datatype)
-        break
       case "WRITE":
-        this.knxWrite(_data.ga, _data.datatype, _data.value)
+        this.knxWrite(_data.ga, _data.dpt, _data.value, _data.options)
         break
       case "OBSERVE":
-        this.observeGA(_data.ga, _data.options)
+        this.observeGA(_data.ga, _data.dpt, _data.options)
         break
       case "OBSERVEALL":
         this.observeAll(true, _data.options)
@@ -103,7 +101,7 @@ class HabitatAdapter_KNX extends HabitatAdapter
       ipAddr          : this.configuration.host,
       ipPort          : this.configuration.port,
       forceTunneling  : this.configuration.forceTunneling,
-      loglevel        : "error",
+      loglevel        : "error", // error, debug, trace
       handlers: {
         connected: function() {
           self.knxConnected()
@@ -117,20 +115,47 @@ class HabitatAdapter_KNX extends HabitatAdapter
       }
     })
 
+    // Todo add handler in handler
+    this.knx.on('disconnected', function(){
+      self.knxDisconnected()
+    })
+
   }
 
   knxConnectionStateChanged()
   {
-    this.output( { connectionState : this.adapterState.connection.connected } )
+    // if the state changes from 'not connected' to 'connected', we do a read request to all observed ga's
+    // so that the subsribers get the actual data
+    // TODO: run through the stored feedback datapoints and do a reread?
+
+    // if the connection was established we have to bind the datapoints to this connection!
+    //for(let i=0; i<this.feedbackDatapoints.length; i++)
+    //  this.feedbackDatapoints[i].bind(this.getKnxAdapter().knx)
+
+    //for(let i=0; i<this.feedbackDatapoints.length; i++)
+    //  this.feedbackDatapoints[i].read()
   }
 
 
   knxConnected()
   {
-    this.logDebug('Connected to: ' + this.configuration.host + ':' + this.configuration.port)
-    this.adapterState.connection.connected  = true
-    this.adapterState.times.lastConnect     = new Date()
-    this.knxConnectionStateChanged()
+    if(!this.adapterState.connection.connected)
+    {
+      this.logDebug('Connected to: ' + this.configuration.host + ':' + this.configuration.port)
+      this.adapterState.connection.connected  = true
+      this.adapterState.times.lastConnect     = new Date()
+      this.knxConnectionStateChanged()
+    }
+  }
+
+  knxDisconnected()
+  {
+    if(this.adapterState.connection.connected)
+    {
+      this.logDebug('Disconnected from: ' + this.configuration.host + ':' + this.configuration.port)
+      this.adapterState.connection.connected  = false
+      this.knxConnectionStateChanged()
+    }
   }
 
 
@@ -180,27 +205,21 @@ class HabitatAdapter_KNX extends HabitatAdapter
   }
 
 
-  knxWrite(_ga, _datatype, _value)
+  knxWrite(_ga, _dpt, _value, _options)
   {
-    var datapoint = new KNX.Datapoint({ga: _ga, dpt: _datatype}, this.knx)
+    var datapoint = new KNX.Datapoint({ga: _ga, dpt: _dpt}, this.knx)
     datapoint.write(_value)
 
-    self.adapterState.counters.sent++
-    self.adapterState.times.lastSent = new Date()
+    this.adapterState.counters.sent++
+    this.adapterState.times.lastSent = new Date()
   }
 
 
-  knxRead(_ga, _datatype)
+  observeGA(_ga, _dpt, _options)
   {
-    var datapoint = new KNX.Datapoint({ga: _ga, dpt: _datatype}, self.knx)
-    datapoint.read()
-  }
-
-
-  observeGA(_ga, _options)
-  {
-    this.observedGA[_ga] = { options : _options }
-    this.logDebug('Addded observation for group address \'' + _ga + '\'')
+    this.observedGA[_ga] = { ga : _ga, options : _options }
+    this.addFeedbackDatapoint(_ga, _dpt)
+    this.logDebug('Addded observation for group address \'' + _ga + '\' (' + _dpt + ')')
   }
 
 
@@ -208,6 +227,20 @@ class HabitatAdapter_KNX extends HabitatAdapter
   {
     this.globalObservation = _observeAll
     this.logDebug(this.globalObservation ? 'Addded global observation' : 'Removed global observation')
+  }
+
+
+  addFeedbackDatapoint(_ga, _dataType)
+  {
+    const self = this
+    // lets create a datapoint with the ability of autoread.
+    // That means it will be read when the connection is beeing established
+    const datapoint = new KNX.Datapoint({ga: _ga, dpt: _dataType, autoread: true}, self.knx)
+    datapoint.on("change", function(_currentValue, _value, _ga){
+      // there is no need to do anything here weith the infi that the datapoint has been changed
+      // this will be catched by the 'knxEvent' method anyway!
+    })
+    self.feedbackDatapoints.push(datapoint)
   }
 
 }

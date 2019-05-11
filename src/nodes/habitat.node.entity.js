@@ -31,6 +31,19 @@ class HabitatNode_Entity extends HabitatNode
     delete this.habitatContextObject().nodes[this.getEntityId()]
   }
 
+  state()
+  {
+    if(!this.habitatAppNode().getEntityStates[this.entityId])
+      this.habitatAppNode().getEntityStates[this.entityId] = this.getDefaultState()
+    return this.habitatAppNode().getEntityStates[this.entityId]
+  }
+
+  getDefaultState()
+  {
+    throw 'Default state is not specified'
+  }
+
+
   ready()
   {
     // every thing node stores a reference in the global context within the habitat object

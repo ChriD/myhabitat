@@ -8,6 +8,26 @@ class HabitatNode_Thing extends HabitatNode_Entity
   {
     super(_RED, _config)
   }
+
+  created()
+  {
+    // a thing often has an adapter, so if we have one, store the adapter entity id to the config object
+    if(this.config.adapterNode)
+    {
+      const adapterNode = this.RED.nodes.getNode(this.config.adapterNode)
+      if(adapterNode)
+        this.config.adapterId = adapterNode.getEntityId()
+    }
+  }
+
+
+  adapterNode()
+  {
+    if(!this.RED.nodes.getNode(this.config.adapterNode))
+      this.error('Adapter node for ' + this.config.adapterId + ' not found')
+    return this.RED.nodes.getNode(this.config.adapterNode)
+  }
+
 }
 
 

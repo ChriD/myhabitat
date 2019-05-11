@@ -4,6 +4,7 @@
  *
  * TODOS: - log system does use some ressources even if it is disabled, maybe we find a better solution?
  *        - allow external adapter files to be loaded
+ *        - SYSINFO adapter crashes when USB is attached (at least when my handy is attached)
  *
  */
 
@@ -360,14 +361,12 @@ class Habitat extends HabitatBase
     // be aware thet a direct state update will not trigger any actions on the entity object
     //if(_message.data && _message.data.entityState)
     //  this.updateEntityState(_message.data.entityState.entityId, _message.data.entityState.entity, _message.data.entityState.state, _message.data.entityState.originator, _message.data.entityState.specification)
-
     // TODO: we may get entity input data. This data will be redirected to the nodes 'input' method
     // if(_message.data && _message.data.entityInput)
     //  this.doEntityInput(_message.data.entityInput.entityId, _message.data.entityInput.entity, _message.data.entityInput.input, _message.data.entityInput.originator)
 
-
-    // TODO: @@@
-    // messages with data are emited
+    // if the message has a 'data' attribute, we do only emit the data for the adapter entity
+    // the 'data' attribute does container the adaper specific protocol. This data will be evaluated on the specific node-red adapter node
     if(_message.data)
       this.emit('adapterMessage', _message.adapter.entity, _message.data)
 

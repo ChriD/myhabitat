@@ -19,6 +19,16 @@ class HabitatNode_Adapter extends HabitatNode_Entity
     throw "Adapter process file is not specified"
   }
 
+  adapterProcess()
+  {
+    return this.habitatAppNode().getAdapterProcess(this.getEntityId())
+  }
+
+  getEntityId()
+  {
+    return this.config.adapterId
+  }
+
   allNodesStarted()
   {
       super.allNodesStarted()
@@ -33,6 +43,14 @@ class HabitatNode_Adapter extends HabitatNode_Entity
     // on close/cleanup we have to wait until the adapter was unregistered, so we do return a
     // promise that will resolve if the adapter was closed nad cleaned up its stuff
     return this.habitatAppNode().unregisterAdapter(this.getEntityId())
+  }
+
+  adapterMessage(_adapterEntity, _data)
+  {
+  }
+
+  adapterState(_adapterEntity, _state)
+  {
   }
 
 }
