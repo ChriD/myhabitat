@@ -26,9 +26,10 @@ module.exports = function(RED) {
     }
 
 
-    input()
+    input(_message)
     {
-      // Input can come from socket or from node gui itself!?!?
+      // Input can come from the socket adapter or from node-red gui
+      // TODO: @@@
     }
 
 
@@ -45,6 +46,7 @@ module.exports = function(RED) {
     {
       super.gaReceived(_ga, _value)
 
+      // if we have received a feedback ga, we have to set the appropriate state
       switch(_ga)
       {
         case this.config.gaFeedbackOnOff:
@@ -53,12 +55,6 @@ module.exports = function(RED) {
       }
     }
 
-    /*
-    stateChanged()
-    {
-      // TODO: if state of entity (thing) has chaned we have to do something
-    }
-    */
 
     turnOn()
     {

@@ -11,9 +11,17 @@ class HabitatNode
 
     self.RED          = _RED
     self.config       = _config
+    self.isReady      = false
 
     //_RED.events.setMaxListeners(100)
     _RED.events.once('nodes-started', function() { self.allNodesStarted() })
+
+    // input events from the gui a redirected to the main input method of the instance
+    // this input method will be called by the habitat app to id there comes a message
+    // from the gateway adapter
+    self.on('input', function(_message){
+        self.input(_message)
+    })
 
   }
 
@@ -26,6 +34,7 @@ class HabitatNode
 
   ready()
   {
+    this.isReady = true
   }
 
   async cleanup()

@@ -358,15 +358,12 @@ class Habitat extends HabitatBase
     }
 
     // we may get an entity state update info from an adapter (e.g. comGateway)
-    // be aware thet a direct state update will not trigger any actions on the entity object
-    //if(_message.data && _message.data.entityState)
-    //  this.updateEntityState(_message.data.entityState.entityId, _message.data.entityState.entity, _message.data.entityState.state, _message.data.entityState.originator, _message.data.entityState.specification)
-    // TODO: we may get entity input data. This data will be redirected to the nodes 'input' method
-    // if(_message.data && _message.data.entityInput)
-    //  this.doEntityInput(_message.data.entityInput.entityId, _message.data.entityInput.entity, _message.data.entityInput.input, _message.data.entityInput.originator)
+    // this is a special data protocol which has to be the same for every adapter who is sending entity states to the system
+    if(_message.entity && _message.entityState)
+      this.emit('entityState', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
 
     // if the message has a 'data' attribute, we do only emit the data for the adapter entity
-    // the 'data' attribute does container the adaper specific protocol. This data will be evaluated on the specific node-red adapter node
+    // the 'data' attribute does container the adapter specific protocol. This data will be evaluated on the specific node-red adapter node
     if(_message.data)
       this.emit('adapterMessage', _message.adapter.entity, _message.data)
 

@@ -124,16 +124,8 @@ class HabitatAdapter_KNX extends HabitatAdapter
 
   knxConnectionStateChanged()
   {
-    // if the state changes from 'not connected' to 'connected', we do a read request to all observed ga's
-    // so that the subsribers get the actual data
-    // TODO: run through the stored feedback datapoints and do a reread?
-
-    // if the connection was established we have to bind the datapoints to this connection!
-    //for(let i=0; i<this.feedbackDatapoints.length; i++)
-    //  this.feedbackDatapoints[i].bind(this.getKnxAdapter().knx)
-
-    //for(let i=0; i<this.feedbackDatapoints.length; i++)
-    //  this.feedbackDatapoints[i].read()
+    // if the state changes from 'not connected' to 'connected', we  should do a read request to all observed ga's
+    // But in fact this is not necessary because the feedback datapoint classes semm to do this by its own!
   }
 
 

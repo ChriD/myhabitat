@@ -41,9 +41,9 @@ module.exports = function(RED) {
         self.onAdapterMessage(_adapterEntityId, _data)
       })
 
-      //this.habitat.on('adapterState', function(_adapterEntityId, _state){
-      //  self.onAdapterState(_adapterEntityId, _state)
-      //})
+      this.habitat.on('entityState', function(_adapterEntity, _entity, _entityState, _originator){
+        self.onEntityState(_adapterEntity, _entity, _entityState, _originator)
+      })
 
       this.created()
     }
@@ -106,17 +106,11 @@ module.exports = function(RED) {
       this.habitatContextObject().nodes[_adapterEntity.id].adapterMessage(_adapterEntity, _data)
     }
 
-    onAdapterState(_adapterEntity, _state)
+    onEntityState(_adapterEntity, _entity, _entityState, _originator)
     {
-      // TODO: @@ not sure if we should do this like that?!?!?
-      /*
-      if(!this.habitatContextObject().nodes[_adapterEntity.id])
-      {
-        this.error('No adapter node for entityId \'' + _adapterEntity.id + '\' found!')
-        return
-      }
-      this.habitatContextObject().nodes[_adapterEntity.id].adapterState(_adapterEntity, _state)
-      */
+      // TODO: @@@
+      // check if entity exists
+      this.habitatContextObject().nodes[_entity.id].input({ state : _entityState, originator : _originator})
     }
 
   }
