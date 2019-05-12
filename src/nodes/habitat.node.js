@@ -20,7 +20,8 @@ class HabitatNode
     // this input method will be called by the habitat app to id there comes a message
     // from the gateway adapter
     self.on('input', function(_message){
-        self.input(_message)
+        if(self.isReady)
+          self.input(_message)
     })
 
   }
@@ -35,6 +36,10 @@ class HabitatNode
   ready()
   {
     this.isReady = true
+  }
+
+  input(_message)
+  {
   }
 
   async cleanup()
@@ -71,6 +76,11 @@ class HabitatNode
   allNodesStarted()
   {
     this.ready()
+  }
+
+
+  updateNodeInfoStatus()
+  {
   }
 
 }

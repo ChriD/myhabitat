@@ -8,7 +8,9 @@
       adapterNode:            { value: '',        required: true,  type: "habitat-adapter-knx" },
       lightType:              { value: 'SIMPLE',  required: true },
       gaActionOnOff:          { value: '' },
-      gaFeedbackOnOff:        { value: '' }
+      gaFeedbackOnOff:        { value: '' },
+      gaActionBrightness:     { value: '' },
+      gaFeedbackBrightness:   { value: '' },
     },
     inputs: 1,
     outputs: 0,
@@ -28,15 +30,19 @@
       // when selection of the type of light is changed, we have to store it back into our default value
       // because this is not done automatically in this case
       lightTypeElement.onchange = function () {
-        //if(lightTypeElement.selectedIndex >= 0)
-        //  self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
+        // when selection of the type of light is changed, we have to store it back into our default value
+        // because this is not doen automatically!
+        // ATTENTION: In seems that the 'node changed' is not triggered (no 'changed' mark on the node in the gui)
+        // TODO: @@@
+        if(lightTypeElement.selectedIndex >= 0)
+          self.lightType = lightTypeElement.options[lightTypeElement.selectedIndex].value
         updateDesign()
       }
 
       function updateDesign() {
         // hide all elements which have a data-lightType attribute and make only those visible which have the correct type!
         var container = document.getElementById('habitat-thing-knx-light')
-        var elements = container.querySelectorAll('[data-lighttype]')
+        var elements  = container.querySelectorAll('[data-lighttype]')
         for(var i=0; i<elements.length; i++)
         {
             var types = elements[i].dataset.lighttype.split(" ")
@@ -79,9 +85,9 @@
               <div class="form-row">
                   <label for="node-input-lightType" style="width:11em">Type</label>
                   <select style="width:60%;" id="node-input-lightType">
-                      <option value="SIMPLE">Simple light</option>
-                      <option value="SIMPLEDIM">Simple dimmable light</option>
-                    </select>
+                    <option value="SIMPLE">Simple light</option>
+                    <option value="SIMPLEDIM">Simple dimmable light</option>
+                  </select>
               </div>
             </div>
           </div>
@@ -100,6 +106,14 @@
               <div class="form-row">
                   <label for="node-input-gaFeedbackOnOff" style="width:11em">On/Off [RM]</label>
                   <input type="text" id="node-input-gaFeedbackOnOff" placeholder="0/0/0" style="width:60%">
+              </div>
+              <div class="form-row" data-lighttype="SIMPLEDIM">
+                  <label for="node-input-gaActionBrightness" style="width:11em">Brightness</label>
+                  <input type="text" id="node-input-gaActionBrightness" placeholder="0/0/0" style="width:60%">
+              </div>
+              <div class="form-row" data-lighttype="SIMPLEDIM">
+                  <label for="node-input-gaFeedbackBrightness" style="width:11em">Brightness [RM]</label>
+                  <input type="text" id="node-input-gaFeedbackBrightness" placeholder="0/0/0" style="width:60%">
               </div>
             </div>
           </div>

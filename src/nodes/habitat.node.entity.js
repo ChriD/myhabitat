@@ -21,6 +21,23 @@ class HabitatNode_Entity extends HabitatNode
     return this.config.entityId
   }
 
+  getEntity()
+  {
+    return {
+      id        : this.getEntityId(),
+      moduleId  : this.getEntityModuleId()
+    }
+  }
+
+  ready()
+  {
+    super.ready()
+    // callen the state method will create an initial state object from the 'getDefaultState' method
+    // this call is not mandatory but it will ensure that all nodes which are ready have their complete
+    // state object for further use
+    this.state()
+  }
+
   addNodeReferenceToHabitatContext()
   {
     this.habitatContextObject().nodes[this.getEntityId()] = this
@@ -31,11 +48,16 @@ class HabitatNode_Entity extends HabitatNode
     delete this.habitatContextObject().nodes[this.getEntityId()]
   }
 
+  stateObject()
+  {
+    if(!this.habitatAppNode().getEntityStates()[this.getEntityId()])
+      this.habitatAppNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
+      return this.habitatAppNode().getEntityStates()[this.getEntityId()]
+  }
+
   state()
   {
-    if(!this.habitatAppNode().getEntityStates[this.entityId])
-      this.habitatAppNode().getEntityStates[this.entityId] = this.getDefaultState()
-    return this.habitatAppNode().getEntityStates[this.entityId]
+    return this.stateObject().state
   }
 
   getDefaultState()
@@ -50,6 +72,7 @@ class HabitatNode_Entity extends HabitatNode
     // this is good for distributing the messages via entityId. The reference is beeing removed when
     // the node is closed/destroyed
     this.addNodeReferenceToHabitatContext()
+    super.ready()
   }
 
   async cleanup()

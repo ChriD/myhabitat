@@ -10,6 +10,13 @@ class HabitatNode_Thing_KNX extends HabitatNode_Thing
     this.observedGA = []
   }
 
+
+  getEntityModuleId()
+  {
+    return "KNX"
+  }
+
+
   created()
   {
     const self = this

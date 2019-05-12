@@ -384,9 +384,12 @@ class Habitat extends HabitatBase
     {
       this.logTrace('State update for entity id: ' + _entityId + ' by ' + (_originator ? _originator.id : 'unknown'))
 
+      // be sur ethe entity obect does containe the entity id
+      _entity.id = _entity.id ? _entity.id : _entityId
+
       // if there is no entry for the entity state we have to create one before we can merge
       if(!this.getEntityStates()[_entityId])
-        this.getEntityStates()[_entityId] = { entityId : _entityId, entity : {}, state : {} , originator : {}, specification : {} }
+        this.getEntityStates()[_entityId] = { entity : {}, state : {} , originator : {}, specification : {} }
 
       // we do have information about the entity itself
       Merge(this.getEntityStates()[_entityId].entity, _entity)

@@ -38,7 +38,6 @@ module.exports = function(RED) {
 
     adapterMessage(_adapterEntity, _data)
     {
-      this.log('Received messages: ' + JSON.stringify(_data))
       // we have retrieved KNX data, so we do emit a event where all KNX nodes are listening on
       // if there is relevant KNX data for the node it will proceed, so in fact every KNX node gets
       // every KNX data we are observing

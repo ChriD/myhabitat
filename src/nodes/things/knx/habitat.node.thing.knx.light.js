@@ -21,15 +21,48 @@ module.exports = function(RED) {
     {
       return  {
                 isOn        : false,
-                brightness  : 1.0,
+                brightness  : 100,
               }
     }
 
 
     input(_message)
     {
-      // Input can come from the socket adapter or from node-red gui
-      // TODO: @@@
+      const payload = _message.payload
+
+      // be sure we always have a state object for further processing
+      if(!_message.state)
+        _message.state = {}
+
+      switch(typeof payload)
+      {
+        // a number is representating a brightness value
+        case "number" :
+          _message.state.brightness = payload
+          break
+        // a boolean tells us if the lamp should be on or off
+        case "boolean":
+          _message.state.isOn = payload === true ? true : false
+          break
+        // and we may have some special actions which are representated as strings
+        case "string":
+          if(payload.toUpperCase() === "TOGGLE")
+          _message.state.isOn = this.state().isOn ? false : true
+          break
+      }
+
+      // apply the state object which was given by the input or which was created from
+      // the above code to the physical device
+      if(_message.state)
+      {
+        if(_message.state.isOn /*&& _message.state.isOn != this.state().isOn*/)
+          this.turnOn()
+        if(!_message.state.isOn /*&& _message.state.isOn != this.state().isOn*/)
+          this.turnOff()
+        if(_message.state.brightness /*&& _message.state.brightness != this.state().brightness*/ && this.isDimmable())
+          this.setBrightness(_message.state.brightness / 100 * 255)
+      }
+
     }
 
 
@@ -37,8 +70,16 @@ module.exports = function(RED) {
     {
       super.ready()
 
-      // register the feedback GA's for the light
-      this.observeGA(this.config.gaFeedbackOnOff, 'DPT1.001')
+      // register the feedback GA's for the state of the light
+      if(this.config.gaFeedbackOnOff)
+        this.observeGA(this.config.gaFeedbackOnOff, 'DPT1.001')
+      if(this.config.gaFeedbackBrightness && this.isDimmable())
+        this.observeGA(this.config.gaFeedbackBrightness, 'DPT5.001')
+    }
+
+    isDimmable()
+    {
+      return this.config.lightType === "SIMPLEDIM" ? true : false
     }
 
 
@@ -52,7 +93,12 @@ module.exports = function(RED) {
         case this.config.gaFeedbackOnOff:
           this.state().isOn = _value
           break
+        case this.config.gaFeedbackBrightness:
+          this.state().brightness = (100 / 255) * _value
+          break
       }
+
+      this.updateNodeInfoStatus()
     }
 
 
@@ -67,6 +113,20 @@ module.exports = function(RED) {
       this.sendGA(this.config.gaActionOnOff, 'DPT1.001', 0)
     }
 
+
+    setBrightness(_brightness)
+    {
+      //this.sendGA(this.config.gaActionOnOff, 'DPT5.001', _brightness)
+    }
+
+
+    updateNodeInfoStatus()
+    {
+      super.updateNodeInfoStatus()
+      let infoText = Math.round((this.state().brightness)).toString() + "%"
+      let infoFill = this.state().isOn ? "green" : "red"
+      this.status({fill:infoFill, shape:"dot", text: infoText})
+    }
 
   }
 

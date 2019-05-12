@@ -108,8 +108,11 @@ module.exports = function(RED) {
 
     onEntityState(_adapterEntity, _entity, _entityState, _originator)
     {
-      // TODO: @@@
-      // check if entity exists
+      if(!this.habitatContextObject().nodes[_entity.id])
+      {
+        this.error('No node for entityId \'' + _adapterEntity.id + '\' found!')
+        return
+      }
       this.habitatContextObject().nodes[_entity.id].input({ state : _entityState, originator : _originator})
     }
 
