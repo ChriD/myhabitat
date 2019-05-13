@@ -17,6 +17,9 @@
     "nodes": {
       "habitat-app": "src/nodes/app/habitat.node.habitatApp.js",
       "habitat-adapter-knx": "src/nodes/adapters/habitat.node.adapter.knx.js",
+      "habitat-adapter-artnet": "src/nodes/adapters/habitat.node.adapter.artnet.js",
+      "habitat-state-observer": "src/nodes/other/habitat.node.state.observer.js",
+      "habitat-thing-artnet-light": "src/nodes/things/artnet/habitat.node.thing.artnet.light.js",
       "habitat-thing-knx-light": "src/nodes/things/knx/habitat.node.thing.knx.light.js"
     }
   },

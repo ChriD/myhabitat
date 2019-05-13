@@ -37,12 +37,16 @@ module.exports = function(RED) {
 
       this.habitat = new Habitat()
 
-      this.habitat.on('adapterMessage', function(_adapterEntityId, _data){
-        self.onAdapterMessage(_adapterEntityId, _data)
+      this.habitat.on('adapterMessageReceived', function(_adapterEntityId, _data){
+        self.onAdapterMessageReceived(_adapterEntityId, _data)
       })
 
-      this.habitat.on('entityState', function(_adapterEntity, _entity, _entityState, _originator){
-        self.onEntityState(_adapterEntity, _entity, _entityState, _originator)
+      this.habitat.on('entityStateReceived', function(_adapterEntity, _entity, _entityState, _originator){
+        self.onEntityStateReceived(_adapterEntity, _entity, _entityState, _originator)
+      })
+
+      this.habitat.on('entityStateChanged', function( _path, _value, _previousValue){
+        self.onEntityStateChanged( _path, _value, _previousValue)
       })
 
       this.created()
@@ -50,6 +54,8 @@ module.exports = function(RED) {
 
     created()
     {
+      super.created()
+
       // the habitat app node should be the first one which is beeing added to the global context
       // that's because the other nodes do need to call some functions on it, so we do add the app
       // reference directly on creation and not on 'ready' as the other nodes will do
@@ -95,7 +101,7 @@ module.exports = function(RED) {
       return this.habitat.getEntityStates()
     }
 
-    onAdapterMessage(_adapterEntity, _data)
+    onAdapterMessageReceived(_adapterEntity, _data)
     {
       // pass the message to the appropriate adapter node if found, otherwise give some node-red error
       if(!this.habitatContextObject().nodes[_adapterEntity.id])
@@ -106,7 +112,7 @@ module.exports = function(RED) {
       this.habitatContextObject().nodes[_adapterEntity.id].adapterMessage(_adapterEntity, _data)
     }
 
-    onEntityState(_adapterEntity, _entity, _entityState, _originator)
+    onEntityStateReceived(_adapterEntity, _entity, _entityState, _originator)
     {
       if(!this.habitatContextObject().nodes[_entity.id])
       {
@@ -114,6 +120,11 @@ module.exports = function(RED) {
         return
       }
       this.habitatContextObject().nodes[_entity.id].input({ state : _entityState, originator : _originator})
+    }
+
+    onEntityStateChanged(_path, _value, _previousValue)
+    {
+      this.emit('entityStateChanged', _path, _value, _previousValue)
     }
 
   }

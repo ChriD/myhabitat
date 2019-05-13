@@ -1,0 +1,68 @@
+<script type="text/javascript">
+  RED.nodes.registerType('habitat-adapter-artnet',{
+    category: 'config',
+    color: '#9999FF',
+    defaults: {
+      name              : { value: '' },
+      adapterId         : { value: 'ARTNET01',  required: true },
+      host              : { value: '',          required: true },
+      port              : { value: 0,           required: true, validate:RED.validators.number() },
+      universe          : { value: 6454,           validate:RED.validators.number() },
+      bufferRefresh     : { value: 5000,        validate:RED.validators.number() },
+      fadeTime          : { value: 250,         validate:RED.validators.number() }
+    },
+    inputs:0,
+    outputs:0,
+    icon: 'white-globe.png',
+    paletteLabel: 'Habitat ARTNET',
+    label: function() {
+        return this.name || 'Habitat ARTNET'
+    },
+  });
+</script>
+
+
+<script type="text/x-red" data-template-name="habitat-adapter-artnet">
+
+  <div class="form-row">
+    <label for="node-input-name">Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-adapterId">Adapter ID</label>
+    <input type="text" id="node-config-input-adapterId" placeholder="Adapter ID">
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-host">Host</label>
+      <input type="text" id="node-config-input-host" placeholder="">
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-port">Port</label>
+      <input type="text" id="node-config-input-port" placeholder="6454">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-universe">Universe</label>
+    <input type="text" id="node-config-input-universe" placeholder="0">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-bufferRefresh">Buffer refresh</label>
+    <input type="text" id="node-config-input-bufferRefresh" placeholder="5000">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-fadeTime">Std. fade time</label>
+    <input type="text" id="node-config-input-fadeTime" placeholder="0">
+  </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="habitat-adapter-artnet">
+  <p>
+    This is the configuration node for a DMX-ARTNET adapter instance which will be created by the habitat application
+    You may have multiple instances if you have more than one DMX-ARTNET universes
+  </p>
+  <div class="form-tips">
+    <p>Credits to the author of the underlaying DMX-ARTNET library</p>
+    <p><b><a href="????">????</a></b></p>
+  </div>
+</script>
+

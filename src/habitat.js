@@ -5,6 +5,11 @@
  * TODOS: - log system does use some ressources even if it is disabled, maybe we find a better solution?
  *        - allow external adapter files to be loaded
  *        - SYSINFO adapter crashes when USB is attached (at least when my handy is attached)
+ *        - add external adapter + nodes (Raumfeld)
+ *        - logging to files with a existing logger (watson?)
+ *        - admin panel with state viewer and logger
+ *        - node helps and descriptions!
+ *        - github wiki
  *
  */
 
@@ -107,7 +112,6 @@ class Habitat extends HabitatBase
     self.registerAdapter('comGateway.js', "COMGATEWAY", { port : self.configuration.comgateway.port, clientPingInterval: self.configuration.comgateway.clientPingInterval })
 
     // we do have a webserver for serving the guis
-    // TODO: use another path, this one is only for developing
     if(self.configuration.webserver.enabled)
       self.registerAdapter('webserver.js', "WEBSERVER", { port : self.configuration.webserver.port, path: self.configuration.webserver.path })
 
@@ -176,6 +180,7 @@ class Habitat extends HabitatBase
     self.configuration.webserver          = self.configuration.webserver ? self.configuration.webserver : {}
     self.configuration.webserver.enabled  = self.configuration.webserver.hasOwnProperty('enabled') ? self.configuration.webserver.enabled : true
     self.configuration.webserver.port     = self.configuration.webserver.port ? self.configuration.webserver.port : 8090
+    // TODO: use another path ?!, this one is only for developing
     self.configuration.webserver.path     = self.configuration.webserver.path ? self.configuration.webserver.path :  __dirname + '/web/build/default'
 
     self.configuration.sysinfo            = self.configuration.sysinfo ? self.configuration.sysinfo : {}
@@ -354,24 +359,23 @@ class Habitat extends HabitatBase
       // every adapter does have an 'adapter state object' which should include infos like connection status aso...
       // we do store this data into the global entity state object too
       this.updateEntityState(_message.adapter.entity.id, _message.adapter.entity, _message.adapter.state, {}, {} )
-      this.emit("adapterState", _message.adapter.entity, _message.adapter.state)
+      this.emit("adapterStateReceived", _message.adapter.entity, _message.adapter.state)
     }
 
     // we may get an entity state update info from an adapter (e.g. comGateway)
     // this is a special data protocol which has to be the same for every adapter who is sending entity states to the system
     if(_message.entity && _message.entityState)
-      this.emit('entityState', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
+      this.emit('entityStateReceived', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
 
     // if the message has a 'data' attribute, we do only emit the data for the adapter entity
     // the 'data' attribute does container the adapter specific protocol. This data will be evaluated on the specific node-red adapter node
     if(_message.data)
-      this.emit('adapterMessage', _message.adapter.entity, _message.data)
-
+      this.emit('adapterMessageReceived', _message.adapter.entity, _message.data)
 
   }
 
 
-    // TODO: @@@ ???
+    // TODO: @@@ ??? Needed???
   onNodeMessage()
   {
 

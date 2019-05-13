@@ -32,7 +32,7 @@ class HabitatNode_Entity extends HabitatNode
   ready()
   {
     super.ready()
-    // callen the state method will create an initial state object from the 'getDefaultState' method
+    // calling the state method will create an initial state object from the 'getDefaultState' method
     // this call is not mandatory but it will ensure that all nodes which are ready have their complete
     // state object for further use
     this.state()

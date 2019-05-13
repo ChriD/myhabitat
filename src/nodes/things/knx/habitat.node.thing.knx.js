@@ -17,10 +17,10 @@ class HabitatNode_Thing_KNX extends HabitatNode_Thing
   }
 
 
-  created()
+  ready()
   {
     const self = this
-    super.created()
+    super.ready()
     // be sure we get all messages the knx adapter was subscribed to listen to
     // those messages may not all belong to the specific node instance, so we have to filter out the appropriate KNX messages
     this.adapterNode().on('knxMessage', function(_data){

@@ -7,6 +7,7 @@
  * TODOS: - Better Connection handling (error/connect)
  *          Problem is that the artnet connection is via udp socket (broadcast) and there is no info if it worked or not
  *        - maybe disable throttle of library because we make our own at 100HZ?
+ *        - maybe change to https://github.com/margau/dmxnet ?!
  *
  */
 
@@ -51,6 +52,8 @@ class HabitatAdapter_Artnet extends HabitatAdapter
     self.adapterState.connection = {}
     self.adapterState.connection.host             = ""
     self.adapterState.connection.port             = 0
+    self.adapterState.connection.universe         = 0
+    self.adapterState.connection.dataRefresh      = 0
     self.adapterState.counters = {}
     self.adapterState.counters.processedActions   = 0
 
@@ -75,9 +78,10 @@ class HabitatAdapter_Artnet extends HabitatAdapter
     const self = this
     self.artnet = new Artnet(this.configuration)
 
-    self.adapterState.connection.host     = self.configuration.host
-    self.adapterState.connection.port     = self.configuration.port
-    self.adapterState.connection.universe = self.configuration.universe
+    self.adapterState.connection.host         = self.configuration.host
+    self.adapterState.connection.port         = self.configuration.port
+    self.adapterState.connection.universe     = self.configuration.universe
+    self.adapterState.connection.dataRefresh  = self.configuration.refresh
 
     self.logDebug('Establish connection to ' + self.configuration.host + ':' + self.configuration.port)
 

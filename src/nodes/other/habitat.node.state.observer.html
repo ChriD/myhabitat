@@ -1,0 +1,57 @@
+
+<script type="text/javascript">
+  RED.nodes.registerType('habitat-state-observer',{
+    category: 'Habitat',
+    color: '#9999FF',
+    defaults: {
+      name                    : { value: '' },
+      entityId                : { value: '',      required: true},
+      statePath               : { value: '',      required: true}
+    },
+    inputs:0,
+    outputs:1,
+    icon: 'white-globe.png',
+    paletteLabel: 'State Observer',
+    label: function() {
+        return this.name || 'State Observer'
+    },
+  });
+</script>
+
+
+<script type="text/x-red" data-template-name="habitat-state-observer">
+
+
+  <div class="palette-category palette-category-expanded" style="display: block;">
+    <div class="palette-header">
+      <span>General</span>
+    </div>
+    <div style="position: relative; display: block;">
+      <div style="padding: 6px; padding-top: 12px;">
+
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-name">Name</label>
+          <input style="width:60%;" type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-entityId">EntityId</label>
+          <input style="width:60%;" type="text" id="node-input-entityId" placeholder="EntityId">
+        </div>
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-statePath">Path</label>
+          <input style="width:60%;" type="text" id="node-input-statePath" placeholder="Path">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="habitat-state-observer">
+  <p>This node is the main habitat application node</p>
+  <p></p>
+  <div class="form-tips"><b>Tip:</b> This is here to help.</div>
+</script>
+
