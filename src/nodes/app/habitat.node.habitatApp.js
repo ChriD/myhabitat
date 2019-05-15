@@ -75,6 +75,12 @@ module.exports = function(RED) {
       return "HABITATAPP"
     }
 
+    getDefaultState()
+    {
+      // TODO: return version?
+      return {}
+    }
+
     unregisterAdapter(_adapterEntityId)
     {
       return this.habitat.unregisterAdapter(_adapterEntityId)

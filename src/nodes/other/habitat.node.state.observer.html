@@ -6,7 +6,8 @@
     defaults: {
       name                    : { value: '' },
       entityId                : { value: '',      required: true},
-      statePath               : { value: '',      required: true}
+      statePath               : { value: '',      required: true},
+      initialSend             : { value: true}
     },
     inputs:0,
     outputs:1,
@@ -40,6 +41,10 @@
         <div class="form-row">
           <label style="width:39%;" for="node-input-statePath">Path</label>
           <input style="width:60%;" type="text" id="node-input-statePath" placeholder="Path">
+        </div>
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-initialSend">Initial send</label>
+          <input style="width:60%;" type="checkbox" id="node-input-initialSend" placeholder="">
         </div>
 
       </div>

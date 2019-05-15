@@ -32,6 +32,11 @@ class HabitatNode_Entity extends HabitatNode
   ready()
   {
     super.ready()
+    // every entity node stores a reference in the global context within the habitat object
+    // this is good for distributing the messages via entityId. The reference is beeing removed when
+    // the node is closed/destroyed
+    this.addNodeReferenceToHabitatContext()
+
     // calling the state method will create an initial state object from the 'getDefaultState' method
     // this call is not mandatory but it will ensure that all nodes which are ready have their complete
     // state object for further use
@@ -51,8 +56,8 @@ class HabitatNode_Entity extends HabitatNode
   stateObject()
   {
     if(!this.habitatAppNode().getEntityStates()[this.getEntityId()])
-      this.habitatAppNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
-      return this.habitatAppNode().getEntityStates()[this.getEntityId()]
+        this.habitatAppNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
+    return this.habitatAppNode().getEntityStates()[this.getEntityId()]
   }
 
   state()
@@ -63,16 +68,6 @@ class HabitatNode_Entity extends HabitatNode
   getDefaultState()
   {
     throw 'Default state is not specified'
-  }
-
-
-  ready()
-  {
-    // every thing node stores a reference in the global context within the habitat object
-    // this is good for distributing the messages via entityId. The reference is beeing removed when
-    // the node is closed/destroyed
-    this.addNodeReferenceToHabitatContext()
-    super.ready()
   }
 
   async cleanup()

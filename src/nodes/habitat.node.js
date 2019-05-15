@@ -26,6 +26,11 @@ class HabitatNode
 
   }
 
+  ready()
+  {
+    this.isReady = true
+  }
+
 
   created()
   {
@@ -33,10 +38,6 @@ class HabitatNode
     self.on('close', function(_removed){ self.close(_removed) })
   }
 
-  ready()
-  {
-    this.isReady = true
-  }
 
   input(_message)
   {

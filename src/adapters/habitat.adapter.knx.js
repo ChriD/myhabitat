@@ -61,6 +61,7 @@ class HabitatAdapter_KNX extends HabitatAdapter
     this.logDebug('Closing KNX connection')
     if(this.knx)
       this.knx.Disconnect()
+    this.knx = null
     super.close()
   }
 

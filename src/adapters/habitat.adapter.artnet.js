@@ -95,6 +95,7 @@ class HabitatAdapter_Artnet extends HabitatAdapter
   {
     if(this.artnet)
         this.artnet.close()
+    this.artnet = null
 
     if(this.bufferUpdateIntervalId)
       clearInterval(this.bufferUpdateIntervalId)

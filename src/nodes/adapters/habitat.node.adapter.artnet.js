@@ -33,7 +33,7 @@ module.exports = function(RED) {
 
     getAdapterConfiguration()
     {
-      return { host : this.config.host , port : this.config.port, refresh : this.config.refresh, universe : this.config.universe}
+      return { host : this.config.host , port : this.config.port, refresh : this.config.bufferRefresh, universe : this.config.universe}
     }
 
     adapterMessage(_adapterEntity, _data)

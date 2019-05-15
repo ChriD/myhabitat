@@ -24,6 +24,11 @@ class HabitatNode_Adapter extends HabitatNode_Entity
     return this.habitatAppNode().getAdapterProcess(this.getEntityId())
   }
 
+  getDefaultState()
+  {
+    return {}
+  }
+
   getEntityId()
   {
     return this.config.adapterId

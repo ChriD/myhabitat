@@ -11,6 +11,8 @@ class HabitatNode_Thing extends HabitatNode_Entity
 
   created()
   {
+    super.created()
+
     // a thing often has an adapter, so if we have one, store the adapter entity id to the config object
     if(this.config.adapterNode)
     {

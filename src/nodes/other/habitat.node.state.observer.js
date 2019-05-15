@@ -11,6 +11,7 @@
 
  const HabitatNode    = require('../habitat.node.js')
  const Habitat        = require("../../habitat.js")
+ const Get            = require('lodash.get')
 
 module.exports = function(RED) {
 
@@ -34,16 +35,29 @@ module.exports = function(RED) {
       super.ready()
 
       // attach to the habitat state emitter
-      this.habitatAppNode().on('entityStateChanged', function(_path, _value, _previousValue){
+      self.habitatAppNode().on('entityStateChanged', function(_path, _value, _previousValue){
         self.stateChanged(_path, _value, _previousValue)
       })
+
+      // be sure to output the initial state on node init. It ma be the case that the state for the entity
+      // is not set already, so then we would not find a state object. But that is okay because in this
+      // case the stateChanged' will trigger
+      if(self.config.initialSend)
+      {
+        const entityState = self.habitatAppNode().getEntityStates()[self.config.entityId]
+        if(entityState)
+          self.stateChanged(this.config.entityId + '.state.' + self.config.statePath , Get(entityState.state, self.config.statePath) , null)
+        //else
+        //  self.error('No state object for entity \'' + self.config.entityId +'\' found')
+      }
+
     }
 
     stateChanged(_path, _value, _previousValue)
     {
-      const self = this
+      //console.log(_path + ': ' + JSON.stringify(_value)) // TODO: @@@
       if(_path === this.config.entityId + '.state.' + this.config.statePath)
-        self.send({ payload: _value })
+        this.send({ payload: _value })
     }
 
   }

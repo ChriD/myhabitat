@@ -392,22 +392,24 @@ class Habitat extends HabitatBase
       _entity.id = _entity.id ? _entity.id : _entityId
 
       // if there is no entry for the entity state we have to create one before we can merge
-      if(!this.getEntityStates()[_entityId])
-        this.getEntityStates()[_entityId] = { entity : {}, state : {} , originator : {}, specification : {} }
+      // we do not want to trigger the observation here so we use the plain object, not the observed one
+      if(!this.entityStates[_entityId])
+        this.entityStates[_entityId] = { entity : {}, state : {} , originator : {}, specification : {} }
 
       // we do have information about the entity itself
+      // TODO: we may use deep 'Copy' instead of 'Merge' ?
       Merge(this.getEntityStates()[_entityId].entity, _entity)
 
       // a state may have some other detailed info (_specification) which describes the type of the state
+      // TODO: we may use deep 'Copy' instead of 'Merge' ?
       Merge(this.getEntityStates()[_entityId].specification, _specification)
 
       // merge the originator into the state. It may be usefull to have the info who did update the last state
-      // this may flood us with some unnecessary messages, but we will see if this will be okay or not
-      // we do a merge and not a deep copy because we do not want to trigger the 'on-changed' everytime for the originator
-      // the pitfall is, that all originator attribnutes always have to be set
+      // TODO: we may use deep 'Copy' instead of 'Merge' ?
       Merge(this.getEntityStates()[_entityId].originator, _originator)
 
-      // merge given state object into the current one
+      // merge given state object into the current one.
+      // this one we do merge into the observed object so we do get the state changes triggered!
       Merge(this.getEntityStates()[_entityId].state, _entityState)
     }
     catch(_exception)
@@ -419,12 +421,12 @@ class Habitat extends HabitatBase
 
   entityStatesObjectChanged(_path, _value, _previousValue)
   {
-    this.logTrace('State changed on path \'' + _path + '\' from \'' + (_previousValue ? _previousValue.toString() : '') + '\' to \'' + (_value ? _value.toString() : '') + '\'')
+    this.logTrace('State changed on path \'' + _path + '\' from \'' + (_previousValue != null ? _previousValue.toString() : '') + '\' to \'' + (_value != null ? _value.toString() : '') + '\'')
 
     this.statistics.counters.states.updates++
 
     // the state change should be sent to the communication gateway, so all clients which
-    // are connectedt to the socket will be aware of the status
+    // are connected to the socket will be aware of the status
     this.sendStateUpdateToComGatewayProcess(_path, _value, _previousValue)
 
     // skip 'originator', 'specification' and 'entity' changes, those we do not want to emit
@@ -433,9 +435,24 @@ class Habitat extends HabitatBase
     if(_path.includes('.originator') || _path.includes('.specification') || _path.includes('.entity'))
       return
 
+    // TODO: @@@
+    if(_path.startsWith("KITCHEN-SPOT"))
+      console.log('State changed on path \'' + _path + '\' from \'' + (_previousValue != null ? _previousValue.toString() : '') + '\' to \'' + (_value != null ? _value.toString() : '') + '\'')
+
     // emit the state update so that subscribers will get the info if a state was updated
     // most subscribers will be 'thing' nodes in the node-red ecosystem
     this.emit('entityStateChanged', _path, _value, _previousValue)
+
+    // if path was changed to be an object, we have to emit the state changed for all properties of the object
+    // otherwise this would be not really correct
+    if(_value instanceof Object)
+    {
+      for (var property in _value)
+      {
+        if (_value.hasOwnProperty(property))
+          this.entityStatesObjectChanged(_path + '.' + property,  _value[property], '')
+      }
+    }
   }
 
 
