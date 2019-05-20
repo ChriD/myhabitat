@@ -15,29 +15,29 @@ class HabitatNode
 
     //_RED.events.setMaxListeners(100)
     _RED.events.once('nodes-started', function() { self.allNodesStarted() })
-
-    // input events from the gui a redirected to the main input method of the instance
-    // this input method will be called by the habitat app to id there comes a message
-    // from the gateway adapter
-    self.on('input', function(_message){
-        if(self.isReady)
-          self.input(_message)
-    })
-
-  }
-
-  ready()
-  {
-    this.isReady = true
   }
 
 
   created()
   {
     const self = this
-    self.on('close', function(_removed){ self.close(_removed) })
+    // input events from the gui a redirected to the main input method of the instance
+    // this input method will be called by the habitat app to id there comes a message
+    // from the gateway adapter
+    self.on('input', function(_message){
+      if(self.isReady)
+        self.input(_message)
+    })
+
+    self.on('close', function(_removed){
+      self.close(_removed)
+    })
   }
 
+  ready()
+  {
+    this.isReady = true
+  }
 
   input(_message)
   {

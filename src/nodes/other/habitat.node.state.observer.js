@@ -20,12 +20,7 @@ module.exports = function(RED) {
     constructor(_config)
     {
       super(RED, _config)
-
-      var self = this
-
       RED.nodes.createNode(this, _config)
-
-      this.created()
     }
 
     ready()
@@ -55,7 +50,6 @@ module.exports = function(RED) {
 
     stateChanged(_path, _value, _previousValue)
     {
-      //console.log(_path + ': ' + JSON.stringify(_value)) // TODO: @@@
       if(_path === this.config.entityId + '.state.' + this.config.statePath)
         this.send({ payload: _value })
     }

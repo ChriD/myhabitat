@@ -52,19 +52,6 @@ module.exports = function(RED) {
       this.created()
     }
 
-    created()
-    {
-      super.created()
-
-      // the habitat app node should be the first one which is beeing added to the global context
-      // that's because the other nodes do need to call some functions on it, so we do add the app
-      // reference directly on creation and not on 'ready' as the other nodes will do
-      this.addNodeReferenceToHabitatContext()
-
-      // init the habitat application
-      this.habitat.init(this.habitatConfig)
-    }
-
     getEntityModuleId()
     {
       return "HABITAT"
@@ -79,6 +66,19 @@ module.exports = function(RED) {
     {
       // TODO: return version?
       return {}
+    }
+
+    created()
+    {
+      super.created()
+
+      // the habitat app node should be the first one which is beeing added to the global context
+      // that's because the other nodes do need to call some functions on it, so we do add the app
+      // reference directly on creation and not on 'ready' as the other nodes will do
+      this.addNodeReferenceToHabitatContext()
+
+       // init the habitat application
+       this.habitat.init(this.habitatConfig)
     }
 
     unregisterAdapter(_adapterEntityId)

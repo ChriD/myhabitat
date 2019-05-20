@@ -2,7 +2,7 @@
   "name": "habitat",
   "version": "0.0.1",
   "description": "home automation system powered by node-red",
-  "main": "src/habitat-startup.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,17 +16,11 @@
   "node-red": {
     "nodes": {
       "habitat-app": "src/nodes/app/habitat.node.habitatApp.js",
-      "habitat-adapter-knx": "src/nodes/adapters/habitat.node.adapter.knx.js",
-      "habitat-adapter-artnet": "src/nodes/adapters/habitat.node.adapter.artnet.js",
-      "habitat-state-observer": "src/nodes/other/habitat.node.state.observer.js",
-      "habitat-thing-artnet-light": "src/nodes/things/artnet/habitat.node.thing.artnet.light.js",
-      "habitat-thing-knx-light": "src/nodes/things/knx/habitat.node.thing.knx.light.js"
+      "habitat-state-observer": "src/nodes/other/habitat.node.state.observer.js"
     }
   },
   "dependencies": {
-    "artnet": "^1.4.0",
     "connect": "^3.6.6",
-    "knx": "^2.3.3",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.merge": "^4.6.1",

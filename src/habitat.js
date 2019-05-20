@@ -24,6 +24,8 @@ const Merge         = require('lodash.merge')
 const CloneDeep     = require('lodash.clonedeep');
 const LogLevel      = require("./globals/habitat.global.log.js").LogLevel
 
+const SystemAdapterFilePath   = __dirname + '/processes/habitat.process.adapter.'
+
 
 class Habitat extends HabitatBase
 {
@@ -97,7 +99,7 @@ class Habitat extends HabitatBase
 
     // habitat comes with a log adapter, this adapter has to be started before logging is possible
     if(self.configuration.logger.enabled)
-      self.registerAdapter('log.js', "LOG", { logLevel : self.configuration.logger.logLevel })
+      self.registerAdapter(SystemAdapterFilePath + 'log.js', "LOG", { logLevel : self.configuration.logger.logLevel })
 
     // logs from the habitat instance should be sent to the logger process
     self.on('log', function(_type, _moduleId, _entityId, _log, _object){
@@ -109,15 +111,15 @@ class Habitat extends HabitatBase
 
     // another built in adapter is the communication gateway which allows communication between habitat and
     // other extarnal things. In fact a gui would be a good one to use this
-    self.registerAdapter('comGateway.js', "COMGATEWAY", { port : self.configuration.comgateway.port, clientPingInterval: self.configuration.comgateway.clientPingInterval })
+    self.registerAdapter(SystemAdapterFilePath + 'comGateway.js', "COMGATEWAY", { port : self.configuration.comgateway.port, clientPingInterval: self.configuration.comgateway.clientPingInterval })
 
     // we do have a webserver for serving the guis
     if(self.configuration.webserver.enabled)
-      self.registerAdapter('webserver.js', "WEBSERVER", { port : self.configuration.webserver.port, path: self.configuration.webserver.path })
+      self.registerAdapter(SystemAdapterFilePath + 'webserver.js', "WEBSERVER", { port : self.configuration.webserver.port, path: self.configuration.webserver.path })
 
     // we do add some adapter for system information. The adapter only sends some system infos within its adaper state object
     if(self.configuration.sysinfo.enabled)
-      self.registerAdapter('systeminfo.js', "SYSINFO", { interval : self.configuration.sysinfo.interval })
+      self.registerAdapter(SystemAdapterFilePath + 'systeminfo.js', "SYSINFO", { interval : self.configuration.sysinfo.interval })
 
     // start the watchdog intervall for probing our adapter processes
     if(self.configuration.adapterProcessWatchdog.enabled)
@@ -271,7 +273,6 @@ class Habitat extends HabitatBase
   registerAdapter(_adapterFile, _adapterEntityId, _adapterConfiguration)
   {
     const self = this
-
     if(self.adapterEntityProcesses[_adapterEntityId])
     {
       self.logError('Adapter process for entity ' + _adapterEntityId + ' already registered!')
@@ -280,16 +281,9 @@ class Habitat extends HabitatBase
 
     try
     {
-      let adapterFile
-      self.adapterEntityProcesses[_adapterEntityId] = {}
-      // the '_adapterFile' my be a filename only (then the sytem searches in the internal habitat adapter folder)
-      // or a complete path with filename. This is defined by the 'EXT#' prefix and defines an external, non system adapter
-      if(_adapterFile.startsWith('EXT#'))
-        adapterFile = _adapterFile.substring(4, _adapterFile.length)
-      else
-        adapterFile = __dirname + '/processes/habitat.process.adapter.' + _adapterFile
 
-      self.adapterEntityProcesses[_adapterEntityId].process = childProcess.fork(adapterFile, [_adapterEntityId])
+      self.adapterEntityProcesses[_adapterEntityId] = {}
+      self.adapterEntityProcesses[_adapterEntityId].process = childProcess.fork(_adapterFile, [_adapterEntityId])
       self.getAdapterProcess(_adapterEntityId).on('message', function(_message){
         self.onAdapterMessage(_message)
       })
@@ -434,10 +428,6 @@ class Habitat extends HabitatBase
     // we do have the actual originator and specification up to date
     if(_path.includes('.originator') || _path.includes('.specification') || _path.includes('.entity'))
       return
-
-    // TODO: @@@
-    if(_path.startsWith("KITCHEN-SPOT"))
-      console.log('State changed on path \'' + _path + '\' from \'' + (_previousValue != null ? _previousValue.toString() : '') + '\' to \'' + (_value != null ? _value.toString() : '') + '\'')
 
     // emit the state update so that subscribers will get the info if a state was updated
     // most subscribers will be 'thing' nodes in the node-red ecosystem
