@@ -1,11 +1,11 @@
 'use strict'
 
-const HabitatAdapter  = require("./habitat.adapter.js")
-const Connect         = require('connect')
-const ServeStatic     = require('serve-static')
+const MyHabitatAdapter  = require("./myhabitat.adapter.js")
+const Connect           = require('connect')
+const ServeStatic       = require('serve-static')
 
 
-class HabitatAdapter_Webserver extends HabitatAdapter
+class HabitatAdapter_Webserver extends MyHabitatAdapter
 {
   constructor(_entityId)
   {

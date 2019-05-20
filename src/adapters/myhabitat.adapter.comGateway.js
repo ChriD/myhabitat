@@ -1,14 +1,14 @@
 
 'use strict'
 
-const HabitatAdapter    = require("./habitat.adapter.js")
+const MyHabitatAdapter  = require("./myhabitat.adapter.js")
 const Crypto            = require("crypto")
 const WebSocket         = require('ws')
 const Get               = require('lodash.get')
 const Set               = require('lodash.set')
 
 
-class HabitatAdapter_ComGateway extends HabitatAdapter
+class HabitatAdapter_ComGateway extends MyHabitatAdapter
 {
   constructor(_entityId)
   {

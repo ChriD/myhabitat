@@ -1,8 +1,8 @@
 <!-- https://github.com/sbarwe/node-red-contrib-contextbrowser/blob/master/contextbrowser.html -->
 
 <script type="text/javascript">
-  RED.nodes.registerType('habitat-app',{
-    category: 'Habitat',
+  RED.nodes.registerType('myhabitat-app',{
+    category: 'MyHabitat',
     color: '#9999FF',
     defaults: {
       name                    : { value: '' },
@@ -19,15 +19,15 @@
     inputs:0,
     outputs:0,
     icon: 'white-globe.png',
-    paletteLabel: 'Habitat',
+    paletteLabel: 'MyHabitat',
     label: function() {
-        return this.name || 'Habitat'
+        return this.name || 'MyHabitat'
     },
   });
 </script>
 
 
-<script type="text/x-red" data-template-name="habitat-app">
+<script type="text/x-red" data-template-name="myhabitat-app">
 
 
   <div class="palette-category palette-category-expanded" style="display: block;">
@@ -142,7 +142,7 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="habitat-app">
+<script type="text/x-red" data-help-name="myhabitat-app">
   <p>This node is the main habitat application node</p>
   <p></p>
   <div class="form-tips"><b>Tip:</b> This is here to help.</div>

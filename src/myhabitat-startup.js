@@ -1,7 +1,7 @@
 "use strict"
 
-const Habitat       = require("./habitat.js")
-const LogLevel      = require("./globals/habitat.global.log.js").LogLevel
+const Habitat       = require("./myhabitat.js")
+const LogLevel      = require("./globals/myhabitat.global.log.js").LogLevel
 
 
 
@@ -16,6 +16,8 @@ habitat.init({
                             }
 })
 
+/*
+
 habitat.registerAdapter('knx.js', 'KNX001', { host : "10.0.0.130", port : 3671, forceTunneling : false })
 habitat.registerAdapter('artnet.js', 'ARTNET001', { host : "10.0.0.125", port : 6454, universe : 0, refresh : 4000 })
 
@@ -27,6 +29,7 @@ habitat.getAdapterProcess('KNX001').send( {data : { action    : "observe",
                                                                 },
                                                   }
                                           })
+                                          */
 /*
 habitat.getAdapterProcess('KNX001').send( {data : { action    : "observe",
                                                     ga        : "7/2/2",

@@ -1,6 +1,6 @@
 "use strict"
 
-const HabitatNode_Entity   = require('./habitat.node.entity.js')
+const HabitatNode_Entity   = require('./myhabitat.node.entity.js')
 
 class HabitatNode_Thing extends HabitatNode_Entity
 {

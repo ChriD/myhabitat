@@ -2,9 +2,9 @@
 "use strict"
 
 const EventEmitter  = require("events").EventEmitter
-const LogType       = require("./globals/habitat.global.log.js").LogType
+const LogType       = require("./globals/myhabitat.global.log.js").LogType
 
-class HabitatBase extends EventEmitter
+class MyHabitatBase extends EventEmitter
 {
   constructor()
   {
@@ -74,6 +74,6 @@ class HabitatBase extends EventEmitter
 
 }
 
-module.exports = HabitatBase
+module.exports = MyHabitatBase
 
 

@@ -1,7 +1,7 @@
 "use strict"
 
- const HabitatNode_Entity = require('../habitat.node.entity.js')
- const Habitat            = require("../../habitat.js")
+ const HabitatNode_Entity = require('../myhabitat.node.entity.js')
+ const Habitat            = require("../../myhabitat.js")
 
 module.exports = function(RED) {
 
@@ -135,5 +135,5 @@ module.exports = function(RED) {
 
   }
 
-  RED.nodes.registerType("habitat-app", HabitatNode_HabitatApp)
+  RED.nodes.registerType("myhabitat-app", HabitatNode_HabitatApp)
 }

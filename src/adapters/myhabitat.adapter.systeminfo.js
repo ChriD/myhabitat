@@ -1,10 +1,10 @@
 'use strict'
 
-const HabitatAdapter  = require("./habitat.adapter.js")
-const SysInfo         = require('systeminformation');
+const MyHabitatAdapter  = require("./myhabitat.adapter.js")
+const SysInfo           = require('systeminformation');
 
 
-class HabitatAdapter_SystemInfo extends HabitatAdapter
+class HabitatAdapter_SystemInfo extends MyHabitatAdapter
 {
   constructor(_entityId)
   {

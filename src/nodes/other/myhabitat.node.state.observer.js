@@ -9,8 +9,8 @@
 
 "use strict"
 
- const HabitatNode    = require('../habitat.node.js')
- const Habitat        = require("../../habitat.js")
+ const HabitatNode    = require('../myhabitat.node.js')
+ const Habitat        = require("../../myhabitat.js")
  const Get            = require('lodash.get')
 
 module.exports = function(RED) {
@@ -56,5 +56,5 @@ module.exports = function(RED) {
 
   }
 
-  RED.nodes.registerType("habitat-state-observer", HabitatNode_State_Observer)
+  RED.nodes.registerType("myhabitat-state-observer", HabitatNode_State_Observer)
 }

@@ -1,9 +1,9 @@
 'use strict'
 
-const HabitatBase  = require('../habitat.base.js')
+const MyHabitatBase  = require('../myhabitat.base.js')
 
 
-class HabitatAdapter extends HabitatBase
+class MyHabitatAdapter extends MyHabitatBase
 {
   constructor(_entityId)
   {
@@ -149,4 +149,4 @@ class HabitatAdapter extends HabitatBase
 }
 
 
-module.exports = HabitatAdapter
+module.exports = MyHabitatAdapter

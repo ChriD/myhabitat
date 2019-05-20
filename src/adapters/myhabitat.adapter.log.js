@@ -1,10 +1,10 @@
 'use strict'
 
-const HabitatAdapter  = require("./habitat.adapter.js")
-const LogLevel        = require("../globals/habitat.global.log.js").LogLevel
+const MyHabitatAdapter  = require("./myhabitat.adapter.js")
+const LogLevel          = require("../globals/myhabitat.global.log.js").LogLevel
 
 
-class HabitatAdapter_Log extends HabitatAdapter
+class HabitatAdapter_Log extends MyHabitatAdapter
 {
   constructor(_entityId)
   {

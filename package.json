@@ -15,8 +15,8 @@
   ],
   "node-red": {
     "nodes": {
-      "habitat-app": "src/nodes/app/habitat.node.habitatApp.js",
-      "habitat-state-observer": "src/nodes/other/habitat.node.state.observer.js"
+      "myhabitat-app": "src/nodes/app/myhabitat.node.habitatApp.js",
+      "myhabitat-state-observer": "src/nodes/other/myhabitat.node.state.observer.js"
     }
   },
   "dependencies": {
