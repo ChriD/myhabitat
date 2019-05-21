@@ -6,16 +6,14 @@
  *
  */
 
-
 "use strict"
 
- const HabitatNode    = require('../myhabitat.node.js')
- const Habitat        = require("../../myhabitat.js")
+ const MyHabitatNode  = require('../myhabitat.node.js')
  const Get            = require('lodash.get')
 
 module.exports = function(RED) {
 
-  class HabitatNode_State_Observer extends HabitatNode
+  class MyHabitatNode_State_Observer extends MyHabitatNode
   {
     constructor(_config)
     {
@@ -30,7 +28,7 @@ module.exports = function(RED) {
       super.ready()
 
       // attach to the habitat state emitter
-      self.habitatAppNode().on('entityStateChanged', function(_path, _value, _previousValue){
+      self.appNode().on('entityStateChanged', function(_path, _value, _previousValue){
         self.stateChanged(_path, _value, _previousValue)
       })
 
@@ -39,7 +37,7 @@ module.exports = function(RED) {
       // case the stateChanged' will trigger
       if(self.config.initialSend)
       {
-        const entityState = self.habitatAppNode().getEntityStates()[self.config.entityId]
+        const entityState = self.appNode().getEntityStates()[self.config.entityId]
         if(entityState)
           self.stateChanged(this.config.entityId + '.state.' + self.config.statePath , Get(entityState.state, self.config.statePath) , null)
         //else
@@ -56,5 +54,5 @@ module.exports = function(RED) {
 
   }
 
-  RED.nodes.registerType("myhabitat-state-observer", HabitatNode_State_Observer)
+  RED.nodes.registerType("myhabitat-state-observer", MyHabitatNode_State_Observer)
 }

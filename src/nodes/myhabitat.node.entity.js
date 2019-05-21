@@ -1,8 +1,8 @@
 "use strict"
 
-const HabitatNode   = require('./myhabitat.node.js')
+const MyHabitatNode   = require('./myhabitat.node.js')
 
-class HabitatNode_Entity extends HabitatNode
+class MyHabitatNode_Entity extends MyHabitatNode
 {
   constructor(_RED, _config)
   {
@@ -45,19 +45,19 @@ class HabitatNode_Entity extends HabitatNode
 
   addNodeReferenceToHabitatContext()
   {
-    this.habitatContextObject().nodes[this.getEntityId()] = this
+    this.myHabitatContextObject().nodes[this.getEntityId()] = this
   }
 
   removeNodeReferenceFromHabitatContext()
   {
-    delete this.habitatContextObject().nodes[this.getEntityId()]
+    delete this.myHabitatContextObject().nodes[this.getEntityId()]
   }
 
   stateObject()
   {
-    if(!this.habitatAppNode().getEntityStates()[this.getEntityId()])
-        this.habitatAppNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
-    return this.habitatAppNode().getEntityStates()[this.getEntityId()]
+    if(!this.appNode().getEntityStates()[this.getEntityId()])
+        this.appNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
+    return this.appNode().getEntityStates()[this.getEntityId()]
   }
 
   state()
@@ -80,4 +80,4 @@ class HabitatNode_Entity extends HabitatNode
 
 }
 
-module.exports = HabitatNode_Entity
+module.exports = MyHabitatNode_Entity

@@ -5,7 +5,7 @@ const Connect           = require('connect')
 const ServeStatic       = require('serve-static')
 
 
-class HabitatAdapter_Webserver extends MyHabitatAdapter
+class MyHabitatAdapter_Webserver extends MyHabitatAdapter
 {
   constructor(_entityId)
   {
@@ -69,4 +69,4 @@ class HabitatAdapter_Webserver extends MyHabitatAdapter
 }
 
 
-module.exports = HabitatAdapter_Webserver
+module.exports = MyHabitatAdapter_Webserver

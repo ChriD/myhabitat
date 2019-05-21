@@ -1,7 +1,7 @@
 
 'use strict'
 
-const HabitatProcess            = require('./myhabitat.process.adapter.js')
-const HabitatAdapter_SystemInfo = require('../adapters/myhabitat.adapter.systeminfo.js')
+const MyHabitatProcess            = require('./myhabitat.process.adapter.js')
+const MyHabitatAdapter_SystemInfo = require('../adapters/myhabitat.adapter.systeminfo.js')
 
-HabitatProcess.processSetup(process, new HabitatAdapter_SystemInfo(HabitatProcess.getEntityIdFromArgs(process.argv)))
+MyHabitatProcess.processSetup(process, new MyHabitatAdapter_SystemInfo(MyHabitatProcess.getEntityIdFromArgs(process.argv)))

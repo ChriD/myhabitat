@@ -28,7 +28,7 @@ const LogLevel      = require("./globals/myhabitat.global.log.js").LogLevel
 const SystemAdapterFilePath   = __dirname + '/processes/myhabitat.process.adapter.'
 
 
-class Habitat extends MyHabitatBase
+class MyHabitat extends MyHabitatBase
 {
   constructor()
   {
@@ -192,7 +192,7 @@ class Habitat extends MyHabitatBase
 
     self.configuration.logger             = self.configuration.logger ? self.configuration.logger : {}
     self.configuration.logger.enabled     = self.configuration.logger.hasOwnProperty('enabled') ? self.configuration.logger.enabled : true
-    self.configuration.logger.logLevel    = self.configuration.logger.logLevel ? self.configuration.logger.logLevel : (process.env.HABITAT_LOGLEVEL ? process.env.HABITAT_LOGLEVEL :  LogLevel.INFO)
+    self.configuration.logger.logLevel    = self.configuration.logger.logLevel ? self.configuration.logger.logLevel : (process.env.MYHABITAT_LOGLEVEL ? process.env.MYHABITAT_LOGLEVEL :  LogLevel.INFO)
 
     self.configuration.adapterProcessWatchdog           = self.configuration.adapterProcessWatchdog ? self.configuration.adapterProcessWatchdog : {}
     self.configuration.adapterProcessWatchdog.enabled   = self.configuration.adapterProcessWatchdog.hasOwnProperty('enabled') ? self.configuration.adapterProcessWatchdog.enabled : true
@@ -533,4 +533,4 @@ class Habitat extends MyHabitatBase
 }
 
 
-module.exports = Habitat
+module.exports = MyHabitat

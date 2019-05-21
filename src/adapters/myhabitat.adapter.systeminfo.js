@@ -4,7 +4,7 @@ const MyHabitatAdapter  = require("./myhabitat.adapter.js")
 const SysInfo           = require('systeminformation');
 
 
-class HabitatAdapter_SystemInfo extends MyHabitatAdapter
+class MyHabitatAdapter_SystemInfo extends MyHabitatAdapter
 {
   constructor(_entityId)
   {
@@ -162,4 +162,4 @@ class HabitatAdapter_SystemInfo extends MyHabitatAdapter
 }
 
 
-module.exports = HabitatAdapter_SystemInfo
+module.exports = MyHabitatAdapter_SystemInfo

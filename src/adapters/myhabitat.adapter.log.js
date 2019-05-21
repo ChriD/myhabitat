@@ -4,7 +4,7 @@ const MyHabitatAdapter  = require("./myhabitat.adapter.js")
 const LogLevel          = require("../globals/myhabitat.global.log.js").LogLevel
 
 
-class HabitatAdapter_Log extends MyHabitatAdapter
+class MyHabitatAdapter_Log extends MyHabitatAdapter
 {
   constructor(_entityId)
   {
@@ -69,4 +69,4 @@ class HabitatAdapter_Log extends MyHabitatAdapter
 }
 
 
-module.exports = HabitatAdapter_Log
+module.exports = MyHabitatAdapter_Log

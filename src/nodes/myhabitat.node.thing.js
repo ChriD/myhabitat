@@ -1,8 +1,8 @@
 "use strict"
 
-const HabitatNode_Entity   = require('./myhabitat.node.entity.js')
+const MyHabitatNode_Entity   = require('./myhabitat.node.entity.js')
 
-class HabitatNode_Thing extends HabitatNode_Entity
+class MyHabitatNode_Thing extends MyHabitatNode_Entity
 {
   constructor(_RED, _config)
   {
@@ -27,4 +27,4 @@ class HabitatNode_Thing extends HabitatNode_Entity
 }
 
 
-module.exports = HabitatNode_Thing
+module.exports = MyHabitatNode_Thing

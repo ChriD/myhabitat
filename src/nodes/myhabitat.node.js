@@ -53,13 +53,13 @@ class HabitatNode
   }
 
 
-  habitatContextObject()
+  myHabitatContextObject()
   {
-    let habitat = this.context().global.get('HABITAT')
+    let habitat = this.context().global.get('MYHABITAT')
     if(!habitat)
     {
-      this.context().global.set('HABITAT', {  nodes : {} } )
-      habitat = this.context().global.get('HABITAT')
+      this.context().global.set('MYHABITAT', {  nodes : {} } )
+      habitat = this.context().global.get('MYHABITAT')
     }
     return habitat
   }
@@ -68,9 +68,9 @@ class HabitatNode
    * returns the habitat application node
    * @return {Object} the habitat application node
    */
-  habitatAppNode()
+  appNode()
   {
-    return this.habitatContextObject().nodes['HABITATAPP']
+    return this.myHabitatContextObject().nodes['MYHABITATAPP']
   }
 
 

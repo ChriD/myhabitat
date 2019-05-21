@@ -1,7 +1,7 @@
 
 'use strict'
 
-const HabitatProcess            = require('./myhabitat.process.adapter.js')
-const HabitatAdapter_Webserver  = require('../adapters/myhabitat.adapter.webserver.js')
+const MyHabitatProcess            = require('./myhabitat.process.adapter.js')
+const MyHabitatAdapter_Webserver  = require('../adapters/myhabitat.adapter.webserver.js')
 
-HabitatProcess.processSetup(process, new HabitatAdapter_Webserver(HabitatProcess.getEntityIdFromArgs(process.argv)))
+MyHabitatProcess.processSetup(process, new MyHabitatAdapter_Webserver(MyHabitatProcess.getEntityIdFromArgs(process.argv)))
