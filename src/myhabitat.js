@@ -449,15 +449,9 @@ class MyHabitat extends MyHabitatBase
 
   calcStatistics()
   {
-    // TODO: @@@
-
-    /*
-    this.statistics = { counters :  { processes:  { active : 0 },
-    messages:   { adapters : { in : 0, out : 0 } },
-    states:     { updates : 0 }
-  }
-}*/
     let entityId = this.getEntityId()
+
+    // TODO: add active process count info
 
     // calc the overall message count from the adapters and all other messages that are beeing processed by the habitat app
     let msgCountOverall = this.statistics.counters.messages.adapters.in + this.statistics.counters.messages.adapters.out
@@ -475,7 +469,7 @@ class MyHabitat extends MyHabitatBase
       this.statistics.counters.messages.overallCount.pop()
     for(let idx=0; idx<this.statistics.counters.messages.overallCount.length; idx++)
       msgCountIntervalAvg += this.statistics.counters.messages.overallCount[idx]
-    msgCountIntervalAvg = msgCountIntervalAvg / 5
+    msgCountIntervalAvg = (msgCountIntervalAvg / 5).toFixed(0)
 
     // store previous
     this.statistics.counters.messages.adapters.inPrev   = this.statistics.counters.messages.adapters.in
