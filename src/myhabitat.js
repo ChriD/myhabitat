@@ -22,7 +22,7 @@ const MyHabitatBase = require('./myhabitat.base.js')
 const Package       = require('../package.json')
 const OnChange      = require('on-change')
 const Merge         = require('lodash.merge')
-const CloneDeep     = require('lodash.clonedeep');
+const CloneDeep     = require('lodash.clonedeep')
 const LogLevel      = require("./globals/myhabitat.global.log.js").LogLevel
 
 const SystemAdapterFilePath   = __dirname + '/processes/myhabitat.process.adapter.'
