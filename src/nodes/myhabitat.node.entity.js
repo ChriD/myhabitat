@@ -11,13 +11,14 @@ class MyHabitatNode_Entity extends MyHabitatNode
 
   getEntityModuleId()
   {
-    throw "Entity-Module is not specified"
+    //throw "Entity-Module is not specified"
+    return ''
   }
 
   getEntityId()
   {
-    if(!this.config.entityId)
-      throw "Entity-ID is not specified"
+    //if(!this.config.entityId)
+      //throw "Entity-ID is not specified"
     return this.config.entityId
   }
 
@@ -45,16 +46,21 @@ class MyHabitatNode_Entity extends MyHabitatNode
 
   addNodeReferenceToHabitatContext()
   {
-    this.myHabitatContextObject().nodes[this.getEntityId()] = this
+    if(this.getEntityId())
+      this.myHabitatContextObject().nodes[this.getEntityId()] = this
   }
 
   removeNodeReferenceFromHabitatContext()
   {
-    delete this.myHabitatContextObject().nodes[this.getEntityId()]
+    if(this.getEntityId())
+      delete this.myHabitatContextObject().nodes[this.getEntityId()]
   }
+
 
   stateObject()
   {
+    if(!this.getEntityId())
+      return { entity : {}, state : {}, originator : {}, specification : {}}
     if(!this.appNode().getEntityStates()[this.getEntityId()])
         this.appNode().getEntityStates()[this.getEntityId()] = { entity : this.getEntity(), state : this.getDefaultState(), originator : {}, specification : {} }
     return this.appNode().getEntityStates()[this.getEntityId()]
