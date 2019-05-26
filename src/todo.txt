@@ -7,6 +7,9 @@ TODOS v1.0
 * RAUMFELD-Adapter      : create external raumfeld adapter
 * WEBGUI                : show logs
 * WEBGUI                : Better design
+* PROCESSES             : Process names on linux and windows --> http://broken-by.me/node-js-change-visible-process-name/
+                          https://stackoverflow.com/questions/44756196/how-to-change-the-node-js-process-name-on-windows-10
+                          doesn't work on windows!
 
 TODOS Future
-* GENRAL                : localization
+* GENERAL               : localization
