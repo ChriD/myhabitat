@@ -40,8 +40,6 @@ module.exports = function(RED) {
         const entityState = self.appNode().getEntityStates()[self.config.entityId]
         if(entityState)
           self.stateChanged(this.config.entityId + '.state.' + self.config.statePath , Get(entityState.state, self.config.statePath) , null)
-        //else
-        //  self.error('No state object for entity \'' + self.config.entityId +'\' found')
       }
 
     }

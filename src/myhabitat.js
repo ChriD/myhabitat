@@ -1,11 +1,9 @@
 /**
- * HABITAT
+ * MYHABITAT
  *
  *
  * TODOS: - log system does use some ressources even if it is disabled, maybe we find a better solution?
- *        - allow external adapter files to be loaded
  *        - SYSINFO adapter crashes when USB is attached (at least when my handy is attached)
- *        - add external adapter + nodes (Raumfeld)
  *        - logging to files with a existing logger (watson?)
  *        - admin panel with state viewer and logger
  *        - node helps and descriptions!
@@ -23,6 +21,8 @@ const Package       = require('../package.json')
 const OnChange      = require('on-change')
 const Merge         = require('lodash.merge')
 const CloneDeep     = require('lodash.clonedeep')
+const Get           = require('lodash.get')
+const Set           = require('lodash.set')
 const LogLevel      = require("./globals/myhabitat.global.log.js").LogLevel
 
 const SystemAdapterFilePath   = __dirname + '/processes/myhabitat.process.adapter.'
@@ -140,15 +140,15 @@ class MyHabitat extends MyHabitatBase
     const processEntityIdsRespawn = []
 
     // TODO: should i used the connected & killed info on the process object instead the ping loop?
-    //
     for(let idx=(processEntityIds.length-1); idx>=0; idx--)
     {
       // check if the process has updated the state in the watchdog list.
-      // if this is not the case, we have to reboot the process, fot this we do store the entity id into a list
+      // if this is not the case, we have to reboot the process, for this we do store the entity id into a list
       if(this.adapterEntityProcessWatchdogList[processEntityIds[idx]] === false)
       {
         this.logError('Adapter entity process ' + processEntityIds[idx] + ' seems to be crashed!')
         processEntityIdsRespawn.push(processEntityIds[idx])
+        Set(this.getEntityStates()[processEntityIds[idx]].state, 'process.alive', false)
       }
       self.adapterEntityProcessWatchdogList[processEntityIds[idx]] = false
     }
@@ -332,9 +332,14 @@ class MyHabitat extends MyHabitatBase
     this.statistics.counters.messages.adapters.in++
 
     // all adapters are sending us a 'ping' event about each second
-    // if this happens we have to mark the entotyid in the watchlist as 'alive and working hard'
+    // if this happens we have to mark the entityid in the watchlist as 'alive and working hard'
+    // TODO: another thing we have to to is set the alive state for informational usage
     if(_message.adapter && _message.adapter.ping)
+    {
       this.adapterEntityProcessWatchdogList[_message.adapter.entity.id] = true
+      this.createEmptyEntityStateIfNotExists(_message.adapter.entity.id)
+      Set(this.getEntityStates()[_message.adapter.entity.id].state, 'process.alive', true)
+    }
 
     // adapters may send a log to the main process
     // this is not the best thing but i found no good method to reference the logger process to the other
@@ -377,6 +382,13 @@ class MyHabitat extends MyHabitatBase
   }
 
 
+  createEmptyEntityStateIfNotExists(_entityId)
+  {
+    if(!this.entityStates[_entityId])
+      this.entityStates[_entityId] = { entity : {}, state : {} , originator : {}, specification : {} }
+  }
+
+
   updateEntityState(_entityId, _entity, _entityState, _originator = {}, _specification = {})
   {
     try
@@ -388,8 +400,7 @@ class MyHabitat extends MyHabitatBase
 
       // if there is no entry for the entity state we have to create one before we can merge
       // we do not want to trigger the observation here so we use the plain object, not the observed one
-      if(!this.entityStates[_entityId])
-        this.entityStates[_entityId] = { entity : {}, state : {} , originator : {}, specification : {} }
+      this.createEmptyEntityStateIfNotExists(_entityId)
 
       // we do have information about the entity itself
       // TODO: we may use deep 'Copy' instead of 'Merge' ?
