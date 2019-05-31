@@ -15,8 +15,11 @@ module.exports = function(RED) {
 
       RED.nodes.createNode(this, _config)
 
-      // create a configuration object for the habitat application
-      // the habitat application foes have dome built in adapters and for that we have to define some values
+      // all myHabitat nodes are registereing the 'nodes-started' event, so we raise the warning to 100
+      RED.events.setMaxListeners(100)
+
+      // create a configuration object for the myHabitat application
+      // the myHabitat application does have dome built in adapters and for that we have to define some values
       this.myHabitatConfig = {}
       this.myHabitatConfig.comgateway = {}
       this.myHabitatConfig.comgateway.port                = parseInt(_config.comgatewayPort)
