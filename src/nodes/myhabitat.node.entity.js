@@ -44,6 +44,25 @@ class MyHabitatNode_Entity extends MyHabitatNode
     this.state()
   }
 
+  input(_message)
+  {
+    super.input(_message)
+
+      // the state object may be given in the payload too, so if this is the case, copy the payload state
+      // to the message state (if message state is not there!)
+      if(!_message.state)
+      {
+        if(_message.payload.state && typeof _message.payload.state == "object")
+          _message.state = JSON.parse(JSON.stringify(_message.payload.state))
+        else
+          _message.state = {}
+      }
+
+      // fill up the given message state object with all values we need, that means the state object given by the
+      // input will be merged with the current state object so we do have all of the properties existent
+      this.prepareInputState(_message.state)
+  }
+
   addNodeReferenceToHabitatContext()
   {
     if(this.getEntityId())
@@ -74,6 +93,30 @@ class MyHabitatNode_Entity extends MyHabitatNode
   getDefaultState()
   {
     throw 'Default state is not specified'
+  }
+
+
+  prepareInputState(_inputState, _state = this.state())
+  {
+    if(!_inputState)
+      _inputState = {}
+
+    for (var property in _state)
+    {
+      if (_state.hasOwnProperty(property))
+      {
+        if(_state[property] instanceof Object)
+        {
+          if (!_inputState.hasOwnProperty(property))
+            _inputState[property] = {}
+          this.prepareInputState(_inputState[property], _state[property])
+        }
+        else
+        {
+          _inputState[property] = _inputState.hasOwnProperty(property)   ? _inputState[property]  : _state[property]
+        }
+      }
+    }
   }
 
   async cleanup()
