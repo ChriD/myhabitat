@@ -213,10 +213,18 @@ class MyHabitat extends MyHabitatBase
   sendToLoggerProcess(_type, _moduleId, _entityId, _log, _object)
   {
     if(this.adapterEntityProcesses['LOG'])
+    {
       this.sendToAdapter("LOG", {data : { type      : _type,
                                           moduleId  : _moduleId,
                                           entityId  : _entityId,
                                           text      : _log } })
+      // print out the stack trace if error is some kind of exception
+      if(_object && typeof _object == 'object' && _object.hasOwnProperty('stack'))
+        this.sendToAdapter("LOG", {data : { type      : _type,
+                                            moduleId  : _moduleId,
+                                            entityId  : _entityId,
+                                            text      : _object.stack } })
+    }
   }
 
 
