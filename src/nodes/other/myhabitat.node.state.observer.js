@@ -19,6 +19,7 @@ module.exports = function(RED) {
     {
       super(RED, _config)
       RED.nodes.createNode(this, _config)
+      this.created()
     }
 
     ready()
