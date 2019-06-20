@@ -195,12 +195,17 @@ class HabitatAdapter_ComGateway extends MyHabitatAdapter
   {
     this.logDebug('Got client message from ' + _clientInfo.id + ': ' + JSON.stringify(_data))
 
-    // clients currently do send us only state updates, if there is no state information in the data
-    // we skip it and give some warning in the log. In future we may have some deeper communication
-    if(_data.entityState)
-      this.output( { entityState : _data.entityState } )
-    else
-      this.logWarning('Client message does not contain workable data!')
+    try
+    {
+      const object = JSON.parse(_data)
+      // redirect the data given from the client directly to the habitat app
+      // in future we may have some pecial communication protocol so it may be that we wont redirect all messages then
+      this.outputRawData(object)
+    }
+    catch(_exception)
+    {
+      this.logError('Error on client message: ' +  _data, _exception)
+    }
   }
 
 

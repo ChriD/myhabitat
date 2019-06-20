@@ -3,13 +3,15 @@ TODOS v1.0
 
 * KNX-Adapter           : Better Connection handling (endless reconnect + info when connection error!)
 * KNX-Adapter           : redirect logs from the underlaying knx library
-* ADAPTERS              : allow and implement external ADAPTERS
 * RAUMFELD-Adapter      : create external raumfeld adapter
 * WEBGUI                : show logs
 * WEBGUI                : Better design
 * PROCESSES             : Process names on linux and windows --> http://broken-by.me/node-js-change-visible-process-name/
                           https://stackoverflow.com/questions/44756196/how-to-change-the-node-js-process-name-on-windows-10
                           doesn't work on windows!
+* LOGS                  : always redirect logs to the gateway
+* GENERAL               : make good node descriptions and help texts
+* USERGUI               : https://codex.so/editor ?
 
 TODOS Future
 * GENERAL               : localization

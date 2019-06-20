@@ -1,6 +1,8 @@
 'use strict'
 
-const MyHabitatBase  = require('../myhabitat.base.js')
+const MyHabitatBase   = require('../myhabitat.base.js')
+const Get             = require('lodash.get')
+const Set             = require('lodash.set')
 
 
 class MyHabitatAdapter extends MyHabitatBase
@@ -112,6 +114,13 @@ class MyHabitatAdapter extends MyHabitatBase
                       data    : _data
                     }
     this.dataOut(output)
+  }
+
+
+  outputRawData(_data)
+  {
+    Set(_data, 'adapter.entity', this.createEntityObject())
+    this.dataOut(_data)
   }
 
 

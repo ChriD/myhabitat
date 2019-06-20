@@ -122,6 +122,9 @@ class MyHabitat extends MyHabitatBase
     if(self.configuration.sysinfo.enabled)
       self.registerAdapter(SystemAdapterFilePath + 'systeminfo.js', "SYSINFO", { interval : self.configuration.sysinfo.interval })
 
+    // the scene manager adapter is always enabled
+    self.registerAdapter(SystemAdapterFilePath + 'sceneManager.js', "SCENEMANAGER", {})
+
     // start the watchdog intervall for probing our adapter processes
     if(self.configuration.adapterProcessWatchdog.enabled)
     {
@@ -373,13 +376,37 @@ class MyHabitat extends MyHabitatBase
     // we may get an entity state update info from an adapter (e.g. comGateway)
     // this is a special data protocol which has to be the same for every adapter who is sending entity states to the system
     if(_message.entity && _message.entityState)
+    {
       this.emit('entityStateReceived', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
+    }
+
+    // there is the possibility to control scenes from any adapter. (e.g loadScene, storeScene)
+    // this is done by using the 'scene' action object
+    if(_message.scene)
+    {
+      this.handleSceneObject(_message.scene)
+      this.emit('sceneObjectReceived', _message.scene, _message.originator)
+    }
+
 
     // if the message has a 'data' attribute, we do only emit the data for the adapter entity
     // the 'data' attribute does container the adapter specific protocol. This data will be evaluated on the specific node-red adapter node
     if(_message.data)
       this.emit('adapterMessageReceived', _message.adapter.entity, _message.data)
 
+  }
+
+
+  handleSceneObject(_sceneEnvelope)
+  {
+    if(!this.adapterEntityProcesses['SCENEMANAGER'])
+      return
+    /*
+    this.sendToAdapter("SCENEMANAGER", {data : {  action        : 'load',
+                                                  sceneId       : '',
+                                                  entityId      : '' } })
+    */
+    this.sendToAdapter("SCENEMANAGER", {data : _sceneEnvelope })
   }
 
 
