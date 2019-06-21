@@ -51,6 +51,7 @@ module.exports = function(RED) {
           else if(payload.toUpperCase() == "RESET")
             self.reset()
           break
+        // TODO: silentDown, silentUp?
 
         default:
           break
