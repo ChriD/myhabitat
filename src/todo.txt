@@ -12,6 +12,7 @@ TODOS v1.0
 * LOGS                  : always redirect logs to the gateway
 * GENERAL               : make good node descriptions and help texts
 * USERGUI               : https://codex.so/editor ?
+* SCENEMANAGER          : specihern und laden der daten
 
 TODOS Future
 * GENERAL               : localization

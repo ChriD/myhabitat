@@ -14,7 +14,8 @@
       sysinfoEnabled          : { value: true },
       sysinfoInterval         : { value: 2500,    required: true, validate: RED.validators.number() },
       loggerEnabled           : { value: true },
-      loggerLogLevel          : { value: 10 }
+      loggerLogLevel          : { value: 10 },
+      scenesStorageFile       : { value: './data/states.json'}
     },
     inputs:0,
     outputs:0,
@@ -137,8 +138,21 @@
       </div>
     </div>
 
+    <div class="palette-category palette-category-expanded" style="display: block;">
+      <div class="palette-header">
+        <span>Scenes</span>
+      </div>
+      <div style="position: relative; display: block;">
+        <div style="padding: 6px; padding-top: 12px;">
 
+          <div class="form-row">
+            <label style="width:39%;" for="node-input-scenesStorageFile">Storage file</label>
+            <input style="width:60%;" type="text" id="node-input-scenesStorageFile" placeholder="./data/states.json">
+          </div>
 
+        </div>
+      </div>
+    </div>
 
 </script>
 

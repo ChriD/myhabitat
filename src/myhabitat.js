@@ -123,7 +123,7 @@ class MyHabitat extends MyHabitatBase
       self.registerAdapter(SystemAdapterFilePath + 'systeminfo.js', "SYSINFO", { interval : self.configuration.sysinfo.interval })
 
     // the scene manager adapter is always enabled
-    self.registerAdapter(SystemAdapterFilePath + 'sceneManager.js', "SCENEMANAGER", {})
+    self.registerAdapter(SystemAdapterFilePath + 'sceneManager.js', "SCENEMANAGER", { storageFile : self.configuration.scenes.storageFile })
 
     // start the watchdog intervall for probing our adapter processes
     if(self.configuration.adapterProcessWatchdog.enabled)
@@ -200,6 +200,9 @@ class MyHabitat extends MyHabitatBase
     self.configuration.adapterProcessWatchdog           = self.configuration.adapterProcessWatchdog ? self.configuration.adapterProcessWatchdog : {}
     self.configuration.adapterProcessWatchdog.enabled   = self.configuration.adapterProcessWatchdog.hasOwnProperty('enabled') ? self.configuration.adapterProcessWatchdog.enabled : true
     self.configuration.adapterProcessWatchdog.interval  = self.configuration.adapterProcessWatchdog.interval ? self.configuration.adapterProcessWatchdog.interval : 5000
+
+    self.configuration.scenes             = self.configuration.scenes ? self.configuration.scenes : {}
+    self.configuration.scenes.storageFile = self.configuration.scenes.storageFile ? self.configuration.scenes.storageFile : './data/states.json'
   }
 
 

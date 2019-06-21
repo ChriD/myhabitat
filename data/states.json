@@ -1,0 +1,22 @@
+{
+    "TESTON": {
+        "entities": {
+            "ARTNET-KITCHEN-SPOT-ISLAND": {
+                "isOn": true
+            },
+            "KNX-KITCHEN-SPOT-WORK": {
+                "isOn": true
+            }
+        }
+    },
+    "TESTOFF": {
+        "entities": {
+            "ARTNET-KITCHEN-SPOT-ISLAND": {
+                "isOn": false
+            },
+            "KNX-KITCHEN-SPOT-WORK": {
+                "isOn": false
+            }
+        }
+    }
+}

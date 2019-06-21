@@ -38,6 +38,10 @@ module.exports = function(RED) {
       this.myHabitatConfig.logger.enabled                 = _config.loggerEnabled
       this.myHabitatConfig.logger.logLevel                = parseInt(_config.loggerLogLevel)
 
+      this.myHabitatConfig.scenes = {}
+      this.myHabitatConfig.scenes.storageFile            = _config.scenesStorageFile
+
+
       this.myHabitat = new MyHabitat()
 
       this.myHabitat.on('adapterMessageReceived', function(_adapterEntityId, _data){

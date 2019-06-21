@@ -1,10 +1,10 @@
 'use strict'
 
-const MyHabitatAdapter  = require("./myhabitat.adapter.js")
-const CloneDeep         = require('lodash.clonedeep')
-const Get               = require('lodash.get')
-const Set               = require('lodash.set')
-const fs                = require("fs");
+const MyHabitatAdapter      = require("./myhabitat.adapter.js")
+const CloneDeep             = require('lodash.clonedeep')
+const Get                   = require('lodash.get')
+const Set                   = require('lodash.set')
+const MyhabitatStorage_File = require('../storage/myhabitat.storage.file.js')
 
 
 class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
@@ -20,9 +20,11 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
     this.adapterState.counters = {}
     this.adapterState.counters.scenes     = 0
 
-
     // 'multi dimensional' object storing the sceneId and the entities with its states
     this.sceneData = {}
+
+    //
+
   }
 
 
@@ -37,26 +39,27 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
     const self = this
 
     this.adapterState.storageFile = _configuration.storageFile
-    // on setup we are loading the scenes from the file storage into our data object
-    // the data object will be saved from timne to time if there was a change
-    //self.loadScenesFromFile(_configuration.storageFile)
 
-    // https://www.npmjs.com/package/data-store
-    // https://www.npmjs.com/package/node-storage
+    this.storage = new MyhabitatStorage_File(_configuration.storageFile ? _configuration.storageFile : './data/states.json')
+    this.loadScenesData()
 
     super.setup(_configuration)
   }
 
 
-  //createFileIfNotExists()
 
-
-  /*
-  loadScenesFromFile(_filename)
+  async loadScenesData()
   {
-
+    this.sceneData = await this.storage.load('scenes')
+    this.adapterState.counters.scenes = Object.keys(this.sceneData).length
+    this.logInfo(this.adapterState.counters.scenes.toString() + ' scenes loaded' )
   }
-  */
+
+  async saveScenesData()
+  {
+    this.logDebug('Saveing scenes data fo file:' + this.configuration.storageFile)
+    await this.storage.save('scenes', this.sceneData)
+  }
 
 
   close()
@@ -110,6 +113,8 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
       Set(this.sceneData, _sceneId + '.entities.' + _entityId, _data)
     else
       Set(this.sceneData, _sceneId + '.entities', _data)
+    this.adapterState.counters.scenes = Object.keys(this.sceneData).length
+    this.saveScenesData()
   }
 
 
