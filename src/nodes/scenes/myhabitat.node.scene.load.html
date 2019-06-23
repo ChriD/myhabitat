@@ -1,0 +1,52 @@
+
+<script type="text/javascript">
+  RED.nodes.registerType('myhabitat-scene-load',{
+    category: 'MyHabitat',
+    color: '#9999FF',
+    defaults: {
+      name                    : { value: '' },
+      sceneId                 : { value: '' }
+    },
+    inputs:1,
+    outputs:0,
+    icon: 'white-globe.png',
+    paletteLabel: 'Load Scene',
+    label: function() {
+        return this.name || 'Load Scene'
+    },
+  });
+</script>
+
+
+<script type="text/x-red" data-template-name="myhabitat-scene-load">
+
+
+  <div class="palette-category palette-category-expanded" style="display: block;">
+    <div class="palette-header">
+      <span>General</span>
+    </div>
+    <div style="position: relative; display: block;">
+      <div style="padding: 6px; padding-top: 12px;">
+
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-name">Name</label>
+          <input style="width:60%;" type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+          <label style="width:39%;" for="node-input-sceneId">SceneId</label>
+          <input style="width:60%;" type="text" id="node-input-sceneId" placeholder="SceneId">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="myhabitat-scene-load">
+  <p>This node is the main habitat application node</p>
+  <p></p>
+  <div class="form-tips"><b>Tip:</b> This is here to help.</div>
+</script>
+

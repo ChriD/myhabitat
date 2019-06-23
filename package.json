@@ -18,6 +18,7 @@
       "myhabitat-app": "src/nodes/app/myhabitat.node.app.js",
       "myhabitat-state-observer": "src/nodes/other/myhabitat.node.state.observer.js",
       "myhabitat-state-get": "src/nodes/other/myhabitat.node.state.get.js",
+      "myhabitat-scene-load": "src/nodes/scenes/myhabitat.node.scene.load.js",
       "myhabitat-common-selector": "src/nodes/other/myhabitat.node.common.selector.js"
     }
   },

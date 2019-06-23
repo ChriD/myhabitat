@@ -413,6 +413,14 @@ class MyHabitat extends MyHabitatBase
   }
 
 
+  loadScene(_sceneId)
+  {
+    this.handleSceneObject( { actionId : 'load',
+                              sceneId  :  _sceneId
+                            })
+  }
+
+
     // TODO: @@@ ??? Needed???
   onNodeMessage()
   {
