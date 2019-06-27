@@ -202,7 +202,7 @@ class MyHabitat extends MyHabitatBase
     self.configuration.adapterProcessWatchdog.interval  = self.configuration.adapterProcessWatchdog.interval ? self.configuration.adapterProcessWatchdog.interval : 5000
 
     self.configuration.scenes             = self.configuration.scenes ? self.configuration.scenes : {}
-    self.configuration.scenes.storageFile = self.configuration.scenes.storageFile ? self.configuration.scenes.storageFile : './data/states.json'
+    self.configuration.scenes.storageFile = self.configuration.scenes.storageFile ? self.configuration.scenes.storageFile : './data/scenes.json'
   }
 
 

@@ -15,7 +15,7 @@
       sysinfoInterval         : { value: 2500,    required: true, validate: RED.validators.number() },
       loggerEnabled           : { value: true },
       loggerLogLevel          : { value: 10 },
-      scenesStorageFile       : { value: './data/states.json'}
+      scenesStorageFile       : { value: './data/scenes.json'}
     },
     inputs:0,
     outputs:0,
@@ -147,7 +147,7 @@
 
           <div class="form-row">
             <label style="width:39%;" for="node-input-scenesStorageFile">Storage file</label>
-            <input style="width:60%;" type="text" id="node-input-scenesStorageFile" placeholder="./data/states.json">
+            <input style="width:60%;" type="text" id="node-input-scenesStorageFile" placeholder="./data/scenes.json">
           </div>
 
         </div>
@@ -157,8 +157,78 @@
 </script>
 
 <script type="text/x-red" data-help-name="myhabitat-app">
-  <p>This node is the main habitat application node</p>
-  <p></p>
-  <div class="form-tips"><b>Tip:</b> This is here to help.</div>
+  <p>
+    This node is the main habitat application node.
+    It does contain settings for the inbuilt adapters.
+  </p>
+
+  <h3>Settings</h3>
+
+      <p>
+        <li> Logging
+            <dl class="message-properties">
+                <dt>Enabled <span class="property-type">checkbox</span></dt>
+                <dd>enables or disables the log output</dd>
+                <dt>Log level<span class="property-type">enum</span></dt>
+                <dd>Set the log level which should be generated</dd>
+            </dl>
+        </li>
+        <div class="form-tips" style="max-width: 100%">The logger is an independent node process</div>
+      </p>
+
+      <p>
+        <li> Message gateway
+            <dl class="message-properties">
+                <dt>Port <span class="property-type">number</span></dt>
+                <dd>the port for the gateway</dd>
+                <dt>Alive ping interval <span class="property-type">number [ms]</span></dt>
+                <dd>this is the interval in [ms] when a ping is sent to the client. If the client does not answer with a pong it will be disconnected</dd>
+            </dl>
+        </li>
+        <div class="form-tips" style="max-width: 100%">The message gateway is always enabled. It is an independent node process and Clients can connect to the given port via a socket connection and will receive state updates</div>
+      </p>
+
+      <p>
+        <li> Webserver
+            <dl class="message-properties">
+                <dt>Enabled <span class="property-type">checkbox</span></dt>
+                <dd>enable or disable the webserver</dd>
+                <dt>Port <span class="property-type">number</span></dt>
+                <dd>the port where the wevserver serves</dd>
+                <dt>Path to serve <span class="property-type">string</span></dt>
+                <dd>here you can specify the path which should be served by the webserver. Leave it empty for standard</dd>
+            </dl>
+        </li>
+        <div class="form-tips" style="max-width: 100%">The webserver may be disabled and beeing replaced with an external webserver. Be aware that the admin panel and the standard gui are served by the internal webserver.</div>
+      </p>
+
+      <p>
+        <li> Calculate system info states
+            <dl class="message-properties">
+                <dt>Enabled <span class="property-type">checkbox</span></dt>
+                <dd>enable or disable the system info state calculation</dd>
+                <dt>Data query interval <span class="property-type">number [ms]</span></dt>
+                <dd>this is the interval in [ms] for requesting/updateing the system states. you should not set this value to low because this would lead to performance issues/dd>
+
+            </dl>
+        </li>
+        <div class="form-tips" style="max-width: 100%">The calculation of the system states is beeing done in an independent process to keep the core free of workload, you may disable this calculation but then the GUI's will not have any system data available</div>
+      </p>
+
+      <p>
+        <li> Scenes
+            <dl class="message-properties">
+                <dt>Storage file <span class="property-type">string</span></dt>
+                <dd>the filename with path where the scenes are stored. You can leave ist empty for standard</dd>
+            </dl>
+        </li>
+        <div class="form-tips" style="max-width: 100%">The scene manger is an independent process which does the loading and storing of scenes</div>
+      </p>
+
+
+  <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/ChriD/myhabitat">GitHub</a> - the nodes github repository</li>
+    </ul>
 </script>
 

@@ -12,8 +12,10 @@ TODOS v1.0
 * LOGS                  : always redirect logs to the gateway
 * GENERAL               : make good node descriptions and help texts
 * USERGUI               : https://codex.so/editor ?
+
 * SCENES                : szenen laden node
-* SCENES                : szenen switcher node --> benötigt gruppenid auf der szene
+* SCENES                : szenen switcher node --> benötigt gruppenid auf der szene, kann meherer gruppenids haben? reihenfolge?
+* SCENES                : Szenengruppe
 
 TODOS Future
 * GENERAL               : localization

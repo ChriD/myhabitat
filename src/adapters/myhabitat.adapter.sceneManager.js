@@ -23,7 +23,8 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
     // 'multi dimensional' object storing the sceneId and the entities with its states
     this.sceneData = {}
 
-    //
+    // 'multi dimensional' object which stores multiple scenes into one group for switching
+    //this.sceneGroupData = {}
 
   }
 
@@ -40,7 +41,7 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
 
     this.adapterState.storageFile = _configuration.storageFile
 
-    this.storage = new MyhabitatStorage_File(_configuration.storageFile ? _configuration.storageFile : './data/states.json')
+    this.storage = new MyhabitatStorage_File(_configuration.storageFile ? _configuration.storageFile : './data/scenes.json')
     this.loadScenesData()
 
     super.setup(_configuration)
