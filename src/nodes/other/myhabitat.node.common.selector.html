@@ -149,6 +149,30 @@
 
 
   <script type="text/x-red" data-help-name="myhabitat-common-selector">
-      <p></p>
+    <p>Switches through a given list of data by 1 step</p>
+
+    <h3>Inputs</h3>
+      <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">string | integer | boolean</span>
+        </dt>
+        <dd>
+            the indicator if the next value or the previouse value in the list should be sent to the output
+            <ul>
+              <li>
+                <code>1</code> <code>true</code> <code>up</code> go up the list by one
+              </li>
+              <li>
+                  <code>-1</code> <code>false</code> <code>down</code> go down the list by one
+              </li>
+            </ul>
+        </dd>
+      </dl>
+
+    <h3>Outputs</h3>
+      <dl class="message-properties">
+          <dt>payload <span class="property-type">anytype</span></dt>
+          <dd>the value of the selected item</dd>
+      </dl>
   </script>
 
