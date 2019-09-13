@@ -9,6 +9,9 @@
  *        - node helps and descriptions!
  *        - github wiki
  *
+ *        - adapters should have a "ready" state which they have to send after their init is done
+ *        - dataManager
+ *
  */
 
 
@@ -125,6 +128,9 @@ class MyHabitat extends MyHabitatBase
     // the scene manager adapter is always enabled
     self.registerAdapter(SystemAdapterFilePath + 'sceneManager.js', "SCENEMANAGER", { storageFile : self.configuration.scenes.storageFile })
 
+    // the data manager adapter is always enabled
+    self.registerAdapter(SystemAdapterFilePath + 'dataManager.js', "DATAMANAGER", {})
+
     // start the watchdog intervall for probing our adapter processes
     if(self.configuration.adapterProcessWatchdog.enabled)
     {
@@ -133,6 +139,26 @@ class MyHabitat extends MyHabitatBase
       }, self.configuration.adapterProcessWatchdog.interval)
     }
 
+
+    // TODO: @@@
+    setTimeout(function(){
+      self.postInit()
+    }, 2500)
+
+  }
+
+
+  postInit()
+  {
+    // after initialization of the inbuilt adapters the dataManager should be online on we tell
+    // him to load the last states of our entities. When the manger has received the data the
+    // onDataManagerData method will be called.
+    // ATTENTION: In future we should do a better job and do not use postInit() for this. We
+    //            should create a method which will be called when the adapter tells us that
+    //            he is teady for action
+    // TODO: @@@
+    // this.dataManagerRequest({ id: "LASTSTATE"})
+    // --> this.dataManagerResponse(_request, _dataEnvelope)
   }
 
 
@@ -300,7 +326,7 @@ class MyHabitat extends MyHabitatBase
       self.adapterEntityProcesses[_adapterEntityId] = {}
       self.adapterEntityProcesses[_adapterEntityId].process = childProcess.fork(_adapterFile, [_adapterEntityId])
       self.getAdapterProcess(_adapterEntityId).on('message', function(_message){
-        self.onAdapterMessage(_message)
+        self.onAdapterMessage(_message, _message.adapter.entity)
       })
 
       // store the settings of the adapter process for later use (e.g. process watchdog)
@@ -339,7 +365,7 @@ class MyHabitat extends MyHabitatBase
   }
 
 
-  onAdapterMessage(_message)
+  onAdapterMessage(_message, _adapterEntity)
   {
     // so here we get messages from all adapters which may be a little bottleneck
     // we have to check if this is going to be a problem.
@@ -349,66 +375,108 @@ class MyHabitat extends MyHabitatBase
     // if this happens we have to mark the entityid in the watchlist as 'alive and working hard'
     // TODO: another thing we have to to is set the alive state for informational usage
     if(_message.adapter && _message.adapter.ping)
-    {
-      this.adapterEntityProcessWatchdogList[_message.adapter.entity.id] = true
-      this.createEmptyEntityStateIfNotExists(_message.adapter.entity.id)
-      Set(this.getEntityStates()[_message.adapter.entity.id].state, 'process.alive', true)
-    }
+      this.onAdapterMessage_Ping(_message, _adapterEntity)
 
     // adapters may send a log to the main process
     // this is not the best thing but i found no good method to reference the logger process to the other
     // adapter processes which would make this message distribution obsolete.
     if(_message.adapter && _message.adapter.log)
-      this.sendToLoggerProcess( _message.adapter.log.type,
-                                _message.adapter.log.moduleId,
-                                _message.adapter.log.entityId,
-                                _message.adapter.log.text,
-                                _message.adapter.log.object)
+      this.onAdapterMessage_Log(_message, _adapterEntity)
 
     // if we have got an adapter state object (this is the one giving info about the adapter viablility)
     // we have to emit this info in an own event. The adapter should send it's state periodically or it
     // can send on every state change, but it would be better to keep the state traffic low!
     if(_message.adapter && _message.adapter.state)
-    {
-      // every adapter does have an 'adapter state object' which should include infos like connection status aso...
-      // we do store this data into the global entity state object too
-      this.updateEntityState(_message.adapter.entity.id, _message.adapter.entity, _message.adapter.state, {}, {} )
-      this.emit("adapterStateReceived", _message.adapter.entity, _message.adapter.state)
-    }
+      this.onAdapterMessage_State(_message, _adapterEntity)
 
     // we may get an entity state update info from an adapter (e.g. comGateway)
     // this is a special data protocol which has to be the same for every adapter who is sending entity states to the system
     if(_message.entity && _message.entityState)
-    {
-      this.emit('entityStateReceived', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
-    }
+      this.onAdapterMessage_EntityState(_message, _adapterEntity)
 
     // there is the possibility to control scenes from any adapter. (e.g loadScene, storeScene)
     // this is done by using the 'scene' action object
     if(_message.scene)
-    {
-      this.handleSceneObject(_message.scene)
-      this.emit('sceneObjectReceived', _message.scene, _message.originator)
-    }
-
+      this.onAdapterMessage_Scene(_message, _adapterEntity)
 
     // if the message has a 'data' attribute, we do only emit the data for the adapter entity
     // the 'data' attribute does container the adapter specific protocol. This data will be evaluated on the specific node-red adapter node
     if(_message.data)
-      this.emit('adapterMessageReceived', _message.adapter.entity, _message.data)
-
+      this.onAdapterMessage_Data(_message, _adapterEntity)
   }
+
+
+
+  onAdapterMessage_Ping(_message, _adapterEntity)
+  {
+    this.adapterEntityProcessWatchdogList[_adapterEntity.id] = true
+    this.createEmptyEntityStateIfNotExists(_adapterEntity.id)
+    Set(this.getEntityStates()[_adapterEntity.id].state, 'process.alive', true)
+  }
+
+
+  onAdapterMessage_Log(_message, _adapterEntity)
+  {
+    this.sendToLoggerProcess( _message.adapter.log.type,
+      _message.adapter.log.moduleId,
+      _message.adapter.log.entityId,
+      _message.adapter.log.text,
+      _message.adapter.log.object)
+  }
+
+
+  onAdapterMessage_State(_message, _adapterEntity)
+  {
+    // every adapter does have an 'adapter state object' which should include infos like connection status aso...
+    // we do store this data into the global entity state object too
+    this.updateEntityState(_message.adapter.entity.id, _message.adapter.entity, _message.adapter.state, {}, {} )
+    this.emit("adapterStateReceived", _message.adapter.entity, _message.adapter.state)
+  }
+
+
+  onAdapterMessage_EntityState(_message, _adapterEntity)
+  {
+    // emit the state received event. The app node in node-red will listen to this event and set the state as input
+    // to the approriate node
+    this.emit('entityStateReceived', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
+  }
+
+
+  onAdapterMessage_Scene(_message, _adapterEntity)
+  {
+    this.handleSceneObject(_message.scene)
+    this.emit('sceneObjectReceived', _message.scene, _message.originator)
+  }
+
+
+  onAdapterMessage_Data(_message, _adapterEntity)
+  {
+    switch(_adapterEntity.id.toUpperCase())
+    {
+      case "DATAMANAGER":
+        this.onAdapterMessage_AdapterDataManager(_message, _adapterEntity)
+        break
+    }
+    this.emit('adapterMessageReceived', _message.adapter.entity, _message.data)
+  }
+
+
+  onAdapterMessage_AdapterDataManager()
+  {
+    // when we are receiving a response to a lastStateLoad request we have a big date object in our data envelope
+    // this state object has to be set to all entities
+    // TODO: @@@
+    // this.emit('entityStateReceived', _message.adapter.entity, _message.entity, _message.entityState, _message.originator)
+  }
+
+
 
 
   handleSceneObject(_sceneEnvelope)
   {
     if(!this.adapterEntityProcesses['SCENEMANAGER'])
       return
-    /*
-    this.sendToAdapter("SCENEMANAGER", {data : {  action        : 'load',
-                                                  sceneId       : '',
-                                                  entityId      : '' } })
-    */
+
     this.sendToAdapter("SCENEMANAGER", {data : _sceneEnvelope })
   }
 

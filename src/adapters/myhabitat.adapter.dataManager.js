@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO: allow storage
+
 const MyHabitatAdapter      = require("./myhabitat.adapter.js")
 const CloneDeep             = require('lodash.clonedeep')
 const Get                   = require('lodash.get')
@@ -7,31 +9,27 @@ const Set                   = require('lodash.set')
 const MyhabitatStorage_File = require('../storage/myhabitat.storage.file.js')
 
 
-class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
+class MyHabitatAdapter_DataManager extends MyHabitatAdapter
 {
   constructor(_entityId)
   {
     super(_entityId)
 
-    this.adapterStateInterval       = 7500
-    //this.adapterStateOutputEnabled  = false
+    this.adapterStateInterval               = 7500
 
-    this.adapterState.storageFile         = ""
-    this.adapterState.counters = {}
-    this.adapterState.counters.scenes     = 0
+    // this map holds all the different storage instances which was created
+    // a storage instance may be a file storage, database storage aso.
+    this.storageCollection                  = new Map()
 
-    // 'multi dimensional' object storing the sceneId and the entities with its states
-    this.sceneData = {}
-
-    // 'multi dimensional' object which stores multiple scenes into one group for switching
-    //this.sceneGroupData = {}
-
+    //this.adapterState.lastStateFile         =  ""
+    //this.adapterState.counters              = {}
+    //this.adapterState.counters.scenes       = 0
   }
 
 
   getEntityModuleId()
   {
-    return "SCENEMANAGER"
+    return "DATAMANAGER"
   }
 
 
@@ -39,27 +37,55 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
   {
     const self = this
 
-    this.adapterState.storageFile = _configuration.storageFile
-
-    this.storage = new MyhabitatStorage_File({ filename: _configuration.storageFile ? _configuration.storageFile : './data/scenes.json' } )
-    this.loadScenesData()
+    //this.adapterState.lastStateFile = _configuration.lastStateFile
+    //this.lastStateStorage = new MyhabitatStorage_File(_configuration.lastStateFile ? _configuration.lastStateFile : './data/lastState.json')
+    //this.loadScenesData()
 
     super.setup(_configuration)
   }
 
 
-
-  async loadScenesData()
+  createStorage(_storageType, _storageId, _initParams)
   {
-    this.sceneData = await this.storage.load({ id: 'scenes'})
-    this.adapterState.counters.scenes = Object.keys(this.sceneData).length
-    this.logInfo(this.adapterState.counters.scenes.toString() + ' scenes loaded' )
+    switch(_storageType.toUpperCase())
+    {
+      case 'FILE':
+        this.storageCollection.set(_storageId, new MyhabitatStorage_File(_initParams))
+        break
+      default:
+        this.logError('Storage type ' + _storageType.toString() + ' not available!')
+
+    }
+
+
   }
 
-  async saveScenesData()
+
+  storeData(_storageId, _dataEnvelope)
+  {
+    const storage = this.storageCollection.get(_storageId)
+    return storage.save(_dataEnvelope)
+  }
+
+
+  loadData(_storageId, _dataEnvelope)
+  {
+    const storage = this.storageCollection.get(_storageId)
+    return storage.load(_dataEnvelope)
+  }
+
+
+  /*
+  async loadLastState()
+  {
+    // TODO: remove await...
+    this.sceneData = await this.lastStateStorage.load('state')
+  }
+
+  async saveLastState()
   {
     this.logDebug('Saveing scenes data fo file:' + this.configuration.storageFile)
-    await this.storage.save({ id: 'scenes', data: this.sceneData })
+    await this.storage.save('scenes', this.sceneData)
   }
 
 
@@ -78,13 +104,14 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
       case "LOAD":
         this.loadScene(_data.sceneId, _data.entityId)
         break
-      case "SET":
+      case "STORE":
         this.setSceneData(_data.sceneId, _data.entityId, _data.data)
         break
       default:
         this.logError('Action \'' + _data.action + '\' not found!')
     }
   }
+
 
 
   loadScene(_sceneId, _entityId = '')
@@ -126,8 +153,9 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
     else
       return Get(this.sceneData,  _sceneId)
   }
+  */
 
 }
 
 
-module.exports = MyHabitatAdapter_SceneManager
+module.exports = MyHabitatAdapter_DataManager

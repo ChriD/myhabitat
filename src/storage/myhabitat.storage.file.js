@@ -8,14 +8,14 @@ const Fs                = require("fs")
 
 class MyHabitat_Storage_File extends MyHabitat_Storage
 {
-  constructor(_storageFilename = '')
+  constructor(_initParm = {})
   {
     super()
-    this.storageFilename = _storageFilename
+    this.storageFilename = _initParm.filename ? _initParm.filename : 'default.json'
   }
 
 
-  save(_id, _data)
+  save(_dataEnvelope)
   {
     var self = this
     return new Promise(function(_resolve, _reject){
@@ -25,7 +25,7 @@ class MyHabitat_Storage_File extends MyHabitat_Storage
           if(self.createDirectory(self.getDirectoryFromFileName(self.storageFilename)))
           {
             console.log("Sync: " + self.storageFilename)
-              Fs.writeFileSync(self.storageFilename, JSON.stringify(_data, null, 4), {encoding:'utf8',flag:'w'})
+              Fs.writeFileSync(self.storageFilename, JSON.stringify(_dataEnvelope.data, null, 4), {encoding:'utf8',flag:'w'})
               _resolve()
           }
           else
@@ -41,7 +41,7 @@ class MyHabitat_Storage_File extends MyHabitat_Storage
   }
 
 
-  load(_id, _data)
+  load(_dataEnvelope = {})
   {
     var self = this
     return new Promise(function(_resolve, _reject){

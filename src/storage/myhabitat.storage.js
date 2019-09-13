@@ -13,12 +13,14 @@ class MyHabitat_Storage extends EventEmitter
     super()
   }
 
-  save(_id, _data)
+  save(_dataEnvelope)
   {
+    // should return a promise!
   }
 
-  load(_id)
+  load(_dataEnvelope = {})
   {
+    // should return a promise!
   }
 
 }
