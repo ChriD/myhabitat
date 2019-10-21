@@ -56,8 +56,6 @@ class MyHabitatAdapter_DataManager extends MyHabitatAdapter
         this.logError('Storage type ' + _storageType.toString() + ' not available!')
 
     }
-
-
   }
 
 

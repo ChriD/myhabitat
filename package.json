@@ -26,7 +26,7 @@
     "connect": "^3.6.6",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
-    "lodash.merge": "^4.6.1",
+    "lodash.merge": "^4.6.2",
     "lodash.set": "^4.3.2",
     "on-change": "^1.3.0",
     "serve-static": "^1.13.2",

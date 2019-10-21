@@ -17,6 +17,8 @@ class MyHabitatAdapter extends MyHabitatBase
     self.configuration    = {}
 
     self.adapterState               = {}
+    // define the intervall whenever the adapter puts out its state to the main process
+    // there may be some adapters which do a longer period or some which do a smaller one
     self.adapterStateInterval       = 2500
     self.adapterStateOutputEnabled  = true
 
@@ -153,7 +155,6 @@ class MyHabitatAdapter extends MyHabitatBase
     if(this.adapterPingIntervalId)
       clearInterval(this.adapterPingIntervalId )
   }
-
 
 }
 

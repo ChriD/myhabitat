@@ -322,7 +322,6 @@ class MyHabitat extends MyHabitatBase
 
     try
     {
-
       self.adapterEntityProcesses[_adapterEntityId] = {}
       self.adapterEntityProcesses[_adapterEntityId].process = childProcess.fork(_adapterFile, [_adapterEntityId])
       self.getAdapterProcess(_adapterEntityId).on('message', function(_message){
@@ -486,6 +485,18 @@ class MyHabitat extends MyHabitatBase
     this.handleSceneObject( { actionId : 'load',
                               sceneId  :  _sceneId
                             })
+  }
+
+
+  saveSceneForEntity(_sceneId, _entityId, _sceneData)
+  {
+    // TODO: @@@ ????
+  }
+
+  saveSceneForEntityState(_sceneId, _entityId) // curEntityStateToScene
+  {
+    // TODO: @@@ ????
+    this.saveSceneForEntity(_sceneId, _entityId, this.entityStates[_entityId].state)
   }
 
 
