@@ -23,9 +23,10 @@ class HabitatClient extends EventEmitter {
   }
 
   connect(_host) {
-    var self = this; //self.connection = new WebSocket('ws://' + document.domain + ':3030')
+    var self = this;
 
-    self.connection = new WebSocket('ws://localhost:3030');
+    self.connection = new WebSocket('ws://' + document.domain + ':3030')
+    //self.connection = new WebSocket('ws://localhost:3030');
 
     self.connection.onopen = function () {
       self.logDebug('Connected to habitat');
