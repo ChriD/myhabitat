@@ -26,9 +26,15 @@ const Merge         = require('lodash.merge')
 const CloneDeep     = require('lodash.clonedeep')
 const Get           = require('lodash.get')
 const Set           = require('lodash.set')
-const LogLevel      = require("./globals/myhabitat.global.log.js").LogLevel
+const LogLevel      = require('./globals/myhabitat.global.log.js').LogLevel
+const Path          = require('path')
 
-const SystemAdapterFilePath   = __dirname + '/processes/myhabitat.process.adapter.'
+
+// for creating the child processes we have to get the file location of the process files
+// we can not use '__dirname' due on a node-red install this would link to the node-red module, so we
+// resolve the path of a base filename and go on from there
+const ModulePath              = require.resolve('./myhabitat.base.js')
+const SystemAdapterFilePath   = Path.basename(ModulePath) + '/processes/myhabitat.process.adapter.'
 
 
 class MyHabitat extends MyHabitatBase
