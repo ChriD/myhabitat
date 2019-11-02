@@ -1,6 +1,6 @@
 {
   "name": "myhabitat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "home automation system for node-red",
   "main": "index.js",
   "scripts": {
