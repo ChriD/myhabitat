@@ -89,7 +89,7 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
 
   loadScene(_sceneId, _entityId = '')
   {
-    this.logInfo('Load scene with id: ' + _sceneId + (_entityId ? (' for entity: ' + _entityId) : '' ))
+    this.logDebug('Load scene with id: ' + _sceneId + (_entityId ? (' for entity: ' + _entityId) : '' ))
 
     // lookup the scene id, if we have none, then give some errors
     const sceneData = this.getSceneData(_sceneId, _entityId)
@@ -110,6 +110,8 @@ class MyHabitatAdapter_SceneManager extends MyHabitatAdapter
 
   setSceneData(_sceneId, _entityId, _data)
   {
+    this.logDebug('Setting scene data (\'' + _sceneId + '\') for entity \'' + _entityId +  '\' with \'' + JSON.stringify(_data))
+
     if(_entityId)
       Set(this.sceneData, _sceneId + '.entities.' + _entityId, _data)
     else

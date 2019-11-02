@@ -86,6 +86,9 @@ module.exports = function(RED) {
 
        // init the habitat application
        this.myHabitat.init(this.myHabitatConfig)
+
+       // crate a reference of the 'myhabitat' base application
+       this.myHabitatContextObject().app = this.myHabitat
     }
 
     unregisterAdapter(_adapterEntityId)

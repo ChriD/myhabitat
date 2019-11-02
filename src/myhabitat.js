@@ -486,10 +486,13 @@ class MyHabitat extends MyHabitatBase
   }
 
 
+
+  // scene methods anywhere else???
+
   loadScene(_sceneId)
   {
-    this.handleSceneObject( { actionId : 'load',
-                              sceneId  :  _sceneId
+    this.handleSceneObject( { action  : 'load',
+                              sceneId :  _sceneId
                             })
   }
 
@@ -497,6 +500,12 @@ class MyHabitat extends MyHabitatBase
   saveSceneForEntity(_sceneId, _entityId, _sceneData)
   {
     // TODO: @@@ ????
+    //setSceneData
+    this.handleSceneObject( { action    : 'set',
+                              sceneId   : _sceneId,
+                              entityId  : _entityId,
+                              data      : _sceneData
+                            })
   }
 
   saveSceneForEntityState(_sceneId, _entityId) // curEntityStateToScene

@@ -21,10 +21,8 @@ class MyHabitat_Storage_File extends MyHabitat_Storage
     return new Promise(function(_resolve, _reject){
       try
       {
-        console.log("SAV: " + self.storageFilename)
           if(self.createDirectory(self.getDirectoryFromFileName(self.storageFilename)))
           {
-            console.log("Sync: " + self.storageFilename)
               Fs.writeFileSync(self.storageFilename, JSON.stringify(_dataEnvelope.data, null, 4), {encoding:'utf8',flag:'w'})
               _resolve()
           }
