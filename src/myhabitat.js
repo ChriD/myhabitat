@@ -34,7 +34,7 @@ const Path          = require('path')
 // we can not use '__dirname' due on a node-red install this would link to the node-red module, so we
 // resolve the path of a base filename and go on from there
 const ModulePath              = require.resolve('./myhabitat.base.js')
-const SystemAdapterFilePath   = Path.basename(ModulePath) + '/processes/myhabitat.process.adapter.'
+const SystemAdapterFilePath   = Path.dirname(ModulePath) + '/processes/myhabitat.process.adapter.'
 
 
 class MyHabitat extends MyHabitatBase
