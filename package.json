@@ -31,6 +31,6 @@
     "on-change": "^1.3.0",
     "serve-static": "^1.13.2",
     "systeminformation": "^4.1.6",
-    "ws": "^6.2.1"
+    "ws": "^7.4.6"
   }
 }
